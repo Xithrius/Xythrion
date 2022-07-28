@@ -1,0 +1,2 @@
+# Xythrion
+Discord graphing bot.
