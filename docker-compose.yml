@@ -1,0 +1,25 @@
+---
+version: "3.7"
+
+x-logging: &logging
+  logging:
+    driver: "json-file"
+    options:
+      max-file: "5"
+      max-size: "10m"
+
+x-restart-policy: &restart_policy
+  restart: unless-stopped
+
+services:
+  bot:
+    << : *logging
+    << : *restart_policy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/bot:ro
+    tty: true
+    env_file:
+      - .env
