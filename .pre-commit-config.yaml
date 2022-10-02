@@ -4,8 +4,6 @@ repos:
     hooks:
       - id: check-merge-conflict
       - id: check-toml
-      - id: check-yaml
-        args: [--unsafe] # Required due to custom constructors (e.g. !ENV)
       - id: end-of-file-fixer
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]

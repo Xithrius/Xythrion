@@ -9,6 +9,7 @@ license = "MIT"
 python = "3.10.7"
 disnake = "2.6.0"
 python-dotenv = "^0.21.0"
+loguru = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "4.0.1"
