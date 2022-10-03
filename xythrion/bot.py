@@ -1,5 +1,5 @@
-from loguru import logger as log
 from disnake.ext import commands
+from loguru import logger as log
 
 
 class Xythrion(commands.Bot):

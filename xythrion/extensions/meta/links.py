@@ -1,5 +1,5 @@
-from disnake import Permissions, Embed
-from disnake.ext.commands import Cog, command, Context
+from disnake import Embed, Permissions
+from disnake.ext.commands import Cog, Context, command
 from disnake.utils import oauth_url
 
 from xythrion.bot import Xythrion
