@@ -22,9 +22,16 @@ repos:
   - repo: local
     hooks:
       - id: flake8
-        name: Flake8
-        description: This hook runs flake8 within our project's environment.
+        name: flake8
+        description: Run flake8 within our project's environment.
         entry: poetry run flake8
+        language: system
+        types: [python]
+        require_serial: true
+      - id: pyright
+        name: pyright
+        description: Run flake8 within our project's environment.
+        entry: poetry run pyright
         language: system
         types: [python]
         require_serial: true
