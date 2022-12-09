@@ -1,24 +1,29 @@
+import asyncio
 import os
 
-from disnake import AllowedMentions
-from disnake.ext import commands
 from dotenv import load_dotenv
 from loguru import logger as log
 
 from xythrion.bot import Xythrion
 from xythrion.extensions import EXTENSIONS
 
+
+async def load_extensions() -> None:
+    """Loads extensions in an async type of way."""
+    for extension in EXTENSIONS:
+        await bot.load_extension(extension)
+        log.info(f'Loaded extension "{extension}"')
+
+
 load_dotenv()
 
-bot = Xythrion(
-    command_prefix=commands.when_mentioned,
-    case_insensitive=True,
-    help_command=None,
-    allowed_mentions=AllowedMentions(everyone=False),
-)
+bot = Xythrion()
 
-for extension in EXTENSIONS:
-    bot.load_extension(extension)
-    log.info(f'Loaded extension "{extension}"')
+asyncio.run(load_extensions())
 
-bot.run(os.getenv("BOT_TOKEN"))
+token = os.getenv("BOT_TOKEN")
+if token is None:
+    log.error("Retrieving token returned none")
+    exit(1)
+
+bot.run(token=token)
