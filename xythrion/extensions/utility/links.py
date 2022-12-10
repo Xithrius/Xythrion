@@ -17,10 +17,10 @@ BOT_ID_INTEGER = 591885341812850699
 class Links(Cog):
     """Links to many things around the internet, including bot statistics."""
 
-    def __init__(self, bot: Xythrion):
+    def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @command(aliases=("desc", "description"))
+    @command(aliases=("repository", "repo"))
     async def info(self, ctx: Context) -> None:
         """Information about bot origin."""
         embed = Embed(description=markdown_link("Xythrion Github Repository", GITHUB_URL))

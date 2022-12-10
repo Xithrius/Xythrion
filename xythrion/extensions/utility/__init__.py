@@ -1,7 +1,9 @@
 from xythrion.bot import Xythrion
-from xythrion.extensions.utility.basic import Basic
+from xythrion.extensions.utility.links import Links
+from xythrion.extensions.utility.ping import Ping
 
 
 async def setup(bot: Xythrion) -> None:
-    """The necessary function for loading in cogs within this folder."""
-    await bot.add_cog(Basic(bot))
+    """The necessary function for loading extensions within this folder."""
+    await bot.add_cog(Ping(bot))
+    await bot.add_cog(Links(bot))

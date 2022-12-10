@@ -13,7 +13,7 @@ class Xythrion(commands.Bot):
             case_insensitive=True,
             help_command=None,
             allowed_mentions=AllowedMentions(everyone=False),
-            intents=Intents.all(),
+            intents=Intents.default(),
         )
 
     @staticmethod

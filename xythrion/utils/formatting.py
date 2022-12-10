@@ -8,6 +8,8 @@ def and_join(items: list[str], sep: str = ", ") -> str:
     return f"{sep.join(str(x) for x in items[:-1])}{sep}and {items[-1]}"
 
 
-def codeblock(code: str, language: str = "python") -> str:
+def codeblock(code: str | list[str], language: str = "python") -> str:
     """Returns a string in the format of a Discord codeblock."""
-    return f"```{language}\n{code}\n```"
+    block = "\n".join(code) if isinstance(code, list) else code
+
+    return f"```{language}\n{block}\n```"
