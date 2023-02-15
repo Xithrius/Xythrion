@@ -16,44 +16,36 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Install Python Dependencies
-        uses: HassanAbouelela/actions/setup-python@setup-python_v1.3.1
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          # Set dev=true to install flake8 extensions, which are dev dependencies
-          dev: true
-          python_version: "3.11.1"
+          python-version: "3.10.9"
+          cache: "pip"
+          cache-dependency-path: "pyproject.toml"
 
-      - name: Run pre-commit hooks
-        run: export PIP_USER=0; SKIP=flake8 pre-commit run --all-files
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v3
+        with:
+          python-version: "3.10.9"
 
-      - name: Run flake8
-        run: "flake8 \
-          --format='::error file=%(path)s,line=%(row)d,col=%(col)d::\
-          [flake8] %(code)s: %(text)s'"
+      - name: Install dependencies
+        run: pdm sync
 
-      - name: Run pyright
-        uses: jakebailey/pyright-action@v1
+      - name: Run lint
+        run: pdm lint
 
-      # Prepare the Pull Request Payload artifact. If this fails, we
-      # we fail silently using the `continue-on-error` option. It's
-      # nice if this succeeds, but if it fails for any reason, it
-      # does not mean that our lint-test checks failed.
       - name: Prepare Pull Request Payload artifact
         id: prepare-artifact
         if: always() && github.event_name == 'pull_request'
         continue-on-error: true
         run: cat $GITHUB_EVENT_PATH | jq '.pull_request' > pull_request_payload.json
 
-      # This only makes sense if the previous step succeeded. To
-      # get the original outcome of the previous step before the
-      # `continue-on-error` conclusion is applied, we use the
-      # `.outcome` value. This step also fails silently.
       - name: Upload a Build Artifact
         if: always() && steps.prepare-artifact.outcome == 'success'
         continue-on-error: true
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: pull-request-payload
           path: pull_request_payload.json

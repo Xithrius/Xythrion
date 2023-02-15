@@ -1,63 +1,50 @@
-[tool.poetry]
+[project]
 name = "Xythrion"
 version = "0.1.0"
 description = "Discord graphing bot"
-authors = ["Xithrius <xithrius@gmail.com>"]
-license = "MIT"
+authors = [
+    {name = "Xithrius", email = "xithrius@gmail.com"},
+]
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+    "discord-py>=2.1.0",
+    "python-dotenv>=0.21.0",
+    "loguru>=0.6.0",
+    "numpy>=1.23.3",
+    "matplotlib>=3.6.0"
+]
 
-[tool.poetry.dependencies]
-python = "3.11.1"
-discord-py = "2.1.0"
-python-dotenv = "0.21.0"
-loguru = "0.6.0"
-numpy = "1.23.3"
-matplotlib = "3.6.0"
-
-[tool.poetry.dev-dependencies]
-flake8 = "4.0.1"
-flake8-annotations = "2.9.0"
-flake8-bugbear = "22.7.1"
-flake8-docstrings = "1.6.0"
-flake8-string-format = "0.3.0"
-flake8-tidy-imports = "4.8.0"
-flake8-todo = "0.7"
-flake8-isort = "4.1.2.post0"
-pep8-naming = "0.13.1"
-pre-commit = "2.20.0"
-taskipy = "1.10.2"
-black = "22.10.0"
-pyright = "1.1.283"
+[tool]
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+lint = [
+    "flake8>=6.0.0",
+    "flake8-annotations>=3.0.0",
+    "flake8-bugbear>=23.2.13",
+    "flake8-docstrings>=1.7.0",
+    "flake8-string-format>=0.3.0",
+    "flake8-tidy-imports>=4.8.0",
+    "flake8-todo>=0.7",
+    "flake8-isort>=6.0.0",
+    "pep8-naming>=0.13.3",
+    "pyright>=1.1.293"
+]
+format = [
+    "black>=23.1.0"
+]
+precommit = [
+    "pre-commit>=3.0.4",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
 
-[tool.taskipy.tasks]
+[tool.pdm.scripts]
 start = "python -m xythrion"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 
 [tool.black]
-line-length = 100
-
-[tool.isort]
-profile = "black"
-multi_line_output = 6
-order_by_type = false
-case_sensitive = true
-combine_as_imports = true
-line_length = 100
-atomic = true
-
-[tool.pyright]
-include = ["xythrion/**/*.py"]
-exclude = ["**/__pycache__"]
-
-typeCheckingMode = "strict"
-reportMissingTypeStubs = false
-reportMissingTypeArgument = false
-reportUnknownParameterType = false
-reportUnknownVariableType = false
-reportUntypedBaseClass = false
-reportUntypedFunctionDecorator = false
-reportUnknownMemberType = false
+line-length = 80

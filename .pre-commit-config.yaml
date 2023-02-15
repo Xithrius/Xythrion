@@ -12,26 +12,3 @@ repos:
     rev: v1.5.1
     hooks:
       - id: python-check-blanket-noqa
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.8.0
-    hooks:
-      - id: isort
-        name: isort (python)
-
-  - repo: local
-    hooks:
-      - id: flake8
-        name: flake8
-        description: Run flake8 within our project's environment.
-        entry: poetry run flake8
-        language: system
-        types: [python]
-        require_serial: true
-      - id: pyright
-        name: pyright
-        description: Run flake8 within our project's environment.
-        entry: poetry run pyright
-        language: system
-        types: [python]
-        require_serial: true
