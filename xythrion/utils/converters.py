@@ -1,6 +1,15 @@
+import re
+
 from discord.ext.commands import Context, Converter
 
 from xythrion.extensions import EXTENSIONS
+
+whitespace_pattern = re.compile(r"\s+")
+
+
+def remove_whitespace(argument: str) -> str:
+    """Replaces any whitespace within a string with nothingness."""
+    return re.sub(whitespace_pattern, "", argument)
 
 
 class Extension(Converter):

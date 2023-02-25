@@ -14,7 +14,8 @@ class Warnings(Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
+    @staticmethod
+    async def on_command_error(ctx: commands.Context, error: commands.CommandError) -> None:
         """Handling all sorts of errors."""
         if isinstance(error, commands.MemberNotFound):
             await ctx.send("I could not find member '{error.argument}'. Please try again")

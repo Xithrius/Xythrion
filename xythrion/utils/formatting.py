@@ -4,7 +4,7 @@ def markdown_link(desc: str, link: str, t: str = "") -> str:
 
 
 def and_join(items: list[str], sep: str = ", ") -> str:
-    """Joins a list by a separator with an 'and' at the very end for readability."""
+    """Joins a list by a separator with an 'and' at the very end."""
     return f"{sep.join(str(x) for x in items[:-1])}{sep}and {items[-1]}"
 
 
