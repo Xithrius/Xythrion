@@ -3,7 +3,7 @@ from io import BytesIO
 import numpy as np
 from loguru import logger as log
 
-from xythrion.utils import noblock
+from xythrion.utils.executor import noblock
 
 try:
     import matplotlib
@@ -19,28 +19,16 @@ except (ImportError, ImportWarning) as e:
 
 
 @noblock
-async def graph_2d(
+def graph_2d(
     x: np.ndarray,
     y: np.ndarray,
-    *,
-    plot_type: str = "line",
-    autorotate_xaxis: bool = True
 ) -> BytesIO:
     buffer = BytesIO()
-    fig, axis = plt.subplots()
 
+    fig, axis = plt.subplots()
     axis.grid(True, linestyle="-.", linewidth=0.5)
 
-    if plot_type == "bar":
-        placements = np.linspace(0, len(x) + 1, len(x))
-        axis.bar(placements, y, 0.5)
-        axis.set_xticks(placements)
-        axis.set_xticklabels(x)
-    else:
-        axis.plot(x, y)
-
-    if autorotate_xaxis:
-        plt.gcf().autofmt_xdate()
+    axis.plot(x, y)
 
     fig.savefig(buffer, format="png")
 
@@ -48,28 +36,37 @@ async def graph_2d(
 
     return buffer
 
-# from io import BytesIO
-#
-# import matplotlib as plt
-# import numpy as np
-#
-#
-# def graph(x: np.ndarray, y: np.ndarray) -> BytesIO:
-#     """Plotting pre-calculated x/y points."""
+# @noblock
+# def graph_2d(
+#     x: np.ndarray,
+#     y: np.ndarray,
+#     *,
+#     plot_type: str = "line",
+#     autorotate_xaxis: bool = True
+# ) -> BytesIO:
 #     buffer = BytesIO()
-#     fig, ax = plt.subplots()
-#     fig.tight_layout(pad=0.3, w_pad=0.2, h_pad=0.5)
+#     fig, axis = plt.subplots()
 #
-#     ax.grid(True, linestyle="-.", linewidth=0.5)
+#     axis.grid(True, linestyle="-.", linewidth=0.5)
 #
-#     ax.spines["left"].set_position("zero")
-#     ax.spines["right"].set_color("none")
-#     ax.spines["bottom"].set_position("zero")
-#     ax.spines["top"].set_color("none")
+#     if plot_type == "bar":
+#         placements = np.linspace(0, len(x) + 1, len(x))
+#         axis.bar(placements, y, 0.5)
+#         axis.set_xticks(placements)
+#         axis.set_xticklabels(x)
+#     else:
+#         axis.plot(x, y)
 #
-#     ax.plot(x, y)
+#     # if autorotate_xaxis:
+#     #     plt.gcf().autofmt_xdate()
+#
+#     # axis.spines["left"].set_position("zero")
+#     # axis.spines["right"].set_color("none")
+#     # axis.spines["bottom"].set_position("zero")
+#     # axis.spines["top"].set_color("none")
 #
 #     fig.savefig(buffer, format="png")
+#
 #     buffer.seek(0)
 #
 #     return buffer
