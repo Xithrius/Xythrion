@@ -1,6 +1,6 @@
 from xythrion.bot import Xythrion
-from xythrion.extensions.utility.links import Links
-from xythrion.extensions.utility.ping import Ping
+from xythrion.extensions.info.links import Links
+from xythrion.extensions.info.ping import Ping
 
 
 async def setup(bot: Xythrion) -> None:

@@ -1,6 +1,3 @@
 {
-    "recommendations": [
-        "ms-pyright.pyright",
-        "ms-python.python"
-    ],
+  "recommendations": ["ms-python.python"]
 }

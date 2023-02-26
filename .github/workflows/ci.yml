@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  lint-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,6 +35,9 @@ jobs:
 
       - name: Run lint
         run: pdm lint
+
+      - name: Run tests
+        run: pdm test
 
       - name: Prepare Pull Request Payload artifact
         id: prepare-artifact
