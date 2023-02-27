@@ -1,8 +1,7 @@
 from discord.ext.commands import Cog, Context, command
-import httpx
+from loguru import logger as log
 
 from xythrion.bot import Xythrion
-
 
 class Ping(Cog):
     """Pinging the bot, to see if it's alive."""
@@ -18,8 +17,6 @@ class Ping(Cog):
     @command()
     async def ping_api(self, ctx: Context) -> None:
         """Is *that* thing on?"""
-        res = httpx.get("localhost:8000/ping")
+        r = await self.bot.http_client.get('http://localhost:8000/ping')
 
-        j = res.json()
-
-        print(j)
+        await ctx.send(r.json())

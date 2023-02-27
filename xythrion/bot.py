@@ -6,6 +6,7 @@ import asyncio
 import functools
 from xythrion.extensions import EXTENSIONS
 import os
+import httpx
 
 from dotenv import load_dotenv
 
@@ -16,7 +17,7 @@ POSTGRES_CREDENTIALS = {
     "user": "xythrion",
     "password": "xythrion",
     "database": "xythrion",
-    "port": 7777
+    "port": 7777,
 }
 
 
@@ -38,7 +39,7 @@ class Xythrion(commands.Bot):
         )
 
     async def setup_hook(self):
-        # self.session = aiohttp.ClientSession()
+        self.http_client = httpx.AsyncClient()
 
         self.pool = await asyncpg.create_pool(
             **POSTGRES_CREDENTIALS, command_timeout=60
@@ -58,7 +59,7 @@ class Xythrion(commands.Bot):
         await super().start(token=token)
 
     async def close(self):
-        # await self.session.close()
+        await self.http_client.close()
 
         self.pool.close()
 
