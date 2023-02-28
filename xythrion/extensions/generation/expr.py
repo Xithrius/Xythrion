@@ -1,9 +1,4 @@
-import ast
-from typing import Union
-
-import numpy as np
-from discord.ext.commands import Cog, group, is_owner, Context
-from discord import Embed, File
+from discord.ext.commands import Cog, Context, group, is_owner
 
 from xythrion.bot import Xythrion
 from xythrion.utils import remove_whitespace

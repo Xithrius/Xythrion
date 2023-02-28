@@ -1,4 +1,10 @@
-from discord.ext.commands import Cog, Context, ExtensionNotLoaded, group, is_owner
+from discord.ext.commands import (
+    Cog,
+    Context,
+    ExtensionNotLoaded,
+    group,
+    is_owner,
+)
 from loguru import logger as log
 
 from xythrion.bot import Xythrion
@@ -28,7 +34,9 @@ class Extensions(Cog):
         await ctx.reply(f"Loaded extension {extension}.")
 
     @extension.command(aliases=("unload",))
-    async def unload_extension(self, ctx: Context, extension: Extension) -> None:
+    async def unload_extension(
+        self, ctx: Context, extension: Extension
+    ) -> None:
         """Unloads a singular extension."""
         await self.bot.unload_extension(str(extension))
 
@@ -44,7 +52,8 @@ class Extensions(Cog):
                 await self.bot.load_extension(extension)
             except Exception as e:
                 return log.error(
-                    f"Failed reloading {extension}.", exc_info=(type(e), e, e.__traceback__)
+                    f"Failed reloading {extension}.",
+                    exc_info=(type(e), e, e.__traceback__),
                 )
 
         msg = f"Reloaded {len(EXTENSIONS)} extension(s)."
@@ -57,19 +66,18 @@ class Extensions(Cog):
     async def list_commands(self, ctx: Context) -> None:
         """Lists all commands, and the extensions they're in."""
         cmd_list = sorted(
-            [(k, v) for k, v in self.bot.cogs.items()],
-            key=lambda x: x[0]
+            [(k, v) for k, v in self.bot.cogs.items()], key=lambda x: x[0]
         )
 
         cmd_tree = []
-        for (k, v) in cmd_list:
+        for k, v in cmd_list:
             if not v.get_commands():
                 continue
 
             cmd_tree.append(k)
 
             for cmd in v.walk_commands():
-                spacing = ' ' * (0 if cmd.parent is None else 3)
-                cmd_tree.append(f'{spacing}└── {cmd.name}')
+                spacing = " " * (0 if cmd.parent is None else 3)
+                cmd_tree.append(f"{spacing}└── {cmd.name}")
 
         await ctx.reply(codeblock(cmd_tree))

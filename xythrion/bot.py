@@ -1,14 +1,13 @@
+import os
+
+import asyncpg
+import httpx
 from discord import AllowedMentions, Intents
 from discord.ext import commands
-from loguru import logger as log
-import asyncpg
-import asyncio
-import functools
-from xythrion.extensions import EXTENSIONS
-import os
-import httpx
-
 from dotenv import load_dotenv
+from loguru import logger as log
+
+from xythrion.extensions import EXTENSIONS
 
 load_dotenv()
 

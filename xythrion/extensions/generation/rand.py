@@ -1,8 +1,4 @@
-from collections import Counter
-from random import randint
-
-import pandas as pd
-from discord import Embed, File
+from discord import Embed
 from discord.ext.commands import Cog, Context, command
 
 from xythrion.bot import Xythrion

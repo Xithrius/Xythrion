@@ -1,12 +1,10 @@
+from discord import Embed, Message, User
 from discord.ext.commands import (
     Cog,
     Context,
-    command,
-    is_owner,
     group,
+    is_owner,
 )
-from discord import Message, User
-from loguru import logger as log
 
 from xythrion.bot import Xythrion
 
@@ -45,8 +43,10 @@ class LinkMapper(Cog):
             )
 
             for row in rows:
-                if row['from_match'] in message.content:
-                    res = message.content.replace(row['from_match'], row['to_match'])
+                if row["from_match"] in message.content:
+                    res = message.content.replace(
+                        row["from_match"], row["to_match"]
+                    )
 
                     await message.reply(res)
 
