@@ -12,3 +12,8 @@ repos:
     rev: v1.10.0
     hooks:
       - id: python-check-blanket-noqa
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: 'v0.0.253'
+    hooks:
+      - id: ruff
