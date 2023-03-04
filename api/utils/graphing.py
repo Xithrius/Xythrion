@@ -1,10 +1,9 @@
 import ast
 from io import BytesIO
-from typing import Union
 
 import numpy as np
 from loguru import logger as log
-from sympy.simplify import Symbol, parse_expr
+from sympy import Symbol, parse_expr
 
 try:
     import matplotlib
@@ -20,7 +19,7 @@ except (ImportError, ImportWarning) as e:
         exc_info=(type(e), e, e.__traceback__),
     )
 
-from utils.decorators import noblock
+from api.utils.decorators import noblock
 
 AST_WHITELIST = (
     ast.Expression,
@@ -38,16 +37,18 @@ AST_WHITELIST = (
 
 # https://stackoverflow.com/a/11952618
 def sanitize_expression(expression: str) -> bool:
+    if not expression:
+        raise ValueError("Expression must exist")
     tree = ast.parse(expression, mode="eval")
     return all(isinstance(node, AST_WHITELIST) for node in ast.walk(tree))
 
 
-restriction = tuple[Union[int, float], Union[int, float]]
-
-
 @noblock
 def calculate(
-    expression: str, restrict_x: restriction, *, point_amount: int = 25
+    expression: str,
+    restrict_x: tuple[int | float, int | float],
+    *,
+    point_amount: int = 25,
 ) -> tuple[np.ndarray, np.ndarray]:
     x = np.linspace(restrict_x[0], restrict_x[1], point_amount)
 
