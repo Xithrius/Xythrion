@@ -7,9 +7,7 @@ from xythrion.utils import markdown_link
 
 GITHUB_URL = "https://github.com/Xithrius/Xythrion"
 
-# Read/send messages in channels/threads, view channels, embed links,
-# attach files, read message history, add reactions, use slash commands.
-PERMISSIONS_INTEGER = 277025508416
+PERMISSIONS_INTEGER = 517547084864
 
 BOT_ID_INTEGER = 591885341812850699
 
