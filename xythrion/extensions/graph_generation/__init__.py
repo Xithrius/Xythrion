@@ -1,6 +1,6 @@
 from xythrion.bot import Xythrion
-from xythrion.extensions.generation.expr import GraphExpression
-from xythrion.extensions.generation.rand import GraphRandom
+from xythrion.extensions.graph_generation.expressions import GraphExpression
+from xythrion.extensions.graph_generation.randoms import GraphRandom
 
 
 async def setup(bot: Xythrion) -> None:
