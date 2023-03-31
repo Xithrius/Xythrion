@@ -12,6 +12,14 @@ def remove_whitespace(argument: str) -> str:
     return re.sub(whitespace_pattern, "", argument)
 
 
+REGEX_3D_MATCH = "^((\\d{1,3}), ?(\\d{1,3}), ?(\\d{1,3}))$"
+
+
+def convert_3d_tuples(argument: str) -> tuple[int, ...]:
+    """From a string with 3 arguments to integers."""
+    return tuple(int(x) for x in re.match(REGEX_3D_MATCH, argument).groups())
+
+
 class Extension(Converter):
     """
     Ensure the extension exists and return the full extension path.

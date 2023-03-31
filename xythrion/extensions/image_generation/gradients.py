@@ -5,9 +5,12 @@ import numpy as np
 from PIL import Image
 from discord import Embed, File
 from discord.ext.commands import Cog, Context, command
-from loguru import logger as log
 
 from xythrion.bot import Xythrion
+from xythrion.utils import convert_3d_tuples
+
+TUPLE_BOOL_3D = tuple[bool, bool, bool]
+TUPLE_INT_3D = tuple[int, int, int]
 
 
 # https://github.com/nkmk/python-snippets/blob/master/notebook/numpy_generate_gradient_image.py
@@ -27,9 +30,9 @@ def get_gradient_2d(
 def get_gradient_3d(
     width: int,
     height: int,
-    start_list: tuple[int, int, int],
-    stop_list: tuple[int, int, int],
-    is_horizontal_list: tuple[bool, bool, bool]
+    start_list: TUPLE_INT_3D,
+    stop_list: TUPLE_INT_3D,
+    is_horizontal_list: TUPLE_BOOL_3D
 ):
     result = np.zeros((height, width, len(start_list)))
 
@@ -41,12 +44,11 @@ def get_gradient_3d(
     return result
 
 
-def generate_image() -> BytesIO:
-    gradient_direction = (False, False, False)
-
-    start_color = (8, 159, 143)
-    end_color = (42, 72, 88)
-
+def generate_image(
+    start_color: TUPLE_INT_3D,
+    end_color: TUPLE_INT_3D,
+    gradient_direction: TUPLE_BOOL_3D
+) -> BytesIO:
     array = get_gradient_3d(64, 64, start_color, end_color, gradient_direction)
     img = Image.fromarray(np.uint8(array)).convert('RGBA')
 
@@ -62,10 +64,22 @@ class GradientImageGenerator(Cog):
         self.bot = bot
 
     @command()
-    async def gradient(self, ctx: Context) -> None:
-        log.info('test')
+    async def gradient(
+        self,
+        ctx: Context,
+        start: convert_3d_tuples,
+        end: convert_3d_tuples,
+        direction: str = 'h',
+    ) -> None:
+        gradient_direction = (False, False, False)
+        if direction == 'h':
+            gradient_direction = (True, True, True)
+        elif direction == 'hv':
+            gradient_direction = (True, True, False)
 
-        buffer = await asyncio.to_thread(lambda: generate_image())
+        buffer = await asyncio.to_thread(
+            lambda: generate_image(start, end, gradient_direction)
+        )
 
         embed = Embed()
 
