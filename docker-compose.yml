@@ -13,7 +13,6 @@ x-restart-policy: &restart_policy
 services:
   adminer:
     <<: *logging
-    <<: *restart_policy
 
     image: adminer:latest
 
@@ -22,7 +21,6 @@ services:
 
   postgres:
     <<: *logging
-    <<: *restart_policy
 
     image: postgres:latest
 

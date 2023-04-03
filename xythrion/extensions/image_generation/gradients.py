@@ -79,6 +79,8 @@ class GradientImageGenerator(Cog):
             gradient_direction = (True, True, True)
         elif direction == "hv":
             gradient_direction = (True, True, False)
+        elif direction == "vh":
+            gradient_direction = (False, False, True)
 
         buffer = await asyncio.to_thread(
             lambda: generate_image(
