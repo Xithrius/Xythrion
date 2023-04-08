@@ -7,6 +7,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from loguru import logger as log
 
+from xythrion.context import Context
 from xythrion.extensions import EXTENSIONS
 
 load_dotenv()
@@ -36,6 +37,9 @@ class Xythrion(commands.Bot):
             allowed_mentions=AllowedMentions(everyone=False),
             intents=intents,
         )
+
+    async def get_context(self, message, *, cls=Context):
+        return await super().get_context(message, cls=cls)
 
     async def setup_hook(self):
         self.http_client = httpx.AsyncClient()

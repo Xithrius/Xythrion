@@ -2,11 +2,11 @@ import asyncio
 from io import BytesIO
 
 import numpy as np
-from discord import Embed, File
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, command
 from PIL import Image
 
 from xythrion.bot import Xythrion
+from xythrion.context import Context
 from xythrion.utils import convert_3d_tuples, gradient3
 
 
@@ -56,10 +56,4 @@ class GradientImages(Cog):
             )
         )
 
-        embed = Embed()
-
-        embed.set_image(url="attachment://tmp_gradient.png")
-
-        file = File(fp=buffer, filename="tmp_gradient.png")
-
-        await ctx.send(embed=embed, file=file)
+        await ctx.send_buffer(buffer)

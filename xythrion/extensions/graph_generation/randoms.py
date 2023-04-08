@@ -1,7 +1,8 @@
 from discord import Embed
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, command
 
 from xythrion.bot import Xythrion
+from xythrion.context import Context
 
 
 class GraphRandom(Cog):
@@ -34,8 +35,4 @@ class GraphRandom(Cog):
         #     description=f"Graph of {rolls} dice roll{'s' if rolls > 1 else ''}."
         # )
 
-        # embed.set_image(url="attachment://tmp_graph.png")
-
-        # file = File(fp=buffer, filename="tmp_graph.png")
-
-        # await ctx.send(embed=embed, file=file)
+        # await ctx.send_buffer(buffer, embed=embed)

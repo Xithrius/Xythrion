@@ -1,6 +1,7 @@
-from discord.ext.commands import Cog, Context, group, is_owner
+from discord.ext.commands import Cog, group, is_owner
 
 from xythrion.bot import Xythrion
+from xythrion.context import Context
 from xythrion.utils import remove_whitespace
 
 

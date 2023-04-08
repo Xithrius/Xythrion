@@ -1,6 +1,5 @@
 from discord.ext.commands import (
     Cog,
-    Context,
     ExtensionNotLoaded,
     group,
     is_owner,
@@ -8,6 +7,7 @@ from discord.ext.commands import (
 from loguru import logger as log
 
 from xythrion.bot import Xythrion
+from xythrion.context import Context
 from xythrion.extensions import EXTENSIONS
 from xythrion.utils.converters import Extension
 from xythrion.utils.formatting import codeblock

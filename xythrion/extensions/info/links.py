@@ -1,8 +1,9 @@
 from discord import Embed, Permissions
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, command
 from discord.utils import oauth_url
 
 from xythrion.bot import Xythrion
+from xythrion.context import Context
 from xythrion.utils import markdown_link
 
 GITHUB_URL = "https://github.com/Xithrius/Xythrion"

@@ -1,7 +1,8 @@
 import re
 
-from discord.ext.commands import Context, Converter
+from discord.ext.commands import Converter
 
+from xythrion.context import Context
 from xythrion.extensions import EXTENSIONS
 
 whitespace_pattern = re.compile(r"\s+")

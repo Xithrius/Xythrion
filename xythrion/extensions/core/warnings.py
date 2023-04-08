@@ -6,6 +6,7 @@ from discord.ext.commands import Cog
 from loguru import logger as log
 
 from xythrion.bot import Xythrion
+from xythrion.context import Context
 
 
 class Warnings(Cog, command_attrs=dict(hidden=True)):
@@ -16,7 +17,7 @@ class Warnings(Cog, command_attrs=dict(hidden=True)):
 
     @staticmethod
     async def on_command_error(
-        ctx: commands.Context, error: commands.CommandError
+        ctx: Context, error: commands.CommandError
     ) -> None:
         """Handling all sorts of errors."""
         if isinstance(error, commands.MemberNotFound):

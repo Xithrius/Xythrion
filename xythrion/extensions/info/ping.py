@@ -1,6 +1,7 @@
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, command
 
 from xythrion.bot import Xythrion
+from xythrion.context import Context
 
 
 class Ping(Cog):
