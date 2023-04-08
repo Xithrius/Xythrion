@@ -10,27 +10,27 @@ from xythrion.context import Context
 from xythrion.utils import convert_3d_tuples, gradient3
 
 
-def __generate_gradient_image(
-    start_color: tuple[int, int, int],
-    end_color: tuple[int, int, int],
-    size: tuple[int, int],
-    gradient_direction: tuple[bool, bool, bool],
-) -> BytesIO:
-    array = gradient3(
-        size[0], size[1], start_color, end_color, gradient_direction
-    )
-    img = Image.fromarray(np.uint8(array)).convert("RGBA")
-
-    buffer = BytesIO()
-    img.save(buffer, "png")
-    buffer.seek(0)
-
-    return buffer
-
-
 class GradientImages(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
+
+    @staticmethod
+    def generate_gradient_image(
+        start_color: tuple[int, int, int],
+        end_color: tuple[int, int, int],
+        size: tuple[int, int],
+        gradient_direction: tuple[bool, bool, bool],
+    ) -> BytesIO:
+        array = gradient3(
+            size[0], size[1], start_color, end_color, gradient_direction
+        )
+        img = Image.fromarray(np.uint8(array)).convert("RGBA")
+
+        buffer = BytesIO()
+        img.save(buffer, "png")
+        buffer.seek(0)
+
+        return buffer
 
     @command()
     async def gradient(
@@ -51,7 +51,7 @@ class GradientImages(Cog):
             gradient_direction = (False, False, True)
 
         buffer = await asyncio.to_thread(
-            lambda: __generate_gradient_image(
+            lambda: self.generate_gradient_image(
                 start, end, (size_h, size_v), gradient_direction
             )
         )

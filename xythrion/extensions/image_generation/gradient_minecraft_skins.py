@@ -27,40 +27,40 @@ REMOVE_IMAGE_SECTIONS = [
 ]
 
 
-def __generate_gradient_skin_image(
-    start_color: tuple[int, int, int],
-    end_color: tuple[int, int, int],
-    gradient_direction: tuple[bool, bool, bool] = (False, False, False),
-    size_h: int = 64,
-    size_v: int = 64,
-) -> BytesIO:
-    array = gradient3(
-        size_h, size_v, start_color, end_color, gradient_direction
-    )
-    img = Image.fromarray(np.uint8(array)).convert("RGBA")
-
-    img_arr = np.array(img)
-
-    img_arr[48:64, 16:32] = np.copy(img_arr[28:44, 16:32])
-    img_arr[16:32, 0:16] = np.copy(img_arr[28:44, 16:32])
-
-    for y1, y2, x1, x2 in REMOVE_IMAGE_SECTIONS:
-        img_arr[y1:y2, x1:x2] = (0, 0, 0, 0)
-
-    img_arr[48:64, 32:48] = img_arr[16:32, 40:56]
-
-    img = Image.fromarray(img_arr)
-
-    buffer = BytesIO()
-    img.save(buffer, "png")
-    buffer.seek(0)
-
-    return buffer
-
-
 class GradientMinecraftSkins(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
+
+    @staticmethod
+    def generate_gradient_skin_image(
+        start_color: tuple[int, int, int],
+        end_color: tuple[int, int, int],
+        gradient_direction: tuple[bool, bool, bool] = (False, False, False),
+        size_h: int = 64,
+        size_v: int = 64,
+    ) -> BytesIO:
+        array = gradient3(
+            size_h, size_v, start_color, end_color, gradient_direction
+        )
+        img = Image.fromarray(np.uint8(array)).convert("RGBA")
+
+        img_arr = np.array(img)
+
+        img_arr[48:64, 16:32] = np.copy(img_arr[28:44, 16:32])
+        img_arr[16:32, 0:16] = np.copy(img_arr[28:44, 16:32])
+
+        for y1, y2, x1, x2 in REMOVE_IMAGE_SECTIONS:
+            img_arr[y1:y2, x1:x2] = (0, 0, 0, 0)
+
+        img_arr[48:64, 32:48] = img_arr[16:32, 40:56]
+
+        img = Image.fromarray(img_arr)
+
+        buffer = BytesIO()
+        img.save(buffer, "png")
+        buffer.seek(0)
+
+        return buffer
 
     @command()
     async def gradient_skin(
@@ -70,7 +70,7 @@ class GradientMinecraftSkins(Cog):
         end: convert_3d_tuples,
     ) -> None:
         buffer = await asyncio.to_thread(
-            lambda: __generate_gradient_skin_image(start, end)
+            lambda: self.generate_gradient_skin_image(start, end)
         )
 
         await ctx.send_buffer(buffer)
