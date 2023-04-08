@@ -7,48 +7,16 @@ from discord.ext.commands import Cog, Context, command
 from PIL import Image
 
 from xythrion.bot import Xythrion
-from xythrion.utils import convert_3d_tuples
-
-TUPLE_BOOL_3D = tuple[bool, bool, bool]
-TUPLE_INT_3D = tuple[int, int, int]
+from xythrion.utils import convert_3d_tuples, gradient3
 
 
-# https://github.com/nkmk/python-snippets/blob/master/notebook/numpy_generate_gradient_image.py
-def get_gradient_2d(
-    start: int, stop: int, width: int, height: int, is_horizontal: bool
-):
-    if is_horizontal:
-        return np.tile(np.linspace(start, stop, width), (height, 1))
-    else:
-        return np.tile(np.linspace(start, stop, height), (width, 1)).T
-
-
-def get_gradient_3d(
-    width: int,
-    height: int,
-    start_list: TUPLE_INT_3D,
-    stop_list: TUPLE_INT_3D,
-    is_horizontal_list: TUPLE_BOOL_3D,
-):
-    result = np.zeros((height, width, len(start_list)))
-
-    for i, (start, stop, is_horizontal) in enumerate(
-        zip(start_list, stop_list, is_horizontal_list)
-    ):
-        result[:, :, i] = get_gradient_2d(
-            start, stop, width, height, is_horizontal
-        )
-
-    return result
-
-
-def generate_image(
-    start_color: TUPLE_INT_3D,
-    end_color: TUPLE_INT_3D,
+def __generate_gradient_image(
+    start_color: tuple[int, int, int],
+    end_color: tuple[int, int, int],
     size: tuple[int, int],
-    gradient_direction: TUPLE_BOOL_3D,
+    gradient_direction: tuple[bool, bool, bool],
 ) -> BytesIO:
-    array = get_gradient_3d(
+    array = gradient3(
         size[0], size[1], start_color, end_color, gradient_direction
     )
     img = Image.fromarray(np.uint8(array)).convert("RGBA")
@@ -60,7 +28,7 @@ def generate_image(
     return buffer
 
 
-class GradientImageGenerator(Cog):
+class GradientImages(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
@@ -83,7 +51,7 @@ class GradientImageGenerator(Cog):
             gradient_direction = (False, False, True)
 
         buffer = await asyncio.to_thread(
-            lambda: generate_image(
+            lambda: __generate_gradient_image(
                 start, end, (size_h, size_v), gradient_direction
             )
         )
