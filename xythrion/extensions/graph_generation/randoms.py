@@ -6,6 +6,8 @@ from xythrion.context import Context
 
 
 class GraphRandom(Cog):
+    """Graph random data."""
+
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 

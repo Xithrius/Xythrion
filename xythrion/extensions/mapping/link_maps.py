@@ -10,6 +10,8 @@ from xythrion.context import Context
 
 
 class LinkMapper(Cog):
+    """Post one link, get replied with another."""
+
     def __init__(self, bot: Xythrion):
         self.bot = bot
 

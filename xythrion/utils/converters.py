@@ -6,7 +6,7 @@ from xythrion.context import Context
 from xythrion.extensions import EXTENSIONS
 
 whitespace_pattern = re.compile(r"\s+")
-tuple_3d_int_pattern = re.compile("^\((\d{1,3}), ?(\\d{1,3}), ?(\d{1,3})\)$")
+tuple_3d_int_pattern = re.compile("^\\((\\d{1,3}), ?(\\d{1,3}), ?(\\d{1,3})\\)$")
 
 
 def remove_whitespace(argument: str) -> str:

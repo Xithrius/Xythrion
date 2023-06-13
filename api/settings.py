@@ -3,11 +3,13 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    """Settings are loaded from .env"""
+    """Settings are loaded from .env."""
 
     DATABASE_URL: pydantic.SecretStr
 
     class Config:
+        """Config options."""
+
         frozen = True
         env_file = ".env"
         env_file_encoding = "utf-8"

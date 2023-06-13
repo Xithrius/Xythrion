@@ -11,6 +11,8 @@ from xythrion.utils import convert_3d_tuples, gradient3
 
 
 class GradientImages(Cog):
+    """Generation of gradient images."""
+
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
@@ -21,6 +23,7 @@ class GradientImages(Cog):
         size: tuple[int, int],
         gradient_direction: tuple[bool, bool, bool],
     ) -> BytesIO:
+        """Conversion of integer array to gradient image."""
         array = gradient3(
             size[0], size[1], start_color, end_color, gradient_direction
         )

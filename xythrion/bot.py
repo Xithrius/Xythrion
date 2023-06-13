@@ -2,7 +2,7 @@ import os
 
 import asyncpg
 import httpx
-from discord import AllowedMentions, Intents
+from discord import AllowedMentions, Intents, Message
 from discord.ext import commands
 from dotenv import load_dotenv
 from loguru import logger as log
@@ -38,10 +38,12 @@ class Xythrion(commands.Bot):
             intents=intents,
         )
 
-    async def get_context(self, message, *, cls=Context):
+    async def get_context(self, message: Message, *, cls: Context = Context) -> Context:
+        """Defines the custom context."""
         return await super().get_context(message, cls=cls)
 
-    async def setup_hook(self):
+    async def setup_hook(self) -> None:
+        """Things to setup before the bot logs on."""
         self.http_client = httpx.AsyncClient()
 
         self.pool = await asyncpg.create_pool(
@@ -52,7 +54,8 @@ class Xythrion(commands.Bot):
             await self.load_extension(extension)
             log.info(f'Loaded extension "{extension}"')
 
-    async def start(self):
+    async def start(self) -> None:
+        """Things to run before bot starts."""
         token = os.getenv("BOT_TOKEN")
 
         if token is None:
@@ -61,12 +64,13 @@ class Xythrion(commands.Bot):
 
         await super().start(token=token)
 
-    async def close(self):
+    async def close(self) -> None:
+        """Things to run before the bot logs off."""
         await self.http_client.close()
 
         self.pool.close()
 
-        return await super().close()
+        await super().close()
 
     @staticmethod
     async def on_ready() -> None:

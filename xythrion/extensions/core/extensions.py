@@ -9,8 +9,7 @@ from loguru import logger as log
 from xythrion.bot import Xythrion
 from xythrion.context import Context
 from xythrion.extensions import EXTENSIONS
-from xythrion.utils.converters import Extension
-from xythrion.utils.formatting import codeblock
+from xythrion.utils import Extension, codeblock
 
 
 class Extensions(Cog):
@@ -61,6 +60,7 @@ class Extensions(Cog):
         log.info(msg)
 
         await ctx.send(msg)
+        return None
 
     @extension.command(aliases=("list", "l", "cmds", "c"))
     async def list_commands(self, ctx: Context) -> None:

@@ -1,3 +1,4 @@
+from io import BytesIO
 from uuid import uuid4
 
 from discord import Embed, File
@@ -5,7 +6,10 @@ from discord.ext.commands import Context as BaseContext
 
 
 class Context(BaseContext):
-    async def send_buffer(self, buffer, embed: Embed = None) -> None:
+    """Definition of a custom context."""
+
+    async def send_buffer(self, buffer: BytesIO, embed: Embed = None) -> None:
+        """Send the contents of a buffer as an image to a context."""
         if embed is None:
             embed = Embed()
 

@@ -28,6 +28,8 @@ REMOVE_IMAGE_SECTIONS = [
 
 
 class GradientMinecraftSkins(Cog):
+    """Generating gradient Minecraft skins."""
+
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
