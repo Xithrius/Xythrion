@@ -7,7 +7,7 @@
 
 # Requirements
 - Python 3.10
-- [`python-poetry`](https://github.com/python-poetry/poetry)
+- [`python-pdm`](https://github.com/pdm-project/pdm)
 
 ## Optional Requirements
 - [`docker`](https://github.com/docker/cli) and [`docker-compose`](https://github.com/docker/compose)
@@ -17,8 +17,8 @@
 
 ## Local Installation
 1. Place your key in `BOT_TOKEN` in the `.env` file.
-2. (For development) Install pre-commit hooks using `poetry run task precommit`.
-3. Run `poetry run task start`.
+2. (For development) Install pre-commit hooks using `pdm precommit`.
+3. Run `pdm bot` to run the bot, and `pdm api` to start the api.
 
 ## Docker/Podman Installation
 1. Place your key in `BOT_TOKEN` in the `.env` file.

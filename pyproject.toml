@@ -8,7 +8,7 @@ authors = [
 requires-python = ">=3.11"
 license = {text = "MIT"}
 dependencies = [
-    "discord-py[voice]>=2.1.0",
+    "discord-py>=2.3.0",
     "python-dotenv>=0.21.0",
     "loguru>=0.6.0",
     "numpy>=1.23.3",
@@ -20,8 +20,6 @@ dependencies = [
     "pydantic>=1.10.5",
     "httpx>=0.23.3",
     "asyncpg>=0.27.0",
-    "yt-dlp>=2023.2.17",
-    "pyttsx3>=2.90",
     "pillow>=9.4.0"
 ]
 
@@ -45,9 +43,13 @@ build-backend = "pdm.pep517.api"
 [tool.pdm.scripts]
 bot = "python -m xythrion"
 api = "uvicorn api.run:main"
-test = "pytest ."
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
+# API returns 'OSError: The baseline image directory does not exist' in Github Actions.
+# Ignoring for now, so only bot shall be tested.
+# Last example: https://github.com/Xithrius/Xythrion/actions/runs/5286059099/jobs/9565123149
+test = "pytest xythrion/"
+
 
 [tool.ruff]
 target-version = "py311"
