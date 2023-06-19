@@ -29,6 +29,9 @@ dependencies = [
 lint = [
     "ruff>=0.0.272"
 ]
+format = [
+    "black>=23.3.0"
+]
 precommit = [
     "pre-commit>=3.0.4",
 ]
@@ -49,7 +52,6 @@ precommit = "pre-commit install"
 # Ignoring for now, so only bot shall be tested.
 # Last example: https://github.com/Xithrius/Xythrion/actions/runs/5286059099/jobs/9565123149
 test = "pytest xythrion/"
-
 
 [tool.ruff]
 target-version = "py311"

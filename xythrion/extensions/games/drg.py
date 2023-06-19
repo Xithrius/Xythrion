@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
 from discord.ext.commands import Cog, group
+from loguru import logger as log
 
 from xythrion.bot import Xythrion
 from xythrion.context import Context
+
+WEEKDAY_INDEX_RESET = 3
+HOUR_RESET = 11
 
 
 class DeepRockGalactic(Cog):
@@ -13,7 +17,7 @@ class DeepRockGalactic(Cog):
         self.bot = bot
 
         # https://stackoverflow.com/a/30712187
-        timezone_offset: float = 0.0
+        timezone_offset: float = -8.0
         self.tzinfo = timezone(timedelta(hours=timezone_offset))
 
     @group(aliases=("deeprockgalactic",))
@@ -22,28 +26,32 @@ class DeepRockGalactic(Cog):
         if ctx.invoked_subcommand is None:
             await ctx.reply("Missing subcommand")
 
-    def next_weekday(self, weekday: int = 1) -> int:
+    def next_reset(self) -> int:
         """
-        Gets the unix timestamp of when the next Tuesday happens.
+        Gets the unix timestamp of the next Thursday 11am.
 
         Source: https://stackoverflow.com/a/6558571
         """
+        log.info("test")
+
         now = datetime.now(tz=self.tzinfo)
 
-        days_ahead = weekday - now.weekday()
+        days_ahead = WEEKDAY_INDEX_RESET - now.weekday()
+        hours_ahead = HOUR_RESET - now.hour
 
         if days_ahead <= 0:
             days_ahead += 7
 
-        delta = now + timedelta(days=days_ahead)
+        if hours_ahead <= 0:
+            hours_ahead += 24
+
+        delta = now + timedelta(days=days_ahead, hours=hours_ahead)
 
         return int(delta.timestamp())
 
     @drg.command(aliases=("weekly",))
-    async def next_weekly(
-        self, ctx: Context,
-    ) -> None:
+    async def next_weekly(self, ctx: Context) -> None:
         """Time delta until the weekly quests reset."""
-        weekly_timestamp = self.next_weekday()
+        weekly_timestamp = self.next_reset()
 
         await ctx.send(f"Next weekly reset is in <t:{weekly_timestamp}:R>")
