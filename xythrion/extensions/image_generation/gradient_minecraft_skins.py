@@ -41,9 +41,7 @@ class GradientMinecraftSkins(Cog):
         size_h: int = 64,
         size_v: int = 64,
     ) -> BytesIO:
-        array = gradient3(
-            size_h, size_v, start_color, end_color, gradient_direction
-        )
+        array = gradient3(size_h, size_v, start_color, end_color, gradient_direction)
         img = Image.fromarray(np.uint8(array)).convert("RGBA")
 
         img_arr = np.array(img)

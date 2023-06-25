@@ -23,23 +23,21 @@ class Extensions(Cog):
     async def extension(self, ctx: Context) -> None:
         """Extension group command."""
         if ctx.invoked_subcommand is None:
-            await ctx.reply("Missing subcommand")
+            await ctx.send("Missing subcommand")
 
     @extension.command(aliases=("load",))
     async def load_extension(self, ctx: Context, extension: Extension) -> None:
         """Loads a singular extension."""
         await self.bot.load_extension(str(extension))
 
-        await ctx.reply(f"Loaded extension {extension}.")
+        await ctx.send(f"Loaded extension {extension}.")
 
     @extension.command(aliases=("unload",))
-    async def unload_extension(
-        self, ctx: Context, extension: Extension
-    ) -> None:
+    async def unload_extension(self, ctx: Context, extension: Extension) -> None:
         """Unloads a singular extension."""
         await self.bot.unload_extension(str(extension))
 
-        await ctx.reply(f"Unloaded extension {extension}.")
+        await ctx.send(f"Unloaded extension {extension}.")
 
     @extension.command(aliases=("reload", "r"))
     async def reload_extensions(self, ctx: Context) -> None:
@@ -80,4 +78,4 @@ class Extensions(Cog):
                 spacing = " " * (0 if cmd.parent is None else 3)
                 cmd_tree.append(f"{spacing}└── {cmd.name}")
 
-        await ctx.reply(codeblock(cmd_tree))
+        await ctx.send(codeblock(cmd_tree))

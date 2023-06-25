@@ -24,9 +24,7 @@ class GradientImages(Cog):
         gradient_direction: tuple[bool, bool, bool],
     ) -> BytesIO:
         """Conversion of integer array to gradient image."""
-        array = gradient3(
-            size[0], size[1], start_color, end_color, gradient_direction
-        )
+        array = gradient3(size[0], size[1], start_color, end_color, gradient_direction)
         img = Image.fromarray(np.uint8(array)).convert("RGBA")
 
         buffer = BytesIO()

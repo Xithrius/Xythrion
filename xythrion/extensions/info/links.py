@@ -26,15 +26,13 @@ class Links(Cog):
             description=markdown_link("Xythrion Github Repository", GITHUB_URL)
         )
 
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
 
     @command()
     async def invite(self, ctx: Context) -> None:
         """Provides an invitation link that refers to this bot."""
-        url = oauth_url(
-            BOT_ID_INTEGER, permissions=Permissions(PERMISSIONS_INTEGER)
-        )
+        url = oauth_url(BOT_ID_INTEGER, permissions=Permissions(PERMISSIONS_INTEGER))
 
         embed = Embed(description=markdown_link("Invite link", url))
 
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)

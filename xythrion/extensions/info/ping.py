@@ -13,7 +13,7 @@ class Ping(Cog):
     @command()
     async def ping(self, ctx: Context) -> None:
         """Is this thing on?"""
-        await ctx.reply(":ping_pong: Pong!")
+        await ctx.send(":ping_pong: Pong!")
 
     @command()
     async def ping_api(self, ctx: Context) -> None:

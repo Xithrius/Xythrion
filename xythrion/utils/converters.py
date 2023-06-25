@@ -5,25 +5,21 @@ from discord.ext.commands import Converter
 from xythrion.context import Context
 from xythrion.extensions import EXTENSIONS
 
-whitespace_pattern = re.compile(r"\s+")
-tuple_3d_int_pattern = re.compile("^\\((\\d{1,3}), ?(\\d{1,3}), ?(\\d{1,3})\\)$")
+WHITESPACE_PATTERN = re.compile(r"\s+")
+TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")
 
 
 def remove_whitespace(argument: str) -> str:
     """Replaces any whitespace within a string with nothingness."""
-    return re.sub(whitespace_pattern, "", argument)
+    return re.sub(WHITESPACE_PATTERN, "", argument)
 
 
-def convert_3d_tuples(argument: str) -> tuple[int, ...]:
+def convert_3d_tuples(argument: str) -> tuple[int, int, int]:
     """From a string with 3 arguments to integers."""
-    int3 = tuple(
-        int(x) for x in re.match(tuple_3d_int_pattern, argument).groups()
-    )
+    int3 = tuple(int(x) for x in re.match(TUPLE_3D_INT_PATTERN, argument).groups())
 
     if len(int3) != 3:
-        raise ValueError(
-            "Argument could not be converted to tuple of 3 integers"
-        )
+        raise ValueError("Argument could not be converted to tuple of 3 integers")
 
     return int3
 

@@ -16,12 +16,10 @@ class GraphExpression(Cog):
     async def graph(self, ctx: Context) -> None:
         """Group command for graphing."""
         if ctx.invoked_subcommand is None:
-            await ctx.reply("Missing subcommand")
+            await ctx.send("Missing subcommand")
 
     @graph.command(aliases=("ex", "expr"))
     @is_owner()
-    async def expression(
-        self, ctx: Context, *, expression: remove_whitespace
-    ) -> None:
+    async def expression(self, ctx: Context, *, expression: remove_whitespace) -> None:
         """Parse an expression into its components and graph it."""
         await ctx.send(expression)

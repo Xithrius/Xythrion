@@ -23,7 +23,7 @@ class DeepRockGalactic(Cog):
     async def drg(self, ctx: Context) -> None:
         """Group command for Deep Rock Galactic."""
         if ctx.invoked_subcommand is None:
-            await ctx.reply("Missing subcommand")
+            await ctx.send("Missing subcommand")
 
     def next_reset(self) -> int:
         """
