@@ -8,7 +8,7 @@ from discord.ext.commands import Context as BaseContext
 class Context(BaseContext):
     """Definition of a custom context."""
 
-    async def send_buffer(self, buffer: BytesIO, embed: Embed = None) -> None:
+    async def send_buffer(self, buffer: BytesIO, embed: Embed | None = None) -> None:
         """Send the contents of a buffer as an image to a context."""
         if embed is None:
             embed = Embed()
