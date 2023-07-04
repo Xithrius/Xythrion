@@ -39,7 +39,7 @@ class MinecraftDistances(Cog):
 
         await ctx.send(embed=embed)
 
-    @mc.command()
+    @mc.command(aliases=("from_overworld",))
     async def to_nether(self, ctx: Context, overworld: convert_3d_tuples) -> None:
         (x0, y0, z0) = overworld
         x1, y1, z1 = int(x0 / 8), int(y0 / 8), int(z0 / 8)
@@ -50,7 +50,7 @@ class MinecraftDistances(Cog):
 
         await ctx.send(embed=embed)
 
-    @mc.command()
+    @mc.command(aliases=("from_nether",))
     async def to_overworld(self, ctx: Context, nether: convert_3d_tuples) -> None:
         (x0, y0, z0) = nether
         x1, y1, z1 = x0 * 8, y0 * 8, z0 * 8

@@ -36,9 +36,8 @@ class Xythrion(Bot):
         intents.message_content = True
 
         super().__init__(
-            command_prefix="\\",
+            command_prefix="^",
             case_insensitive=True,
-            help_command=None,
             allowed_mentions=AllowedMentions(everyone=False),
             intents=intents,
         )
@@ -85,9 +84,9 @@ class Xythrion(Bot):
 
     async def close(self) -> None:
         """Things to run before the bot logs off."""
-        await self.http_client.close()
+        await self.http_client.aclose()
 
-        self.pool.close()
+        await self.pool.close()
 
         await super().close()
 

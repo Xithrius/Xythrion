@@ -74,8 +74,21 @@ class Extensions(Cog):
 
             cmd_tree.append(k)
 
-            for cmd in v.walk_commands():
-                spacing = " " * (0 if cmd.parent is None else 3)
-                cmd_tree.append(f"{spacing}└── {cmd.name}")
+            cmds = list(v.walk_commands())
+
+            for (i, cmd) in enumerate(cmds):
+                spacing: str
+                if cmd.parent is None:
+                    spacing = ""
+                else:
+                    spacing = "│" + " " * 3
+
+                tree: str
+                if (i == (len(cmds) - 1)):
+                    tree = "└──"
+                else:
+                    tree = "├──"
+
+                cmd_tree.append(f"{spacing}{tree} {cmd.name}")
 
         await ctx.send(codeblock(cmd_tree))

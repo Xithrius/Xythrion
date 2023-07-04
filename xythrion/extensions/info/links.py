@@ -8,7 +8,7 @@ from xythrion.utils import markdown_link
 
 GITHUB_URL = "https://github.com/Xithrius/Xythrion"
 
-PERMISSIONS_INTEGER = 517547084864
+PERMISSIONS_INTEGER = 412317764672
 
 BOT_ID_INTEGER = 591885341812850699
 

@@ -17,4 +17,6 @@ class Administration(Cog):
         """Shuts the bot down."""
         log.info("Logging out...")
 
-        await self.bot.logout()
+        await ctx.send("Goodbye.")
+
+        await self.bot.close()
