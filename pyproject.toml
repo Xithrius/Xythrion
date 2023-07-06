@@ -22,6 +22,8 @@ dependencies = [
     "asyncpg>=0.27.0",
     "pillow>=9.4.0",
     "croniter>=1.4.1",
+    "ormar[postgres]>=0.12.2",
+    "alembic>=1.11.1",
 ]
 
 [tool]
