@@ -1,10 +1,13 @@
-from os import environ
+import os
 
 from databases import Database
+from dotenv import load_dotenv
 from ormar import ModelMeta
 from sqlalchemy import MetaData
 
-database = Database(environ["DB_URI"])
+load_dotenv()
+
+database = Database(os.environ["DB_URI"])
 metadata = MetaData()
 
 
