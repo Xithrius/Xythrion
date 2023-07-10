@@ -1,3 +1,5 @@
+import json
+
 from discord.ext.commands import (
     Cog,
     group,
@@ -20,14 +22,17 @@ class LinkMapper(Cog):
 
     @link_map.command()
     async def create_link_map(self, ctx: Context) -> None:
+        data = {
+            "created_at": ctx.message.created_at.replace(tzinfo=None),
+            "sid": ctx.guild.id,
+            "uid": ctx.author.id,
+            "from_match": "asdf",
+            "to_match": "fdsa",
+        }
+
         await self.bot.http_client.post(
             "http://localhost:8000/link_map",
-            json={
-                "sid": ctx.guild.id,
-                "uid": ctx.author.id,
-                "from_match": "asdf",
-                "to_match": "fdsa",
-            },
+            data=json.dumps(data, default=str),
         )
 
     # async def execute_add_remap(
