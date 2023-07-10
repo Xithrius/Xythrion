@@ -1,25 +1,39 @@
-<p align="center">
-    <img src="images/icon.png" alt="Project icon"/>
-</p>
+<div align="center">
 
-<h1 align="center">Xythrion</h1>
-<h3 align="center">Discord graphing bot</h3>
+<img src="images/icon.png" width=256/>
 
-# Requirements
-- Python 3.10
+# Xythrion
+
+A graphing bot built with [`discord.py`](https://github.com/Rapptz/discord.py).
+
+[![MIT][s1]][l1] [![CI][s2]][l2] [![pre-commit.ci status][s3]][l3] [![lines of code][s4]][l4]
+
+[s1]: https://img.shields.io/badge/License-MIT-blue.svg
+[l1]: https://opensource.org/licenses/MIT
+[s2]: https://github.com/Xithrius/Xythrion/actions/workflows/ci.yml/badge.svg
+[l2]: https://github.com/Xithrius/Xythrion/actions/workflows/ci.yml
+[s3]: https://results.pre-commit.ci/badge/github/Xithrius/Xythrion/main.svg
+[l3]: https://results.pre-commit.ci/latest/github/Xithrius/Xythrion/main
+[s4]: https://tokei.rs/b1/github/Xithrius/Xythrion?category=code
+[l4]: https://github.com/Xithrius/Xythrion
+
+</div>
+
+## Requirements
+- Python 3.11
 - [`python-pdm`](https://github.com/pdm-project/pdm)
 
-## Optional Requirements
+### Optional Requirements
 - [`docker`](https://github.com/docker/cli) and [`docker-compose`](https://github.com/docker/compose)
 - [`podman`](https://github.com/containers/podman) and [`podman-compose`](https://github.com/containers/podman-compose)
 
-# Setup
+## Setup
 
-## Local Installation
+### Local Installation
 1. Place your key in `BOT_TOKEN` in the `.env` file.
 2. (For development) Install pre-commit hooks using `pdm precommit`.
-3. Run `pdm bot` to run the bot, and `pdm api` to start the api.
+3. Run `pdm api` to start the api, and `pdm bot` to run the bot.
 
-## Docker/Podman Installation
+### Docker/Podman Installation
 1. Place your key in `BOT_TOKEN` in the `.env` file.
 2. Run `docker-compose up bot` or `podman-compose up bot`.
