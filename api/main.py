@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from loguru import logger as log
 
 from api.database import database
+from api.database.models import LinkMap
 
 app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event() -> None:
-    log.info("Connectiong to the database...")
+    log.info("Connecting to the database...")
 
     await database.connect()
 
@@ -19,10 +20,10 @@ async def shutdown_event() -> None:
 
     log.info("Disconnected from database.")
 
-@app.get("/")
-async def root() -> dict[str, str]:
-    return {"msg": "The app is functioning!"}
-
 @app.get("/ping")
 async def ping() -> dict[str, str]:
     return {"ping": "some amount of time"}
+
+@app.post("/link_map", response_model=LinkMap)
+async def create_link_map(link_map: LinkMap) -> LinkMap:
+    return await link_map.save()

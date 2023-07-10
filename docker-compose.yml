@@ -14,6 +14,8 @@ services:
   adminer:
     <<: *logging
 
+    container_name: adminer
+
     image: adminer:latest
 
     ports:
@@ -22,18 +24,15 @@ services:
   postgres:
     <<: *logging
 
-    image: postgres:latest
-
-    environment:
-      POSTGRES_USER: xythrion
-      POSTGRES_PASSWORD: xythrion
-      POSTGRES_DB: xythrion
+    image: postgres:15-alpine
 
     ports:
-      - "7777:5432"
+      - "5432:5432"
 
-    expose:
-      - "7777:5432"
+    environment:
+      POSTGRES_DB: xythrion
+      POSTGRES_PASSWORD: xythrion
+      POSTGRES_USER: xythrion
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U xythrion"]

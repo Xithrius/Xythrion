@@ -1,8 +1,8 @@
 import os
 import sys
 import traceback
+from datetime import timedelta, timezone
 
-import asyncpg
 import httpx
 from discord import AllowedMentions, Embed, Intents, Interaction, Message, app_commands
 from discord.ext.commands import (
@@ -35,6 +35,10 @@ class Xythrion(Bot):
         intents.members = True
         intents.message_content = True
 
+        # https://stackoverflow.com/a/30712187
+        timezone_offset: float = 0.0
+        self.tzinfo = timezone(timedelta(hours=timezone_offset))
+
         super().__init__(
             command_prefix="^",
             case_insensitive=True,
@@ -64,10 +68,6 @@ class Xythrion(Bot):
         """Things to setup before the bot logs on."""
         self.http_client = httpx.AsyncClient()
 
-        self.pool = await asyncpg.create_pool(
-            **POSTGRES_CREDENTIALS, command_timeout=60
-        )
-
         for extension in EXTENSIONS:
             await self.load_extension(extension)
             log.info(f'Loaded extension "{extension}"')
@@ -85,8 +85,6 @@ class Xythrion(Bot):
     async def close(self) -> None:
         """Things to run before the bot logs off."""
         await self.http_client.aclose()
-
-        await self.pool.close()
 
         await super().close()
 

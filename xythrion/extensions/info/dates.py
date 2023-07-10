@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from discord.ext.commands import Cog, group
 
@@ -12,10 +12,6 @@ class Dates(Cog):
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
-        # https://stackoverflow.com/a/30712187
-        timezone_offset: float = 0.0
-        self.tzinfo = timezone(timedelta(hours=timezone_offset))
-
     @group(aliases=("date",))
     async def dates(self, ctx: Context) -> None:
         """Group command for dates."""
@@ -24,12 +20,12 @@ class Dates(Cog):
 
     @dates.command()
     async def delta(self, ctx: Context, timestamp: int) -> None:
-        now = int(datetime.now(tz=self.tzinfo).timestamp())
+        now = int(datetime.now(tz=self.bot.tzinfo).timestamp())
 
         diff = now - timestamp
 
         d = timedelta(seconds=diff)
-        when = datetime.fromtimestamp(timestamp, tz=self.tzinfo)
+        when = datetime.fromtimestamp(timestamp, tz=self.bot.tzinfo)
 
         if diff <= 0:
             await ctx.send(f"It has been {d} since {when}")
