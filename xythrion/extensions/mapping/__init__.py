@@ -1,5 +1,5 @@
 from xythrion.bot import Xythrion
-from xythrion.extensions.mapping.link_maps import LinkMapper
+from xythrion.extensions.mapping.link_map import LinkMapper
 
 
 async def setup(bot: Xythrion) -> None:

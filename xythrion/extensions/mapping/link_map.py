@@ -34,7 +34,7 @@ class LinkMapper(Cog):
         }
 
         await self.bot.http_client.post(
-            "http://localhost:8000/link_map",
+            "http://localhost:8000/link_map/",
             data=json.dumps(data, default=str),
         )
 
@@ -44,7 +44,7 @@ class LinkMapper(Cog):
         data = {"sid": ctx.guild.id, "uid": ctx.author.id}
 
         r: Response = await self.bot.http_client.get(
-            "http://localhost:8000/link_map", params=data
+            "http://localhost:8000/link_map/", params=data
         )
 
         await ctx.send(r.json())
@@ -54,7 +54,7 @@ class LinkMapper(Cog):
         data = {"sid": message.guild.id, "uid": message.author.id}
 
         r: Response = await self.bot.http_client.get(
-            "http://localhost:8000/link_map", params=data
+            "http://localhost:8000/link_map/", params=data
         )
 
         rows = r.json()
