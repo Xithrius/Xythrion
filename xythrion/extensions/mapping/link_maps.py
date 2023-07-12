@@ -1,9 +1,8 @@
 import json
 
-from discord.ext.commands import (
-    Cog,
-    group,
-)
+from discord import Message
+from discord.ext.commands import Cog, group, is_owner
+from httpx import Response
 
 from xythrion.bot import Xythrion
 from xythrion.context import Context
@@ -16,18 +15,22 @@ class LinkMapper(Cog):
         self.bot = bot
 
     @group(aliases=("linkmap",))
+    @is_owner()
     async def link_map(self, ctx: Context) -> None:
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")
 
     @link_map.command()
-    async def create_link_map(self, ctx: Context) -> None:
+    @is_owner()
+    async def create_link_map(
+        self, ctx: Context, from_match: str, to_match: str
+    ) -> None:
         data = {
             "created_at": ctx.message.created_at.replace(tzinfo=None),
             "sid": ctx.guild.id,
             "uid": ctx.author.id,
-            "from_match": "asdf",
-            "to_match": "fdsa",
+            "from_match": from_match,
+            "to_match": to_match,
         }
 
         await self.bot.http_client.post(
@@ -35,42 +38,34 @@ class LinkMapper(Cog):
             data=json.dumps(data, default=str),
         )
 
-    # async def execute_add_remap(
-    #     self, sid: int, uid: int, from_match: str, to_match: str
-    # ) -> bool:
-    #     async with self.bot.pool.acquire() as conn:
-    #         rows = await conn.execute(
-    #             """
-    #             INSERT INTO link_remaps (
-    #                 sid, uid, from_match, to_match
-    #             ) VALUES ($1, $2, $3, $4)
-    #             """,
-    #             str(sid),
-    #             str(uid),
-    #             from_match,
-    #             to_match,
-    #         )
+    @link_map.command()
+    @is_owner()
+    async def get_user_link_maps(self, ctx: Context) -> None:
+        data = {"sid": ctx.guild.id, "uid": ctx.author.id}
 
-    #         return bool(rows)
+        r: Response = await self.bot.http_client.get(
+            "http://localhost:8000/link_map", params=data
+        )
 
-    # @Cog.listener()
-    # async def on_message(self, message: Message) -> None:
-    #     async with self.bot.pool.acquire() as conn:
-    #         rows = await conn.fetch(
-    #             """
-    #             SELECT * FROM link_remaps WHERE sid = $1 AND uid = $2
-    #             """,
-    #             str(message.guild.id),
-    #             str(message.author.id),
-    #         )
+        await ctx.send(r.json())
 
-    #         for row in rows:
-    #             if row["from_match"] in message.content:
-    #                 res = message.content.replace(row["from_match"], row["to_match"])
+    @Cog.listener()
+    async def on_message(self, message: Message) -> None:
+        data = {"sid": message.guild.id, "uid": message.author.id}
 
-    #                 await message.reply(res)
+        r: Response = await self.bot.http_client.get(
+            "http://localhost:8000/link_map", params=data
+        )
 
-    #                 break
+        rows = r.json()
+
+        for row in rows:
+            if row["from_match"] in message.content:
+                res = message.content.replace(row["from_match"], row["to_match"])
+
+                await message.reply(res)
+
+                break
 
     # @group()
     # async def link_remap(self, ctx: Context) -> None:
