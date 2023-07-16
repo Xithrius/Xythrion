@@ -19,6 +19,6 @@ class Ping(Cog):
     @ping.command()
     async def api(self, ctx: Context) -> None:
         """Is *that* thing on?"""
-        r = await self.bot.http_client.get("http://localhost:8000/ping/")
+        j = await self.bot.api.get("ping/")
 
-        await ctx.send(r.json())
+        await ctx.send(j)

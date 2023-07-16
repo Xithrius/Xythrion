@@ -2,7 +2,6 @@ import json
 
 from discord import Message
 from discord.ext.commands import Cog, group, is_owner
-from httpx import Response
 
 from xythrion.bot import Xythrion
 from xythrion.context import Context
@@ -13,6 +12,20 @@ class LinkMapper(Cog):
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
+
+    @Cog.listener()
+    async def on_message(self, message: Message) -> None:
+        data = {"sid": message.guild.id, "uid": message.author.id}
+
+        rows = await self.bot.api.get("link_map/", params=data)
+
+        for row in rows:
+            if row["from_match"] in message.content:
+                res = message.content.replace(row["from_match"], row["to_match"])
+
+                await message.reply(res)
+
+                break
 
     @group(aliases=("linkmap",))
     @is_owner()
@@ -33,8 +46,8 @@ class LinkMapper(Cog):
             "to_match": to_match,
         }
 
-        await self.bot.http_client.post(
-            "http://localhost:8000/link_map/",
+        await self.bot.api.post(
+            "link_map/",
             data=json.dumps(data, default=str),
         )
 
@@ -43,40 +56,9 @@ class LinkMapper(Cog):
     async def get_user_link_maps(self, ctx: Context) -> None:
         data = {"sid": ctx.guild.id, "uid": ctx.author.id}
 
-        r: Response = await self.bot.http_client.get(
-            "http://localhost:8000/link_map/", params=data
-        )
+        j = await self.bot.api.get("link_map/", params=data)
 
-        await ctx.send(r.json())
-
-    @Cog.listener()
-    async def on_message(self, message: Message) -> None:
-        data = {"sid": message.guild.id, "uid": message.author.id}
-
-        r: Response = await self.bot.http_client.get(
-            "http://localhost:8000/link_map/", params=data
-        )
-
-        rows = r.json()
-
-        for row in rows:
-            if row["from_match"] in message.content:
-                res = message.content.replace(row["from_match"], row["to_match"])
-
-                await message.reply(res)
-
-                break
-
-    # @group()
-    # async def link_remap(self, ctx: Context) -> None:
-    #     if ctx.invoked_subcommand is None:
-    #         await ctx.send("Missing subcommand")
-
-    # @link_remap.group()
-    # @is_owner()
-    # async def force(self, ctx: Context, from_match: str, to_match: str) -> None:
-    #     if ctx.invoked_subcommand is None:
-    #         await ctx.send("Missing sub-subcommand")
+        await ctx.send(j)
 
     # @force.command(aliases=("add",))
     # @is_owner()
