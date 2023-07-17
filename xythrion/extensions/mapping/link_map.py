@@ -28,13 +28,11 @@ class LinkMapper(Cog):
                 break
 
     @group(aliases=("linkmap",))
-    @is_owner()
     async def link_map(self, ctx: Context) -> None:
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")
 
     @link_map.command()
-    @is_owner()
     async def create_link_map(
         self, ctx: Context, from_match: str, to_match: str
     ) -> None:
@@ -52,7 +50,6 @@ class LinkMapper(Cog):
         )
 
     @link_map.command()
-    @is_owner()
     async def get_user_link_maps(self, ctx: Context) -> None:
         data = {"sid": ctx.guild.id, "uid": ctx.author.id}
 
@@ -60,31 +57,20 @@ class LinkMapper(Cog):
 
         await ctx.send(j)
 
-    # @force.command(aliases=("add",))
-    # @is_owner()
-    # async def force_add_link_remap(
-    #     self, ctx: Context, user: User, from_match: str, to_match: str
-    # ) -> None:
-    #     if await self.execute_add_remap(ctx.guild.id, user.id, from_match, to_match):
-    #         await ctx.send(embed=Embed(description="Link remap added"))
-    #     else:
-    #         await ctx.send(embed=Embed(description="Link remap already exists"))
+    @link_map.command()
+    async def remove_user_link_map(self, ctx: Context, id: int) -> None:
+        j = await self.bot.api.delete(f"link_map/{id}")
 
-    # @force.command(aliases=("remove", "delete"))
-    # @is_owner()
-    # async def force_remove_link_remap(
-    #     self, ctx: Context, user: User, from_match: str
-    # ) -> None:
-    #     return
+        await ctx.send(j)
 
-    # @link_remapper.command(aliases=("add"))
-    # async def add_link_remap(
-    #     self, ctx: Context, from_match: str, to_match: str
-    # ) -> None:
-    #     return
+    @link_map.group(aliases=("force",))
+    @is_owner()
+    async def force_management(self, ctx: Context) -> None:
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Missing subcommand")
 
-    # @link_remapper.command(aliases=("remove", "delete"))
-    # async def remove_link_remap(
-    #     self, ctx: Context, from_match: str, to_match: str
-    # ) -> None:
-    #     return
+    @force_management.command()
+    async def force_remove_link_map(self, ctx: Context, id: int) -> None:
+        j = await self.bot.api.delete(f"link_map/{id}")
+
+        await ctx.send(j)
