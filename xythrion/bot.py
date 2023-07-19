@@ -1,7 +1,7 @@
-import os
 import sys
 import traceback
 from datetime import timedelta, timezone
+from os import getenv
 
 from discord import AllowedMentions, Embed, Intents, Interaction, Message, app_commands
 from discord.ext.commands import Bot, CommandError
@@ -55,7 +55,7 @@ class Xythrion(Bot):
 
     async def setup_hook(self) -> None:
         """Things to setup before the bot logs on."""
-        api_url = os.getenv("API_URL", "http://localhost:8000")
+        api_url = getenv("API_URL", "http://localhost:8000")
 
         self.api = APIClient(api_url)
 
@@ -65,7 +65,7 @@ class Xythrion(Bot):
 
     async def start(self) -> None:
         """Things to run before bot starts."""
-        token = os.getenv("BOT_TOKEN")
+        token = getenv("BOT_TOKEN")
 
         if token is None:
             log.error("Retrieving token returned none")

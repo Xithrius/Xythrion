@@ -1,0 +1,53 @@
+from os import getenv
+
+from discord.ext.commands import Cog, group
+
+from xythrion.bot import Xythrion
+from xythrion.context import Context
+
+# https://api.nasa.gov/assets/insight/InSight%20Weather%20API%20Documentation.pdf
+BASE_API_URL = "https://api.nasa.gov/insight_weather/?api_key={}&feedtype=json&ver=1.0"
+DATA_SECTIONS = ["AT", "HWS", "PRE", "WD"]
+
+
+class MarsWeather(Cog):
+    """Weather on Mars."""
+
+    def __init__(self, bot: Xythrion):
+        self.bot = bot
+        self.mars_api_key = getenv("NASA_API_KEY", None)
+
+    async def get_mars_weather(self) -> dict:
+        j = await self.bot.api.http_client.get(BASE_API_URL.format(self.mars_api_key))
+
+        return j.json()
+
+    @group()
+    async def mars(self, ctx: Context) -> None:
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Missing subcommand")
+
+    @mars.command()
+    async def weather(self, ctx: Context) -> None:
+        j = await self.get_mars_weather()
+
+        try:
+            first_sol_checked = j["validity_checks"]["sols_checked"][0]
+            valid = any(
+                j["validity_checks"][first_sol_checked][x]["valid"]
+                for x in DATA_SECTIONS
+            )
+
+            if not valid:
+                err = True
+
+        except IndexError:
+            err = True
+
+        if err:
+            await ctx.send("Mars weather could not be retrieved at this time.")
+
+            return
+
+        # TODO: ONCE IN A VALID STATE, PARSE THE WEATHER
+        await ctx.send(valid)
