@@ -1,3 +1,3 @@
-from .db import database, metadata
+from .db import database, metadata, CommandMetric
 
-__all__ = ("database", "metadata")
+__all__ = ("database", "metadata", "CommandMetric",)

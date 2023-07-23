@@ -4,7 +4,7 @@ from os import environ
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from xythrion.database import metadata
+from api.database import metadata
 
 config = context.config
 

@@ -76,3 +76,4 @@ select = ["ANN", "B", "C4", "D", "DTZ", "E", "F", "ISC", "N", "PGH", "PIE", "Q",
 
 [tool.ruff.per-file-ignores]
 "xythrion/tests/*" = ["ANN", "D"]
+"api/database/*" = ["D"]
