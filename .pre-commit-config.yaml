@@ -17,6 +17,6 @@ repos:
       - id: python-check-blanket-noqa
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.282
+    rev: v0.0.284
     hooks:
       - id: ruff
