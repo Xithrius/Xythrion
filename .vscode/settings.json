@@ -5,11 +5,12 @@
     "editor.codeActionsOnSave": {
       "source.fixAll": true,
       "source.organizeImports": true
-    }
+    },
+    "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "python.formatting.provider": "black",
   "python.testing.pytestArgs": ["."],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.languageServer": "Pylance"
+  "python.languageServer": "Pylance",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
