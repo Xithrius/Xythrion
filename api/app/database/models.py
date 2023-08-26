@@ -7,7 +7,7 @@ from ormar import (
     DateTime
 )
 
-from api.database.db import ParentMeta
+from app.database.db import ParentMeta
 
 
 class LinkMap(Model):

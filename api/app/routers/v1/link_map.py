@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from api.database.models import LinkMap
+from app.database.models import LinkMap
 
 router = APIRouter()
 

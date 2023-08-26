@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from api.database import CommandMetric
+from app.database.db import CommandMetric
 
 router = APIRouter()
 

@@ -1,15 +1,13 @@
 from fastapi import FastAPI
 from loguru import logger as log
 
-from api.routers import v1
-from api.database import database
-from api.routers import api_router
+from app.database import database
+from app.routers import v1
 
 app = FastAPI()
-app.include_router(api_router)
-
 
 app.include_router(v1)
+
 
 @app.on_event("startup")
 async def startup_event() -> None:

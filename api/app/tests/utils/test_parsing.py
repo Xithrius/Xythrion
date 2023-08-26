@@ -1,6 +1,6 @@
 import pytest
 
-from api.utils.parsing import sanitize_expression
+from app.utils.parsing import sanitize_expression
 
 
 def test_sanitize_expression_empty() -> None:

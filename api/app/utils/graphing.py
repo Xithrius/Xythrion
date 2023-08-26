@@ -18,7 +18,8 @@ except (ImportError, ImportWarning) as e:
         exc_info=(type(e), e, e.__traceback__),
     )
 
-from api.utils.decorators import noblock
+from app.utils.decorators import noblock
+
 
 @noblock
 def calculate(
