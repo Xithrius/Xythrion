@@ -1,7 +1,3 @@
-from fastapi import APIRouter
+from .v1 import v1
 
-from api.routers import link_map, ping
-
-api_router = APIRouter()
-api_router.include_router(link_map.router)
-api_router.include_router(ping.router)
+__all__ = ("v1",)

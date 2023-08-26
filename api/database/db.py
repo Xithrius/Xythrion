@@ -1,8 +1,8 @@
-from os import getenv
+from os import environ
+from datetime import datetime
 
 from databases import Database
-from dotenv import load_dotenv
-from ormar import ModelMeta
+from ormar import ModelMeta, Model, Integer, Text, DateTime, Boolean
 from sqlalchemy import MetaData
 
 load_dotenv()
@@ -16,3 +16,12 @@ class ParentMeta(ModelMeta):
 
     database = database
     metadata = metadata
+
+class CommandMetric(Model):
+    class Meta(ParentMeta):
+        tabelname = "command_metrics"
+
+    id: int = Integer(primary_key=True)
+    command_name: str = Text()
+    used_at: datetime = DateTime()
+    successfully_completed: bool = Boolean()
