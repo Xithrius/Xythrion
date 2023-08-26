@@ -1,13 +1,16 @@
-from os import environ
 from datetime import datetime
+from os import getenv
 
 from databases import Database
-from ormar import ModelMeta, Model, Integer, Text, DateTime, Boolean
+from dotenv import load_dotenv
+from ormar import Boolean, DateTime, Integer, Model, ModelMeta, Text
 from sqlalchemy import MetaData
 
 load_dotenv()
 
-database = Database(getenv("DB_URI", "postgresql://postgres:postgres@localhost:5432/xythrion"))
+database = Database(
+    getenv("DB_URI", "postgresql://postgres:postgres@localhost:5432/xythrion")
+)
 metadata = MetaData()
 
 
@@ -16,6 +19,7 @@ class ParentMeta(ModelMeta):
 
     database = database
     metadata = metadata
+
 
 class CommandMetric(Model):
     class Meta(ParentMeta):

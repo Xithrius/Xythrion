@@ -17,7 +17,7 @@ class LinkMapper(Cog):
     async def on_message(self, message: Message) -> None:
         data = {"sid": message.guild.id, "uid": message.author.id}
 
-        rows = await self.bot.api.get("link_map/", params=data)
+        rows = await self.bot.api.get("/v1/link_map/", params=data)
 
         for row in rows:
             if row["from_match"] in message.content:
@@ -45,7 +45,7 @@ class LinkMapper(Cog):
         }
 
         await self.bot.api.post(
-            "link_map/",
+            "/v1/link_map/",
             data=json.dumps(data, default=str),
         )
 
@@ -53,13 +53,13 @@ class LinkMapper(Cog):
     async def get_user_link_maps(self, ctx: Context) -> None:
         data = {"sid": ctx.guild.id, "uid": ctx.author.id}
 
-        j = await self.bot.api.get("link_map/", params=data)
+        j = await self.bot.api.get("/v1/link_map/", params=data)
 
         await ctx.send(j)
 
     @link_map.command()
     async def remove_user_link_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"link_map/{id}")
+        j = await self.bot.api.delete(f"/v1/link_map/{id}")
 
         await ctx.send(j)
 
@@ -71,6 +71,6 @@ class LinkMapper(Cog):
 
     @force_management.command()
     async def force_remove_link_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"link_map/{id}")
+        j = await self.bot.api.delete(f"/v1/link_map/{id}")
 
         await ctx.send(j)
