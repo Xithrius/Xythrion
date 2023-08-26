@@ -1,29 +1,18 @@
-import os
 import sys
 import traceback
+from datetime import timedelta, timezone
+from os import getenv
 
-import asyncpg
-import httpx
 from discord import AllowedMentions, Embed, Intents, Interaction, Message, app_commands
-from discord.ext.commands import (
-    Bot,
-    CommandError,
-)
+from discord.ext.commands import Bot, CommandError
 from dotenv import load_dotenv
 from loguru import logger as log
 
+from xythrion.api import APIClient
 from xythrion.context import Context
 from xythrion.extensions import EXTENSIONS
 
 load_dotenv()
-
-
-POSTGRES_CREDENTIALS = {
-    "user": "xythrion",
-    "password": "xythrion",
-    "database": "xythrion",
-    "port": 7777,
-}
 
 
 class Xythrion(Bot):
@@ -34,6 +23,10 @@ class Xythrion(Bot):
         intents = Intents.default()
         intents.members = True
         intents.message_content = True
+
+        # https://stackoverflow.com/a/30712187
+        timezone_offset: float = 0.0
+        self.tzinfo = timezone(timedelta(hours=timezone_offset))
 
         super().__init__(
             command_prefix="^",
@@ -62,11 +55,9 @@ class Xythrion(Bot):
 
     async def setup_hook(self) -> None:
         """Things to setup before the bot logs on."""
-        self.http_client = httpx.AsyncClient()
+        api_url = getenv("API_URL", "http://localhost:8000")
 
-        self.pool = await asyncpg.create_pool(
-            **POSTGRES_CREDENTIALS, command_timeout=60
-        )
+        self.api = APIClient(api_url)
 
         for extension in EXTENSIONS:
             await self.load_extension(extension)
@@ -74,7 +65,7 @@ class Xythrion(Bot):
 
     async def start(self) -> None:
         """Things to run before bot starts."""
-        token = os.getenv("BOT_TOKEN")
+        token = getenv("BOT_TOKEN")
 
         if token is None:
             log.error("Retrieving token returned none")
@@ -84,9 +75,7 @@ class Xythrion(Bot):
 
     async def close(self) -> None:
         """Things to run before the bot logs off."""
-        await self.http_client.aclose()
-
-        await self.pool.close()
+        await self.api.close()
 
         await super().close()
 

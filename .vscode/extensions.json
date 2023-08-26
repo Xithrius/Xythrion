@@ -1,3 +1,6 @@
 {
-  "recommendations": ["ms-python.python", "charliermarsh.ruff"]
+  "recommendations": [
+    "ms-python.python",
+    "charliermarsh.ruff"
+  ]
 }

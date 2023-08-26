@@ -5,7 +5,9 @@ from databases import Database
 from ormar import ModelMeta, Model, Integer, Text, DateTime, Boolean
 from sqlalchemy import MetaData
 
-database = Database(environ["DB_URI"])
+load_dotenv()
+
+database = Database(getenv("DB_URI", "postgresql://postgres:postgres@localhost:5432/xythrion"))
 metadata = MetaData()
 
 

@@ -3,29 +3,25 @@ from loguru import logger as log
 
 from api.routers import v1
 from api.database import database
+from api.routers import api_router
 
 app = FastAPI()
+app.include_router(api_router)
+
 
 app.include_router(v1)
 
 @app.on_event("startup")
 async def startup_event() -> None:
-    log.info("Connectiong to the database...")
+    log.info("Connecting to the database...")
 
     await database.connect()
 
     log.info("Connected to the database.")
+
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
     await database.disconnect()
 
     log.info("Disconnected from database.")
-
-@app.get("/")
-async def root() -> dict[str, str]:
-    return {"msg": "The app is functioning!"}
-
-@app.get("/ping")
-async def ping() -> dict[str, str]:
-    return {"ping": "some amount of time"}

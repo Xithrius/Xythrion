@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 from croniter import croniter
 from discord.ext.commands import Cog, group
@@ -15,10 +15,6 @@ class DeepRockGalactic(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-        # https://stackoverflow.com/a/30712187
-        timezone_offset: float = 0.0
-        self.tzinfo = timezone(timedelta(hours=timezone_offset))
-
     @group(aliases=("deeprockgalactic",))
     async def drg(self, ctx: Context) -> None:
         """Group command for Deep Rock Galactic."""
@@ -31,7 +27,7 @@ class DeepRockGalactic(Cog):
 
         Source: https://stackoverflow.com/a/6558571
         """
-        now = datetime.now(tz=self.tzinfo)
+        now = datetime.now(tz=self.bot.tzinfo)
 
         next_thursday = croniter(WEEKLY_CRON, now).get_next(datetime)
 
