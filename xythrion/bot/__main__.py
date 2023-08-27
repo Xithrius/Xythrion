@@ -1,6 +1,6 @@
 import asyncio
 
-from xythrion.bot import Xythrion
+from bot.bot import Xythrion
 
 
 async def main() -> None:
@@ -9,4 +9,5 @@ async def main() -> None:
     await bot.start()
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

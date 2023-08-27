@@ -1,14 +1,19 @@
-FROM --platform=amd64 python:3.11-slim-buster
+FROM --platform=amd64 python:3.11 as builder
 
-WORKDIR /app
-
-COPY app/ /app
-
+RUN pip install -U pip setuptools wheel
 RUN pip install pdm
 
-COPY pdm.lock pyproject.toml ./
-RUN pdm sync
+COPY pyproject.toml pdm.lock /project/
+COPY app/ /project/app
 
-EXPOSE 8000
+WORKDIR /project
+RUN mkdir __pypackages__ && pdm sync --prod --no-editable
 
-CMD ["pdm", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+FROM python:3.11
+
+ENV PYTHONPATH=/project/pkgs
+COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
+
+COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
+
+CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

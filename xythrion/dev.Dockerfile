@@ -1,16 +1,18 @@
-FROM --platform=amd64 python:3.11-slim-buster
+FROM --platform=amd64 python:3.11 as builder
 
-WORKDIR /bot
-
-RUN apt update && apt install -y gcc
-
+RUN pip install -U pip setuptools wheel
 RUN pip install pdm
 
-COPY pyproject.toml /bot
-COPY pdm.lock /bot
+COPY pyproject.toml pdm.lock /project/
+COPY bot/ /project/bot
 
-RUN pdm install
+WORKDIR /project
+RUN mkdir __pypackages__ && pdm sync --prod --no-editable
 
-COPY . /bot
+FROM python:3.11
 
-CMD ["sh", "entrypoint.sh"]
+ENV PYTHONPATH=/project/pkgs
+COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
+COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
+
+CMD [ "python", "-m", "bot" ]

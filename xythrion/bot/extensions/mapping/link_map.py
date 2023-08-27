@@ -3,8 +3,8 @@ import json
 from discord import Message
 from discord.ext.commands import Cog, group, is_owner
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
+from bot.bot import Xythrion
+from bot.context import Context
 
 
 class LinkMapper(Cog):
@@ -74,3 +74,7 @@ class LinkMapper(Cog):
         j = await self.bot.api.delete(f"/v1/link_map/{id}")
 
         await ctx.send(j)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(LinkMapper(bot))

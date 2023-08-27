@@ -1,8 +1,8 @@
+from bot.context import Context
 from discord.ext.commands import Cog, command, is_owner
 from loguru import logger as log
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
+from bot.bot import Xythrion
 
 
 class Administration(Cog):
@@ -20,3 +20,7 @@ class Administration(Cog):
         await ctx.send("Goodbye.")
 
         await self.bot.close()
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(Administration(bot))

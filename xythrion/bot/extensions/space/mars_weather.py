@@ -1,9 +1,9 @@
 from os import getenv
 
+from bot.context import Context
 from discord.ext.commands import Cog, group
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
+from bot.bot import Xythrion
 
 # https://api.nasa.gov/assets/insight/InSight%20Weather%20API%20Documentation.pdf
 BASE_API_URL = "https://api.nasa.gov/insight_weather/?api_key={}&feedtype=json&ver=1.0"
@@ -51,3 +51,7 @@ class MarsWeather(Cog):
 
         # TODO: ONCE IN A VALID STATE, PARSE THE WEATHER
         await ctx.send(valid)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(MarsWeather(bot))

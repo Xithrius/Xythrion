@@ -2,12 +2,12 @@ import asyncio
 from io import BytesIO
 
 import numpy as np
+from bot.context import Context
+from bot.utils import convert_3d_tuples, gradient3
 from discord.ext.commands import Cog, command
 from PIL import Image
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
-from xythrion.utils import convert_3d_tuples, gradient3
+from bot.bot import Xythrion
 
 REMOVE_IMAGE_SECTIONS = [
     (0, 8, 0, 8),
@@ -74,3 +74,7 @@ class GradientMinecraftSkins(Cog):
         )
 
         await ctx.send_buffer(buffer)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(GradientMinecraftSkins(bot))

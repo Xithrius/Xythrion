@@ -1,7 +1,7 @@
+from bot.context import Context
 from discord.ext.commands import Cog, group
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
+from bot.bot import Xythrion
 
 
 class Ping(Cog):
@@ -22,3 +22,7 @@ class Ping(Cog):
         j = await self.bot.api.get("/v1/ping/")
 
         await ctx.send(j)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(Ping(bot))

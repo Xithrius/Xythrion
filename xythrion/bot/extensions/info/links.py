@@ -1,10 +1,10 @@
+from bot.context import Context
+from bot.utils import markdown_link
 from discord import Embed, Permissions
 from discord.ext.commands import Cog, command
 from discord.utils import oauth_url
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
-from xythrion.utils import markdown_link
+from bot.bot import Xythrion
 
 GITHUB_URL = "https://github.com/Xithrius/Xythrion"
 
@@ -36,3 +36,7 @@ class Links(Cog):
         embed = Embed(description=markdown_link("Invite link", url))
 
         await ctx.send(embed=embed)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(Links(bot))

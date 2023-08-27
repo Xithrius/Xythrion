@@ -1,11 +1,11 @@
 from math import sqrt
 
+from bot.context import Context
+from bot.utils import convert_3d_tuples
 from discord import Embed
 from discord.ext.commands import Cog, group
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
-from xythrion.utils import convert_3d_tuples
+from bot.bot import Xythrion
 
 
 class MinecraftDistances(Cog):
@@ -60,3 +60,7 @@ class MinecraftDistances(Cog):
         )
 
         await ctx.send(embed=embed)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(MinecraftDistances(bot))

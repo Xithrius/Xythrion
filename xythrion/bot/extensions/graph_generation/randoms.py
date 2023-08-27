@@ -1,8 +1,8 @@
+from bot.context import Context
 from discord import Embed
 from discord.ext.commands import Cog, command
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
+from bot.bot import Xythrion
 
 
 class GraphRandom(Cog):
@@ -15,9 +15,7 @@ class GraphRandom(Cog):
     async def dice(self, ctx: Context, rolls: int = 1) -> None:
         """Rolls a die anywhere between 1 and 10 times."""
         if rolls not in range(1, 11):
-            embed = Embed(
-                description="Amount of rolls must be between 1 and 10."
-            )
+            embed = Embed(description="Amount of rolls must be between 1 and 10.")
 
             await ctx.send(embed=embed)
 
@@ -38,3 +36,7 @@ class GraphRandom(Cog):
         # )
 
         # await ctx.send_buffer(buffer, embed=embed)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(GraphRandom(bot))

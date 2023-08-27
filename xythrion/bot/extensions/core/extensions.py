@@ -1,15 +1,9 @@
-from discord.ext.commands import (
-    Cog,
-    ExtensionNotLoaded,
-    group,
-    is_owner,
-)
+from bot.context import Context
+from bot.utils import Extension, codeblock
+from discord.ext.commands import Cog, ExtensionNotLoaded, group, is_owner
 from loguru import logger as log
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
-from xythrion.extensions import EXTENSIONS
-from xythrion.utils import Extension, codeblock
+from bot.bot import EXTENSIONS, Xythrion
 
 
 class Extensions(Cog):
@@ -76,7 +70,7 @@ class Extensions(Cog):
 
             cmds = list(v.walk_commands())
 
-            for (i, cmd) in enumerate(cmds):
+            for i, cmd in enumerate(cmds):
                 spacing: str
                 if cmd.parent is None:
                     spacing = ""
@@ -84,7 +78,7 @@ class Extensions(Cog):
                     spacing = "│" + " " * 3
 
                 tree: str
-                if (i == (len(cmds) - 1)):
+                if i == (len(cmds) - 1):
                     tree = "└──"
                 else:
                     tree = "├──"
@@ -92,3 +86,7 @@ class Extensions(Cog):
                 cmd_tree.append(f"{spacing}{tree} {cmd.name}")
 
         await ctx.send(codeblock(cmd_tree))
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(Extensions(bot))

@@ -1,8 +1,8 @@
+from bot.context import Context
+from bot.utils import remove_whitespace
 from discord.ext.commands import Cog, group, is_owner
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
-from xythrion.utils import remove_whitespace
+from bot.bot import Xythrion
 
 
 class GraphExpression(Cog):
@@ -23,3 +23,7 @@ class GraphExpression(Cog):
     async def expression(self, ctx: Context, *, expression: remove_whitespace) -> None:
         """Parse an expression into its components and graph it."""
         await ctx.send(expression)
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(GraphExpression(bot))

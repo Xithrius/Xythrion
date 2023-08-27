@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
+from bot.context import Context
 from discord.ext.commands import Cog, group
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
+from bot.bot import Xythrion
 
 
 class Dates(Cog):
@@ -31,3 +31,7 @@ class Dates(Cog):
             await ctx.send(f"It has been {d} since {when}")
         else:
             await ctx.send(f"It is {d} until {when}")
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(Dates(bot))

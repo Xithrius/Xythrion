@@ -1,10 +1,10 @@
 from datetime import datetime
 
+from bot.context import Context
 from croniter import croniter
 from discord.ext.commands import Cog, group
 
-from xythrion.bot import Xythrion
-from xythrion.context import Context
+from bot.bot import Xythrion
 
 WEEKLY_CRON = "00 11 * * THU"
 
@@ -39,3 +39,7 @@ class DeepRockGalactic(Cog):
         weekly_timestamp = self.next_reset()
 
         await ctx.send(f"Next weekly reset is in <t:{weekly_timestamp}:R>")
+
+
+async def setup(bot: Xythrion) -> None:
+    await bot.add_cog(DeepRockGalactic(bot))
