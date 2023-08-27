@@ -42,3 +42,42 @@ services:
 
     volumes:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    <<: *logging
+
+    container_name: api
+
+    build:
+      context: ./api
+      dockerfile: dev.Dockerfile
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./api:/api
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "8000:8000"
+
+  bot:
+    <<: *logging
+
+    container_name: bot
+
+    build:
+      context: ./xythrion
+      dockerfile: dev.Dockerfile
+
+    env_file:
+      - .env
+
+    depends_on:
+      - api
+
+    volumes:
+      - ./bot:/bot
