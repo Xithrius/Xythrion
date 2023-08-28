@@ -1,4 +1,5 @@
-from httpx import Response, AsyncClient
+from httpx import AsyncClient, Response
+
 
 class APIClient:
     def __init__(self, base_url: str) -> None:
@@ -9,10 +10,14 @@ class APIClient:
         await self.http_client.aclose()
 
     def full_url(self, partial_endpoint: str) -> str:
-        return f"{self.base_url}/{partial_endpoint}"
+        extra_path_sep = "/" if partial_endpoint[0] != "/" else ""
+
+        return f"{self.base_url}{extra_path_sep}{partial_endpoint}"
 
     async def request(self, method: str, partial_endpoint: str, **kwargs) -> dict:
-        r: Response = await self.http_client.request(method.upper(), self.full_url(partial_endpoint), **kwargs)
+        r: Response = await self.http_client.request(
+            method.upper(), self.full_url(partial_endpoint), **kwargs
+        )
 
         r.raise_for_status()
 

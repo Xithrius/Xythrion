@@ -73,6 +73,9 @@ services:
       context: ./xythrion
       dockerfile: dev.Dockerfile
 
+    environment:
+      API_URL: "http://api:8000"
+
     env_file:
       - .env
 
