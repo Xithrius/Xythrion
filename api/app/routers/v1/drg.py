@@ -11,8 +11,8 @@ async def create_build(build: DeepRockGalacticBuild) -> DeepRockGalacticBuild:
 
 
 @router.get("/", response_model=list[DeepRockGalacticBuild])
-async def get_all_builds(uid: int) -> list[DeepRockGalacticBuild]:
-    return await DeepRockGalacticBuild.objects.all(uid=uid)
+async def get_all_builds() -> list[DeepRockGalacticBuild]:
+    return await DeepRockGalacticBuild.objects.all()
 
 
 @router.delete("/{id}", response_model=DeepRockGalacticBuild)

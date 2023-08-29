@@ -9,14 +9,14 @@ from bot.bot import Xythrion
 WEEKLY_CRON = "00 11 * * THU"
 
 
-class DeepRockGalactic(Cog):
+class DeepRockGalacticWeeklyQuests(Cog):
     """Information about the game 'Deep Rock Galactic'."""
 
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @group(aliases=("deeprockgalactic",))
-    async def drg(self, ctx: Context) -> None:
+    @group(aliases=("drgweekly",))
+    async def drg_weekly(self, ctx: Context) -> None:
         """Group command for Deep Rock Galactic."""
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")
@@ -33,7 +33,7 @@ class DeepRockGalactic(Cog):
 
         return int(next_thursday.timestamp())
 
-    @drg.command(aliases=("weekly",))
+    @drg_weekly.command(aliases=("weekly",))
     async def next_weekly(self, ctx: Context) -> None:
         """Time delta until the weekly quests reset."""
         weekly_timestamp = self.next_reset()
@@ -42,4 +42,4 @@ class DeepRockGalactic(Cog):
 
 
 async def setup(bot: Xythrion) -> None:
-    await bot.add_cog(DeepRockGalactic(bot))
+    await bot.add_cog(DeepRockGalacticWeeklyQuests(bot))

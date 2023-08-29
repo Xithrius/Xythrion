@@ -24,6 +24,8 @@ services:
   postgres:
     <<: *logging
 
+    container_name: postgres
+
     image: postgres:15-alpine
 
     ports:
@@ -39,9 +41,6 @@ services:
       interval: 2s
       timeout: 1s
       retries: 5
-
-    volumes:
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   api:
     <<: *logging
