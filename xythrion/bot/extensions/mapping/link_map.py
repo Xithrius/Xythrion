@@ -1,10 +1,10 @@
 import json
 
+from bot.context import Context
 from discord import Message
-from discord.ext.commands import Cog, group, is_owner
+from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
-from bot.context import Context
 
 
 class LinkMapper(Cog):
@@ -59,18 +59,6 @@ class LinkMapper(Cog):
 
     @link_map.command()
     async def remove_user_link_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"/v1/link_map/{id}")
-
-        await ctx.send(j)
-
-    @link_map.group(aliases=("force",))
-    @is_owner()
-    async def force_management(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
-
-    @force_management.command()
-    async def force_remove_link_map(self, ctx: Context, id: int) -> None:
         j = await self.bot.api.delete(f"/v1/link_map/{id}")
 
         await ctx.send(j)
