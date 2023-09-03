@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from ormar import BigInteger, Boolean, DateTime, Integer, Model, Text
 
 from app.database.db import ParentMeta
@@ -24,6 +25,18 @@ class LinkMap(Model):
     created_at: datetime = DateTime(default=datetime.now)
     from_match: str = Text()
     to_match: str = Text()
+
+
+class WebPath(Model):
+    class Meta(ParentMeta):
+        tablename = "web_map"
+
+    id: int = Integer(primary_key=True)
+    sid: int = BigInteger()
+    uid: int = BigInteger()
+    created_at: datetime = DateTime(default=datetime.now)
+    matches: str = Text()
+    xpath: str = Text()
 
 
 class DeepRockGalacticBuild(Model):
