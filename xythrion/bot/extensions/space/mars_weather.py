@@ -1,9 +1,9 @@
 from os import getenv
 
-from bot.context import Context
 from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
+from bot.context import Context
 
 # https://api.nasa.gov/assets/insight/InSight%20Weather%20API%20Documentation.pdf
 BASE_API_URL = "https://api.nasa.gov/insight_weather/?api_key={}&feedtype=json&ver=1.0"

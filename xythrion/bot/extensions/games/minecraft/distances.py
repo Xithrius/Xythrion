@@ -1,11 +1,11 @@
 from math import sqrt
 
-from bot.context import Context
-from bot.utils import convert_3d_tuples
 from discord import Embed
 from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
+from bot.context import Context
+from bot.utils import convert_3d_tuples
 
 
 class MinecraftDistances(Cog):

@@ -5,7 +5,7 @@ from app.database.models import LinkMap
 router = APIRouter()
 
 
-@router.post("/", response_model=LinkMap)
+@router.post("/", response_model=LinkMap, status_code=201)
 async def create_link_map(link_map: LinkMap) -> LinkMap:
     return await link_map.save()
 

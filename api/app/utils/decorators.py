@@ -1,7 +1,7 @@
 import asyncio
 import functools
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 
 
 async def noblock(func: Callable) -> Any:

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
-from bot.context import Context
 from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
+from bot.context import Context
 
 
 class Dates(Cog):

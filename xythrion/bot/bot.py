@@ -8,12 +8,13 @@ from datetime import timedelta, timezone
 from os import getenv
 from typing import NoReturn
 
-from bot.api import APIClient
-from bot.context import Context
 from discord import AllowedMentions, Embed, Intents, Interaction, Message, app_commands
 from discord.ext.commands import Bot, CommandError
 from dotenv import load_dotenv
 from loguru import logger as log
+
+from bot.api import APIClient
+from bot.context import Context
 
 from . import extensions
 
@@ -85,9 +86,12 @@ class Xythrion(Bot):
 
         self.api = APIClient(api_url)
 
+        log.info(f"Pain {dir(EXTENSIONS)}")
+
         for extension in EXTENSIONS:
             await self.load_extension(extension)
-            log.info(f'Loadeding extension "{extension}"')
+            ext_name = ".".join(extension.split(".")[-2:])
+            log.info(f'Loading extension "{ext_name}"')
 
     async def start(self) -> None:
         """Things to run before bot starts."""

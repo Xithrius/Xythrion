@@ -54,6 +54,9 @@ services:
     env_file:
       - .env
 
+    environment:
+      POSTGRES_HOST: postgres
+
     volumes:
       - ./api:/api
 

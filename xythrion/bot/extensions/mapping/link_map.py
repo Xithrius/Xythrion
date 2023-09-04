@@ -1,10 +1,10 @@
 import json
 
-from bot.context import Context
 from discord import Message
 from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
+from bot.context import Context
 
 
 class LinkMapper(Cog):

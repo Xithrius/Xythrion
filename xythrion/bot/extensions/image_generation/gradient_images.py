@@ -2,12 +2,12 @@ import asyncio
 from io import BytesIO
 
 import numpy as np
-from bot.context import Context
-from bot.utils import convert_3d_tuples, gradient3
-from discord.ext.commands import Cog, command
 from PIL import Image
+from discord.ext.commands import Cog, command
 
 from bot.bot import Xythrion
+from bot.context import Context
+from bot.utils import convert_3d_tuples, gradient3
 
 
 class GradientImages(Cog):

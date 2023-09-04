@@ -5,7 +5,7 @@ from app.database.models import WebPath
 router = APIRouter()
 
 
-@router.post("/", response_model=WebPath)
+@router.post("/", response_model=WebPath, status_code=201)
 async def create_web_map(web_map: WebPath) -> WebPath:
     return await web_map.save()
 

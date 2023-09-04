@@ -1,9 +1,9 @@
-from bot.context import Context
-from bot.utils import Extension, codeblock
 from discord.ext.commands import Cog, ExtensionNotLoaded, group, is_owner
 from loguru import logger as log
 
 from bot.bot import EXTENSIONS, Xythrion
+from bot.context import Context
+from bot.utils import Extension, codeblock
 
 
 class Extensions(Cog):

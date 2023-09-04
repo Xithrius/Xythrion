@@ -1,8 +1,8 @@
-from bot.context import Context
-from bot.utils import remove_whitespace
 from discord.ext.commands import Cog, group, is_owner
 
 from bot.bot import Xythrion
+from bot.context import Context
+from bot.utils import remove_whitespace
 
 
 class GraphExpression(Cog):

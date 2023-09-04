@@ -1,8 +1,8 @@
-from bot.context import Context
 from discord import Embed
 from discord.ext.commands import Cog, command
 
 from bot.bot import Xythrion
+from bot.context import Context
 
 
 class GraphRandom(Cog):
