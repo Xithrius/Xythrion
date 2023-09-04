@@ -86,8 +86,6 @@ class Xythrion(Bot):
 
         self.api = APIClient(api_url)
 
-        log.info(f"Pain {dir(EXTENSIONS)}")
-
         for extension in EXTENSIONS:
             await self.load_extension(extension)
             ext_name = ".".join(extension.split(".")[-2:])
