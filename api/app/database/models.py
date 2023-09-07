@@ -49,3 +49,12 @@ class DeepRockGalacticBuild(Model):
     dwarf_class: str = Text()
     build: str = Text()
     overclock: str = Text(nullable=True)
+
+
+class Trusted(Model):
+    class Meta(ParentMeta):
+        tablename = "trusted"
+
+    id: int = Integer(primary_key=True)
+    uid: int = BigInteger()
+    at: datetime = DateTime(default=datetime.now)

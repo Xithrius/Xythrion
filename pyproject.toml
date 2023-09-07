@@ -8,6 +8,7 @@ dev = [
     "-e file:///${PROJECT_ROOT}/api",
     "ruff>=0.0.285",
     "pre-commit>=3.3.3",
+    "black>=23.7.0",
 ]
 
 [tool.pdm.scripts]
