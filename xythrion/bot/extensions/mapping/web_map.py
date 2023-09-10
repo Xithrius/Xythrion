@@ -1,4 +1,3 @@
-import json
 import re
 
 from bs4 import BeautifulSoup
@@ -63,10 +62,7 @@ class WebMapper(Cog):
             "xpath": xpath,
         }
 
-        await self.bot.api.post(
-            "/v1/web_map/",
-            data=json.dumps(data, default=str),
-        )
+        await self.bot.api.post("/v1/web_map/", data=data)
 
     @web_map.command()
     async def get_user_web_maps(self, ctx: Context) -> None:

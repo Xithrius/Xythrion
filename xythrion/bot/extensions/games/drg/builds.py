@@ -1,5 +1,3 @@
-import json
-
 from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
@@ -35,10 +33,7 @@ class DeepRockGalacticBuilds(Cog):
             "overclock": overclock,
         }
 
-        await self.bot.api.post(
-            "/v1/drg/",
-            data=json.dumps(data, default=str),
-        )
+        await self.bot.api.post("/v1/drg/", data=data)
 
 
 async def setup(bot: Xythrion) -> None:

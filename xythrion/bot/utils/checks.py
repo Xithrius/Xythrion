@@ -11,7 +11,9 @@ def is_trusted() -> Callable:
         if await ctx.bot.is_owner(ctx.message.author):
             return True
 
-        r: InternalAPIResponse = await ctx.bot.api.get(f"/v1/trusted/{ctx.message.author.id}")
+        r: InternalAPIResponse = await ctx.bot.api.get(
+            f"/v1/trusted/{ctx.message.author.id}"
+        )
 
         return r.status == 200
 

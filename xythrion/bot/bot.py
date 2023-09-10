@@ -78,7 +78,16 @@ class Xythrion(Bot):
             type(error), error, error.__traceback__, file=sys.stderr
         )
 
+        data = {"command_name": ctx.command.name, "successfully_completed": False}
+
+        await self.api.post("/v1/metrics/command_metrics", data=data)
+
         await ctx.send(embed=Embed(description=f"`{error}`"))
+
+    async def on_command_completion(self, ctx: Context) -> None:
+        data = {"command_name": ctx.command.name, "successfully_completed": True}
+
+        await self.api.post("/v1/metrics/command_metrics", data=data)
 
     async def setup_hook(self) -> None:
         """Things to setup before the bot logs on."""

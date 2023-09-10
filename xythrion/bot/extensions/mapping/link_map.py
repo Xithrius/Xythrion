@@ -1,5 +1,3 @@
-import json
-
 from discord import Message
 from discord.ext.commands import Cog, group
 
@@ -44,10 +42,7 @@ class LinkMapper(Cog):
             "to_match": to_match,
         }
 
-        await self.bot.api.post(
-            "/v1/link_map/",
-            data=json.dumps(data, default=str),
-        )
+        await self.bot.api.post("/v1/link_map/", data=data)
 
     @link_map.command()
     async def get_user_link_maps(self, ctx: Context) -> None:

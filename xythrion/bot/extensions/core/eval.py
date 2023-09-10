@@ -18,7 +18,7 @@ def find_nth_occurrence(string: str, substring: str, n: int) -> int | None:
     """Return index of `n`th occurrence of `substring` in `string`, or None if not found."""
     index = 0
     for _ in range(n):
-        index = string.find(substring, index+1)
+        index = string.find(substring, index + 1)
         if index == -1:
             return None
     return index
@@ -88,7 +88,7 @@ class Eval(Cog):
                     line = line[6:].strip()
 
             # Combine everything
-            res += (start + line + "\n")
+            res += start + line + "\n"
 
         self.stdout.seek(0)
         text = self.stdout.read()
@@ -96,7 +96,7 @@ class Eval(Cog):
         self.stdout = StringIO()
 
         if text:
-            res += (text + "\n")
+            res += text + "\n"
 
         if out is None:
             # No output, return the input statement
@@ -110,7 +110,9 @@ class Eval(Cog):
             res = (res, out)
 
         else:
-            if (isinstance(out, str) and out.startswith("Traceback (most recent call last):\n")):
+            if isinstance(out, str) and out.startswith(
+                "Traceback (most recent call last):\n"
+            ):
                 # Leave out the traceback message
                 out = "\n" + "\n".join(out.split("\n")[1:])
 
@@ -127,9 +129,11 @@ class Eval(Cog):
                 # Text too long, shorten
                 li = pretty.split("\n")
 
-                pretty = ("\n".join(li[:3])  # First 3 lines
-                          + "\n ...\n"  # Ellipsis to indicate removed lines
-                          + "\n".join(li[-3:]))  # last 3 lines
+                pretty = (
+                    "\n".join(li[:3])  # First 3 lines
+                    + "\n ...\n"  # Ellipsis to indicate removed lines
+                    + "\n".join(li[-3:])
+                )  # last 3 lines
 
             # Add the output
             res += pretty
@@ -156,7 +160,7 @@ class Eval(Cog):
             "bot": self.bot,
             "inspect": inspect,
             "discord": discord,
-            "contextlib": contextlib
+            "contextlib": contextlib,
         }
 
         self.env.update(env)
@@ -173,7 +177,9 @@ async def func():  # (None,) -> Any
             return _
     finally:
         self.env.update(locals())
-""".format(textwrap.indent(code, "            "))
+""".format(
+            textwrap.indent(code, "            ")
+        )
 
         try:
             exec(code_, self.env)  # noqa: S102
@@ -196,9 +202,8 @@ async def func():  # (None,) -> Any
 
         if len(out) > truncate_index:
             await ctx.send(
-                f"```py\n{out[:truncate_index]}\n```"
-                f"... response truncated",
-                embed=embed
+                f"```py\n{out[:truncate_index]}\n```... response truncated",
+                embed=embed,
             )
             return None
 
@@ -220,10 +225,14 @@ async def func():  # (None,) -> Any
         if re.match("py(thon)?\n", code):
             code = "\n".join(code.split("\n")[1:])
 
-        if not re.search(  # Check if it's an expression
-                r"^(return|import|for|while|def|class|"
-                r"from|exit|[a-zA-Z0-9]+\s*=)", code, re.M) and len(
-                    code.split("\n")) == 1:
+        if (
+            not re.search(  # Check if it's an expression
+                r"^(return|import|for|while|def|class|from|exit|[a-zA-Z0-9]+\s*=)",
+                code,
+                re.M,
+            )
+            and len(code.split("\n")) == 1
+        ):
             code = "_ = " + code
 
         await self._eval(ctx, code)
