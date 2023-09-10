@@ -1,8 +1,8 @@
-from discord.ext.commands import Cog, group, is_owner
+from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import remove_whitespace
+from bot.utils import is_trusted, remove_whitespace
 
 
 class GraphExpression(Cog):
@@ -12,14 +12,14 @@ class GraphExpression(Cog):
         self.bot = bot
 
     @group()
-    @is_owner()
+    @is_trusted()
     async def graph(self, ctx: Context) -> None:
         """Group command for graphing."""
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")
 
     @graph.command(aliases=("ex", "expr"))
-    @is_owner()
+    @is_trusted()
     async def expression(self, ctx: Context, *, expression: remove_whitespace) -> None:
         """Parse an expression into its components and graph it."""
         await ctx.send(expression)

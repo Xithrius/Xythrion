@@ -1,8 +1,9 @@
-from discord.ext.commands import Cog, command, is_owner
+from discord.ext.commands import Cog, command
 from loguru import logger as log
 
 from bot.bot import Xythrion
 from bot.context import Context
+from bot.utils import is_trusted
 
 
 class Administration(Cog):
@@ -12,7 +13,7 @@ class Administration(Cog):
         self.bot = bot
 
     @command(alias=("logout",))
-    @is_owner()
+    @is_trusted()
     async def shutdown(self, ctx: Context) -> None:
         """Shuts the bot down."""
         log.info("Logging out...")

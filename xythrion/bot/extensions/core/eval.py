@@ -8,9 +8,10 @@ from io import StringIO
 from typing import Any
 
 import discord
-from discord.ext.commands import Cog, Context, group, is_owner
+from discord.ext.commands import Cog, Context, group
 
 from bot.bot import Xythrion
+from bot.utils import is_trusted
 
 
 def find_nth_occurrence(string: str, substring: str, n: int) -> int | None:
@@ -205,14 +206,14 @@ async def func():  # (None,) -> Any
         return None
 
     @group(name="internal", aliases=("int",))
-    @is_owner()
+    @is_trusted()
     async def internal_group(self, ctx: Context) -> None:
         """Internal commands. Top secret!"""
         if not ctx.invoked_subcommand:
             await ctx.send_help(ctx.command)
 
     @internal_group.command(name="eval", aliases=("e",))
-    @is_owner()
+    @is_trusted()
     async def eval(self, ctx: Context, *, code: str) -> None:
         """Run eval in a REPL-like format."""
         code = code.strip("`")

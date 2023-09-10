@@ -1,9 +1,9 @@
-from discord.ext.commands import Cog, ExtensionNotLoaded, group, is_owner
+from discord.ext.commands import Cog, ExtensionNotLoaded, group
 from loguru import logger as log
 
 from bot.bot import EXTENSIONS, Xythrion
 from bot.context import Context
-from bot.utils import Extension, codeblock
+from bot.utils import Extension, codeblock, is_trusted
 
 
 class Extensions(Cog):
@@ -13,7 +13,7 @@ class Extensions(Cog):
         self.bot = bot
 
     @group(aliases=("extensions", "e"))
-    @is_owner()
+    @is_trusted()
     async def extension(self, ctx: Context) -> None:
         """Extension group command."""
         if ctx.invoked_subcommand is None:

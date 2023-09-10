@@ -1,4 +1,12 @@
+from dataclasses import dataclass
+
 from httpx import AsyncClient, Response
+
+
+@dataclass
+class InternalAPIResponse:
+    status: int
+    data: dict
 
 
 class APIClient:
@@ -14,20 +22,18 @@ class APIClient:
 
         return f"{self.base_url}{extra_path_sep}{partial_endpoint}"
 
-    async def request(self, method: str, partial_endpoint: str, **kwargs) -> dict:
+    async def request(self, method: str, partial_endpoint: str, **kwargs) -> InternalAPIResponse:
         r: Response = await self.http_client.request(
             method.upper(), self.full_url(partial_endpoint), **kwargs
         )
 
-        r.raise_for_status()
+        return InternalAPIResponse(r.status_code, r.json())
 
-        return r.json()
-
-    async def get(self, partial_endpoint: str, **kwargs) -> dict:
+    async def get(self, partial_endpoint: str, **kwargs) -> InternalAPIResponse:
         return await self.request("GET", partial_endpoint, **kwargs)
 
-    async def post(self, partial_endpoint: str, **kwargs) -> dict:
+    async def post(self, partial_endpoint: str, **kwargs) -> InternalAPIResponse:
         return await self.request("POST", partial_endpoint, **kwargs)
 
-    async def delete(self, partial_endpoint: str, **kwargs) -> dict:
+    async def delete(self, partial_endpoint: str, **kwargs) -> InternalAPIResponse:
         return await self.request("DELETE", partial_endpoint, **kwargs)
