@@ -1,4 +1,6 @@
 import re
+from dataclasses import dataclass
+from datetime import datetime
 
 from bs4 import BeautifulSoup
 from discord import Message
@@ -14,6 +16,16 @@ HEADERS = {
     "Accept-Language": "en-US, en;q=0.5",
 }
 REGEX_URL_MATCH = re.compile(r"https?://\S+")
+
+
+@dataclass
+class WebMapData:
+    id: int
+    sid: int
+    uid: int
+    created_at: datetime
+    matches: str
+    xpath: str
 
 
 class WebMapper(Cog):
@@ -32,15 +44,15 @@ class WebMapper(Cog):
     async def on_message(self, message: Message) -> None:
         data = {"sid": message.guild.id, "uid": message.author.id}
 
-        rows = await self.bot.api.get("/v1/web_map/", params=data)
+        rows: list[WebMapData] = await self.bot.api.get("/v1/web_map/", params=data)
 
         for row in rows:
-            if row["matches"] in message.content:
+            if row.matches in message.content:
                 full_url = self.get_first_url(message.content)
                 webpage = await self.bot.api.http_client.get(full_url, headers=HEADERS)
                 soup = BeautifulSoup(webpage.content, "html.parser")
                 dom = etree.HTML(str(soup))
-                extracted = dom.xpath(row["xpath"])
+                extracted = dom.xpath(row.xpath)
                 xpath_url_extract = extracted[0].get("data-src")
 
                 await message.reply(xpath_url_extract)

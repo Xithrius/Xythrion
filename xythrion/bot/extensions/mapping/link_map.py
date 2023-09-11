@@ -1,8 +1,21 @@
+from dataclasses import dataclass
+from datetime import datetime
+
 from discord import Message
 from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
 from bot.context import Context
+
+
+@dataclass
+class LinkMapData:
+    id: int
+    sid: int
+    uid: int
+    created_at: datetime
+    from_match: str
+    to_match: str
 
 
 class LinkMapper(Cog):
@@ -15,11 +28,11 @@ class LinkMapper(Cog):
     async def on_message(self, message: Message) -> None:
         data = {"sid": message.guild.id, "uid": message.author.id}
 
-        rows = await self.bot.api.get("/v1/link_map/", params=data)
+        rows: list[LinkMapData] = await self.bot.api.get("/v1/link_map/", params=data)
 
         for row in rows:
-            if row["from_match"] in message.content:
-                res = message.content.replace(row["from_match"], row["to_match"])
+            if row.from_match in message.content:
+                res = message.content.replace(row.from_match, row.to_match)
 
                 await message.reply(res)
 
