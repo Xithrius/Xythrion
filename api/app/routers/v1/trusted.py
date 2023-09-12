@@ -10,7 +10,12 @@ async def create_trusted_user(trusted: Trusted) -> Trusted:
     return await trusted.save()
 
 
-@router.get("/{uid}", response_model=list[Trusted])
+@router.get("/", response_model=list[Trusted])
+async def get_all_trusted_users() -> list[Trusted]:
+    return await Trusted.objects.all()
+
+
+@router.get("/{uid}", response_model=Trusted)
 async def user_is_trusted(uid: int) -> Trusted:
     is_trusted = await Trusted.objects.get(pk=uid)
 
