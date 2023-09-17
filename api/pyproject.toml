@@ -46,10 +46,8 @@ build-backend = "pdm.pep517.api"
 start = "uvicorn app.run:main"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
-# API returns 'OSError: The baseline image directory does not exist' in Github Actions.
-# Ignoring for now, so only bot shall be tested.
-# Last example: https://github.com/Xithrius/Xythrion/actions/runs/5286059099/jobs/9565123149
-# test = "pytest"
+test = "pytest"
+migrate = "alembic revision --autogenerate -m"
 
 [tool.ruff]
 target-version = "py311"
@@ -68,6 +66,3 @@ ignore = [
 ]
 line-length = 120
 select = ["ANN", "B", "C4", "D", "DTZ", "E", "F", "ISC", "N", "PGH", "PIE", "Q", "RET", "RSE", "RUF", "S", "SIM", "T20", "TID", "UP", "W"]
-
-[tool.ruff.per-file-ignores]
-"app/database/*" = ["D"]

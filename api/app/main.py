@@ -11,15 +11,19 @@ app.include_router(v1)
 
 @app.on_event("startup")
 async def startup_event() -> None:
-    log.info("Connecting to the database...")
+    log.info("Startup event triggered.")
 
-    await database.connect()
+    if not database.is_connected:
+        await database.connect()
 
-    log.info("Connected to the database.")
+        log.info("Connected to the database.")
 
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
-    await database.disconnect()
+    log.info("Shutdown event triggered.")
 
-    log.info("Disconnected from database.")
+    if database.is_connected:
+        await database.disconnect()
+
+        log.info("Disconnected from database.")

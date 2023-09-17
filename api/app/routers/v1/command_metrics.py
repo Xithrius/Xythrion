@@ -1,10 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
-from app.database.models import CommandMetric
+from app.database import CommandMetric
 
 router = APIRouter()
 
 
-@router.post("/command_metrics", response_model=CommandMetric)
-async def create_command_ussage_metric(command_metric: CommandMetric) -> CommandMetric:
+@router.post(
+    "/command_metric",
+    response_model=CommandMetric,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_command_usage_metric(command_metric: CommandMetric) -> CommandMetric:
     return await command_metric.save()

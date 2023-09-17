@@ -1,22 +1,47 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
+from ormar import NoMatch
 
-from app.database.models import WebPath
+from app.database import WebMap
 
 router = APIRouter()
 
 
-@router.post("/", response_model=WebPath, status_code=201)
-async def create_web_map(web_map: WebPath) -> WebPath:
+@router.post(
+    "/",
+    response_model=WebMap,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_web_map(web_map: WebMap) -> WebMap:
     return await web_map.save()
 
 
-@router.get("/", response_model=list[WebPath])
-async def get_web_maps(sid: int, uid: int) -> list[WebPath]:
-    return await WebPath.objects.all(sid=sid, uid=uid)
+@router.get(
+    "/",
+    response_model=list[WebMap],
+    status_code=status.HTTP_200_OK,
+)
+async def get_web_maps(server_id: int, user_id: int) -> list[WebMap]:
+    return await WebMap.objects.all(
+        server_id=server_id,
+        user_id=user_id,
+    )
 
 
-@router.delete("/{id}", response_model=WebPath)
-async def remove_web_map(id: int) -> WebPath:
-    item_db = await WebPath.objects.get(pk=id)
+@router.delete(
+    "/{id}",
+    response_model=WebMap,
+    status_code=status.HTTP_200_OK,
+)
+async def remove_web_map(id: int) -> WebMap:
+    try:
+        item = await WebMap.objects.get(id=id)
 
-    return {"deleted_rows": await item_db.delete()}
+        await WebMap.objects.delete(id=id)
+
+        return item
+
+    except NoMatch:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Web map with id '{id}' not found.",
+        )

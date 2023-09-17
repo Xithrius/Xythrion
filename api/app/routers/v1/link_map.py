@@ -1,22 +1,44 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
+from ormar import NoMatch
 
-from app.database.models import LinkMap
+from app.database import LinkMap
 
 router = APIRouter()
 
 
-@router.post("/", response_model=LinkMap, status_code=201)
+@router.post(
+    "/",
+    response_model=LinkMap,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_link_map(link_map: LinkMap) -> LinkMap:
     return await link_map.save()
 
 
-@router.get("/", response_model=list[LinkMap])
-async def get_link_maps(sid: int, uid: int) -> list[LinkMap]:
-    return await LinkMap.objects.all(sid=sid, uid=uid)
+@router.get(
+    "/",
+    response_model=list[LinkMap],
+    status_code=status.HTTP_200_OK,
+)
+async def get_link_maps(server_id: int, user_id: int) -> list[LinkMap]:
+    return await LinkMap.objects.all(server_id=server_id, user_id=user_id)
 
 
-@router.delete("/{id}", response_model=LinkMap)
+@router.delete(
+    "/{id}",
+    response_model=LinkMap,
+    status_code=status.HTTP_200_OK,
+)
 async def remove_link_map(id: int) -> LinkMap:
-    item_db = await LinkMap.objects.get(pk=id)
+    try:
+        item = await LinkMap.objects.get(id=id)
 
-    return {"deleted_rows": await item_db.delete()}
+        await LinkMap.objects.delete(id=id)
+
+        return item
+
+    except NoMatch:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Web map with id '{id}' not found.",
+        )
