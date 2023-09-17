@@ -10,7 +10,7 @@ from bot.context import Context
 @dataclass
 class TrustedData:
     id: int
-    uid: int
+    user_id: int
     at: datetime
 
 

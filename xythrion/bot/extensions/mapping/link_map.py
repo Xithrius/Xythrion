@@ -11,8 +11,8 @@ from bot.context import Context
 @dataclass
 class LinkMapData:
     id: int
-    sid: int
-    uid: int
+    server_id: int
+    user_id: int
     created_at: datetime
     from_match: str
     to_match: str
@@ -26,7 +26,7 @@ class LinkMapper(Cog):
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
-        data = {"sid": message.guild.id, "uid": message.author.id}
+        data = {"server_id": message.guild.id, "user_id": message.author.id}
 
         rows: list[LinkMapData] = await self.bot.api.get("/v1/link_map/", params=data)
 
@@ -49,8 +49,8 @@ class LinkMapper(Cog):
     ) -> None:
         data = {
             "created_at": ctx.message.created_at.replace(tzinfo=None),
-            "sid": ctx.guild.id,
-            "uid": ctx.author.id,
+            "server_id": ctx.guild.id,
+            "user_id": ctx.author.id,
             "from_match": from_match,
             "to_match": to_match,
         }
@@ -59,7 +59,7 @@ class LinkMapper(Cog):
 
     @link_map.command()
     async def get_user_link_maps(self, ctx: Context) -> None:
-        data = {"sid": ctx.guild.id, "uid": ctx.author.id}
+        data = {"server_id": ctx.guild.id, "user_id": ctx.author.id}
 
         j = await self.bot.api.get("/v1/link_map/", params=data)
 

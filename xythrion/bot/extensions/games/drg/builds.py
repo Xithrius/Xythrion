@@ -27,7 +27,7 @@ class DeepRockGalacticBuilds(Cog):
         self, ctx: Context, dwarf_class: str, build: str, overclock: str | None
     ) -> None:
         data = {
-            "uid": ctx.author.id,
+            "user_id": ctx.author.id,
             "dwarf_class": dwarf_class,
             "build": build,
             "overclock": overclock,

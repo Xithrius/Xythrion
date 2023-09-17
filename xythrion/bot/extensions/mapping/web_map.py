@@ -21,8 +21,8 @@ REGEX_URL_MATCH = re.compile(r"https?://\S+")
 @dataclass
 class WebMapData:
     id: int
-    sid: int
-    uid: int
+    server_id: int
+    user_id: int
     created_at: datetime
     matches: str
     xpath: str
@@ -42,7 +42,7 @@ class WebMapper(Cog):
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
-        data = {"sid": message.guild.id, "uid": message.author.id}
+        data = {"server_id": message.guild.id, "user_id": message.author.id}
 
         rows: list[WebMapData] = await self.bot.api.get("/v1/web_map/", params=data)
 
@@ -67,8 +67,8 @@ class WebMapper(Cog):
     @web_map.command()
     async def create_web_map(self, ctx: Context, matches: str, xpath: str) -> None:
         data = {
-            "sid": ctx.guild.id,
-            "uid": ctx.author.id,
+            "server_id": ctx.guild.id,
+            "user_id": ctx.author.id,
             "created_at": ctx.message.created_at.replace(tzinfo=None),
             "matches": matches,
             "xpath": xpath,
@@ -78,7 +78,7 @@ class WebMapper(Cog):
 
     @web_map.command()
     async def get_user_web_maps(self, ctx: Context) -> None:
-        data = {"sid": ctx.guild.id, "uid": ctx.author.id}
+        data = {"server_id": ctx.guild.id, "user_id": ctx.author.id}
 
         j = await self.bot.api.get("/v1/web_map/", params=data)
 
