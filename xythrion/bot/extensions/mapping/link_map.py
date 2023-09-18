@@ -26,9 +26,14 @@ class LinkMapper(Cog):
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
+        if message.guild is None:
+            return
+
         data = {"server_id": message.guild.id, "user_id": message.author.id}
 
-        rows: list[LinkMapData] = await self.bot.api.get("/v1/link_map/", params=data)
+        response = await self.bot.api.get("/v1/link_maps/", params=data)
+
+        rows: list[LinkMapData] = response.data
 
         for row in rows:
             if row.from_match in message.content:
@@ -45,29 +50,43 @@ class LinkMapper(Cog):
 
     @link_map.command()
     async def create_link_map(
-        self, ctx: Context, from_match: str, to_match: str
+        self,
+        ctx: Context,
+        from_match: str,
+        to_match: str,
+        guild_id: int | None = None,
     ) -> None:
         data = {
             "created_at": ctx.message.created_at.replace(tzinfo=None),
-            "server_id": ctx.guild.id,
             "user_id": ctx.author.id,
             "from_match": from_match,
             "to_match": to_match,
         }
 
-        await self.bot.api.post("/v1/link_map/", data=data)
+        if guild_id is not None:
+            data["server_id"] = guild_id
+        elif ctx.guild is not None:
+            data["server_id"] = ctx.guild.id
+        else:
+            await ctx.send(
+                "Command sent was not in guild channel, and no guild channel specified."
+            )
+
+            return
+
+        await self.bot.api.post("/v1/link_maps/", data=data)
 
     @link_map.command()
     async def get_user_link_maps(self, ctx: Context) -> None:
         data = {"server_id": ctx.guild.id, "user_id": ctx.author.id}
 
-        j = await self.bot.api.get("/v1/link_map/", params=data)
+        j = await self.bot.api.get("/v1/link_maps/", params=data)
 
         await ctx.send(j)
 
     @link_map.command()
     async def remove_user_link_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"/v1/link_map/{id}")
+        j = await self.bot.api.delete(f"/v1/link_maps/{id}")
 
         await ctx.send(j)
 

@@ -9,6 +9,9 @@ class InternalAPIResponse:
     status: int
     data: dict
 
+    def __str__(self) -> str:
+        return str(self.data)
+
 
 class APIClient:
     def __init__(self, base_url: str) -> None:

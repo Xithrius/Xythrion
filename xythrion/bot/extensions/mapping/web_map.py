@@ -42,9 +42,12 @@ class WebMapper(Cog):
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
+        if message.guild is None:
+            return
+
         data = {"server_id": message.guild.id, "user_id": message.author.id}
 
-        rows: list[WebMapData] = await self.bot.api.get("/v1/web_map/", params=data)
+        rows: list[WebMapData] = await self.bot.api.get("/v1/web_maps/", params=data)
 
         for row in rows:
             if row.matches in message.content:
@@ -65,28 +68,48 @@ class WebMapper(Cog):
             await ctx.send("Missing subcommand")
 
     @web_map.command()
-    async def create_web_map(self, ctx: Context, matches: str, xpath: str) -> None:
+    async def create_web_map(
+        self,
+        ctx: Context,
+        matches: str,
+        xpath: str,
+        guild_id: int | None = None,
+    ) -> None:
         data = {
-            "server_id": ctx.guild.id,
             "user_id": ctx.author.id,
             "created_at": ctx.message.created_at.replace(tzinfo=None),
             "matches": matches,
             "xpath": xpath,
         }
 
-        await self.bot.api.post("/v1/web_map/", data=data)
+        if guild_id is not None:
+            data["server_id"] = guild_id
+        elif ctx.guild is not None:
+            data["server_id"] = ctx.guild.id
+        else:
+            await ctx.send(
+                "Command sent was not in guild channel, and no guild channel specified."
+            )
+
+            return
+
+        await self.bot.api.post("/v1/web_maps/", data=data)
 
     @web_map.command()
-    async def get_user_web_maps(self, ctx: Context) -> None:
-        data = {"server_id": ctx.guild.id, "user_id": ctx.author.id}
+    async def get_user_web_maps(
+        self,
+        ctx: Context,
+        guild_id: int | None = None,
+    ) -> None:
+        data = {"user_id": ctx.author.id}
 
-        j = await self.bot.api.get("/v1/web_map/", params=data)
+        j = await self.bot.api.get("/v1/web_maps/", params=data)
 
         await ctx.send(j)
 
     @web_map.command()
     async def remove_user_web_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"/v1/web_map/{id}")
+        j = await self.bot.api.delete(f"/v1/web_maps/{id}")
 
         await ctx.send(j)
 

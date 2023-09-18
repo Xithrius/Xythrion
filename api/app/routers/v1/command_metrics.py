@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/command_metric",
+    "/",
     response_model=CommandMetric,
     status_code=status.HTTP_201_CREATED,
 )
