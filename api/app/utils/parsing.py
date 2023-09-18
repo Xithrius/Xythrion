@@ -18,5 +18,7 @@ AST_WHITELIST = (
 def sanitize_expression(expression: str) -> bool:
     if not expression:
         raise ValueError("Expression must exist")
+
     tree = ast.parse(expression, mode="eval")
+
     return all(isinstance(node, AST_WHITELIST) for node in ast.walk(tree))

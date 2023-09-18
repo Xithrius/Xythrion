@@ -1,24 +1,14 @@
 from io import BytesIO
 
+import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
-from loguru import logger as log
 from sympy import Symbol, parse_expr
 
-try:
-    import matplotlib
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
-    plt.style.use("dark_background")
-
-except (ImportError, ImportWarning) as e:
-    log.error(
-        "Error when importing Matplotlib.",
-        exc_info=(type(e), e, e.__traceback__),
-    )
-
 from app.utils.decorators import noblock
+
+matplotlib.use("Agg")
+plt.style.use("dark_background")
 
 
 @noblock
@@ -39,7 +29,7 @@ def calculate(
 
 
 @noblock
-def graph(
+def graph2d(
     x: np.ndarray,
     y: np.ndarray,
 ) -> BytesIO:
