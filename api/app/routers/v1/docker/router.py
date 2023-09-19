@@ -29,7 +29,7 @@ def extract_container_info(container: Container) -> DockerContainerModel | None:
 
 
 @router.get(
-    "/",
+    "/containers",
     response_model=list[DockerContainerModel],
     status_code=status.HTTP_200_OK,
 )

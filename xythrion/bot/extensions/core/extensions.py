@@ -57,9 +57,7 @@ class Extensions(Cog):
     @extension.command(aliases=("list", "l", "cmds", "c"))
     async def list_commands(self, ctx: Context) -> None:
         """Lists all commands, and the extensions they're in."""
-        cmd_list = sorted(
-            [(k, v) for k, v in self.bot.cogs.items()], key=lambda x: x[0]
-        )
+        cmd_list = sorted(self.bot.cogs.items(), key=lambda x: x[0])
 
         cmd_tree = []
         for k, v in cmd_list:
