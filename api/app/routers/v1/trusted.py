@@ -1,3 +1,4 @@
+from asyncpg import UniqueViolationError
 from fastapi import APIRouter, HTTPException, status
 from ormar import NoMatch
 
@@ -36,8 +37,13 @@ async def get_trusted_user(user_id: int) -> Trusted:
     status_code=status.HTTP_201_CREATED,
 )
 async def create_trusted_user(trusted: Trusted) -> Trusted:
-    # TODO: Make sure exception on duplicate is caught
-    return await trusted.save()
+    try:
+        return await trusted.save()
+    except UniqueViolationError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Trusted user with id '{trusted.id}' already exists.",
+        )
 
 
 @router.delete(

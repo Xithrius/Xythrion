@@ -453,6 +453,16 @@ files = [
 ]
 
 [[package]]
+name = "humanize"
+version = "4.8.0"
+requires_python = ">=3.8"
+summary = "Python humanize utilities"
+files = [
+    {file = "humanize-4.8.0-py3-none-any.whl", hash = "sha256:8bc9e2bb9315e61ec06bf690151ae35aeb65651ab091266941edf97c90836404"},
+    {file = "humanize-4.8.0.tar.gz", hash = "sha256:9783373bf1eec713a770ecaa7c2d7a7902c98398009dfa3d8a2df91eec9311e8"},
+]
+
+[[package]]
 name = "identify"
 version = "2.5.29"
 requires_python = ">=3.8"
@@ -1168,6 +1178,7 @@ dependencies = [
     "croniter>=1.4.1",
     "discord-py>=2.3.2",
     "httpx>=0.24.1",
+    "humanize>=4.8.0",
     "loguru>=0.7.0",
     "lxml>=4.9.3",
     "numpy>=1.25.2",

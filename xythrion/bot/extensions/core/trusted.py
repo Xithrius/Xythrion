@@ -2,10 +2,12 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from discord.ext.commands import Cog, group, is_owner
+from tabulate import tabulate
 
 from bot.api import InternalAPIResponse
 from bot.bot import Xythrion
 from bot.context import Context
+from bot.utils import codeblock, convert_to_deltas
 
 
 @dataclass
@@ -31,19 +33,28 @@ class Trusted(Cog):
     @trust.command(aliases=("list",))
     @is_owner()
     async def list_trusted(self, ctx: Context) -> None:
-        data: list[TrustedData] = await self.bot.api.get("/v1/trusted/")
+        data: InternalAPIResponse = await self.bot.api.get("/v1/trusted/")
 
-        await ctx.send(data)
+        data.data = convert_to_deltas(data.data, "at")
+
+        table = tabulate(data.data, headers="keys")
+        block = codeblock(table)
+
+        await ctx.send(block)
 
     @trust.command(aliases=("add",))
     @is_owner()
     async def add_trust(self, ctx: Context, user_id: int) -> None:
         data: InternalAPIResponse = await self.bot.api.post(
-            "/v1/trusted/", data={"user_id": int(user_id)}
+            "/v1/trusted/", data={"user_id": user_id}
         )
 
-        # await ctx.send(f"Trust given to <@{user_id}> at {data.data['at']}")
-        await ctx.send(data.data)
+        if data.status != 201:
+            await ctx.send("Trust for this user already exists")
+
+            return
+
+        await ctx.send(f"Trust given to <@{user_id}> at {data.data['at']}")
 
     @trust.command(aliases=("remove", "delete"))
     @is_owner()
