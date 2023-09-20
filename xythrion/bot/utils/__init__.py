@@ -4,16 +4,17 @@ from bot.utils.converters import (
     convert_3d_tuples,
     remove_whitespace,
 )
-from bot.utils.formatting import and_join, codeblock, markdown_link
+from bot.utils.formatting import and_join, codeblock, convert_to_deltas, markdown_link
 from bot.utils.gradients import gradient3
 
 __all__ = (
-    is_trusted,
-    and_join,
-    codeblock,
-    markdown_link,
-    Extension,
-    remove_whitespace,
-    convert_3d_tuples,
-    gradient3,
+    "is_trusted",
+    "and_join",
+    "codeblock",
+    "markdown_link",
+    "Extension",
+    "remove_whitespace",
+    "convert_3d_tuples",
+    "gradient3",
+    "convert_to_deltas",
 )

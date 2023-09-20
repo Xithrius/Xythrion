@@ -1,3 +1,8 @@
+from datetime import datetime
+
+from humanize import naturaldelta
+
+
 def markdown_link(desc: str, link: str, t: str = "") -> str:
     """Gets rid of the thinking while creating a link for markdown."""
     if not (desc or link):
@@ -14,8 +19,20 @@ def and_join(items: list[str], sep: str = ", ") -> str:
     return f"{sep.join(str(x) for x in items[:-1])}{sep}and {items[-1]}"
 
 
-def codeblock(code: str | list[str], language: str = "python") -> str:
+def codeblock(code: str | list[str], language: str | None = None) -> str:
     """Returns a string in the format of a Discord codeblock."""
     block = "\n".join(code) if isinstance(code, list) else code
 
-    return f"```{language}\n{block}\n```"
+    return f"```{'' if language is None else language}\n{block}\n```"
+
+
+def convert_to_deltas(data: dict, datetime_key: str) -> dict:
+    """Converts a datetime in a dictionary to a human-readable delta."""
+    current_time = datetime.now()  # noqa: DTZ005
+
+    for item in data:
+        created_time = datetime.fromisoformat(item[datetime_key].rstrip("Z"))
+        delta = created_time - current_time
+        item[datetime_key] = naturaldelta(delta.total_seconds())
+
+    return data

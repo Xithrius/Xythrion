@@ -83,7 +83,7 @@ class Extensions(Cog):
 
                 cmd_tree.append(f"{spacing}{tree} {cmd.name}")
 
-        await ctx.send(codeblock(cmd_tree))
+        await ctx.send(codeblock(cmd_tree, language="python"))
 
 
 async def setup(bot: Xythrion) -> None:

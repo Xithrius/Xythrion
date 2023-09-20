@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass
+from typing import Any
 
 from httpx import AsyncClient, Response
 
@@ -7,7 +8,7 @@ from httpx import AsyncClient, Response
 @dataclass
 class InternalAPIResponse:
     status: int
-    data: dict
+    data: dict[Any, Any]
 
     def __str__(self) -> str:
         return str(self.data)

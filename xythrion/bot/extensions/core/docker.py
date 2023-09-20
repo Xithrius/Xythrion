@@ -3,8 +3,7 @@ from tabulate import tabulate
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import is_trusted
-from bot.utils.formatting import codeblock
+from bot.utils import codeblock, convert_to_deltas, is_trusted
 
 
 class Docker(Cog):
@@ -25,8 +24,10 @@ class Docker(Cog):
     async def list_containers(self, ctx: Context) -> None:
         data = await self.bot.api.get("/v1/docker/containers")
 
+        data.data = convert_to_deltas(data.data, "created")
+
         table = tabulate(data.data, headers="keys")
-        block = codeblock(table, language="")
+        block = codeblock(table)
 
         await ctx.send(block)
 
