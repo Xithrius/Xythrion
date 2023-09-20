@@ -3,6 +3,7 @@ from datetime import datetime
 
 from discord.ext.commands import Cog, group, is_owner
 
+from bot.api import InternalAPIResponse
 from bot.bot import Xythrion
 from bot.context import Context
 
@@ -34,14 +35,17 @@ class Trusted(Cog):
 
         await ctx.send(data)
 
-    @trust.command()
+    @trust.command(aliases=("add",))
     @is_owner()
     async def add_trust(self, ctx: Context, user_id: int) -> None:
-        data: TrustedData = await self.bot.api.post(f"/v1/trusted/{user_id}")
+        data: InternalAPIResponse = await self.bot.api.post(
+            "/v1/trusted/", data={"user_id": int(user_id)}
+        )
 
-        await ctx.send(f"Trust given to <@{user_id}> at {data.at}")
+        # await ctx.send(f"Trust given to <@{user_id}> at {data.data['at']}")
+        await ctx.send(data.data)
 
-    @trust.command()
+    @trust.command(aliases=("remove", "delete"))
     @is_owner()
     async def remove_trust(self, ctx: Context, user_id: int) -> None:
         await self.bot.api.delete(f"/v1/trusted/{user_id}")

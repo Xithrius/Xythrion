@@ -49,6 +49,7 @@ start = "uvicorn app.run:main"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 migrate = "alembic revision --autogenerate -m"
+upgrade = "alembic upgrade head"
 # test = "pytest"
 
 [tool.ruff]

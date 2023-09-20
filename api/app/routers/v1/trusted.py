@@ -35,9 +35,9 @@ async def get_trusted_user(user_id: int) -> Trusted:
     response_model=Trusted,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_trusted_user(user_id: int) -> Trusted:
+async def create_trusted_user(trusted: Trusted) -> Trusted:
     # TODO: Make sure exception on duplicate is caught
-    return await Trusted(user_id=user_id).save()
+    return await trusted.save()
 
 
 @router.delete(

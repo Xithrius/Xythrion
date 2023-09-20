@@ -39,9 +39,12 @@ class APIClient:
         return await self.request("GET", partial_endpoint, **kwargs)
 
     async def post(self, partial_endpoint: str, **kwargs) -> InternalAPIResponse:
-        return await self.request(
-            "POST", partial_endpoint, data=json.dumps(kwargs["data"], default=str)
-        )
+        if (data := kwargs.get("data")) is not None:
+            return await self.request(
+                "POST", partial_endpoint, data=json.dumps(data, default=str)
+            )
+
+        return await self.request("POST", partial_endpoint)
 
     async def delete(self, partial_endpoint: str, **kwargs) -> InternalAPIResponse:
         return await self.request("DELETE", partial_endpoint, **kwargs)
