@@ -4,7 +4,13 @@ from bot.utils.converters import (
     convert_3d_tuples,
     remove_whitespace,
 )
-from bot.utils.formatting import and_join, codeblock, convert_to_deltas, markdown_link
+from bot.utils.formatting import (
+    and_join,
+    codeblock,
+    convert_to_deltas,
+    dict_to_human_table,
+    markdown_link,
+)
 from bot.utils.gradients import gradient3
 
 __all__ = (
@@ -17,4 +23,5 @@ __all__ = (
     "convert_3d_tuples",
     "gradient3",
     "convert_to_deltas",
+    "dict_to_human_table",
 )

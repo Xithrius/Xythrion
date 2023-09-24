@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from humanize import naturaldelta
+from tabulate import tabulate
 
 
 def markdown_link(desc: str, link: str, t: str = "") -> str:
@@ -36,3 +37,14 @@ def convert_to_deltas(data: dict, datetime_key: str) -> dict:
         item[datetime_key] = naturaldelta(delta.total_seconds())
 
     return data
+
+
+def dict_to_human_table(data: dict, datetime_key: str | None = None) -> str:
+    """Dictionary to readable table."""
+    if (key := datetime_key) is not None:
+        data = convert_to_deltas(data, key)
+
+    table = tabulate(data, headers="keys")
+    block = codeblock(table)
+
+    return block

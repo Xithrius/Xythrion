@@ -2,12 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from discord.ext.commands import Cog, group, is_owner
-from tabulate import tabulate
 
 from bot.api import InternalAPIResponse
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import codeblock, convert_to_deltas
+from bot.utils import dict_to_human_table
 
 
 @dataclass
@@ -35,12 +34,9 @@ class Trusted(Cog):
     async def list_trusted(self, ctx: Context) -> None:
         data: InternalAPIResponse = await self.bot.api.get("/v1/trusted/")
 
-        data.data = convert_to_deltas(data.data, "at")
+        table = dict_to_human_table(data.data, "at")
 
-        table = tabulate(data.data, headers="keys")
-        block = codeblock(table)
-
-        await ctx.send(block)
+        await ctx.send(table)
 
     @trust.command(aliases=("add",))
     @is_owner()

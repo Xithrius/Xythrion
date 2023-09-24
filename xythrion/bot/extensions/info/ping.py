@@ -21,7 +21,11 @@ class Ping(Cog):
         """Is *that* thing on?"""
         j = await self.bot.api.get("/v1/ping/")
 
-        await ctx.send(j)
+        await ctx.send(f"API received ping at: {j.data['ping']}")
+
+    @ping.command(aliases=("discord",))
+    async def latency(self, ctx: Context) -> None:
+        await ctx.send(f"Latency: {self.bot.latency*1000:.0f}ms")
 
 
 async def setup(bot: Xythrion) -> None:

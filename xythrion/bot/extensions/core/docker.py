@@ -1,9 +1,8 @@
 from discord.ext.commands import Cog, group
-from tabulate import tabulate
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import codeblock, convert_to_deltas, is_trusted
+from bot.utils import dict_to_human_table, is_trusted
 
 
 class Docker(Cog):
@@ -24,12 +23,9 @@ class Docker(Cog):
     async def list_containers(self, ctx: Context) -> None:
         data = await self.bot.api.get("/v1/docker/containers")
 
-        data.data = convert_to_deltas(data.data, "created")
+        table = dict_to_human_table(data.data, "created")
 
-        table = tabulate(data.data, headers="keys")
-        block = codeblock(table)
-
-        await ctx.send(block)
+        await ctx.send(table)
 
 
 async def setup(bot: Xythrion) -> None:
