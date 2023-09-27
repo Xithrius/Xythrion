@@ -1,11 +1,5 @@
 from .db import database, metadata
-from .models import (
-    CommandMetric,
-    DeepRockGalacticBuild,
-    LinkMap,
-    Trusted,
-    WebMap,
-)
+from .models import CommandMetric, DeepRockGalacticBuild, LinkMap, Pin, Trusted, WebMap
 
 __all__ = (
     "database",
@@ -15,4 +9,5 @@ __all__ = (
     "DeepRockGalacticBuild",
     "WebMap",
     "Trusted",
+    "Pin",
 )
