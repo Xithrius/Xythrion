@@ -58,3 +58,14 @@ class Trusted(Model):
     id = Integer(primary_key=True)
     user_id = BigInteger(unique=True)
     at = DateTime(default=datetime.now)
+
+
+class Pin(Model):
+    class Meta(ParentMeta):
+        tablename = "pins"
+
+    id = Integer(primary_key=True)
+    server_id = BigInteger()
+    user_id = BigInteger()
+    created_at = DateTime(default=datetime.now)
+    message = Text()
