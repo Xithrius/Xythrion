@@ -11,6 +11,7 @@ from typing import NoReturn
 from discord import AllowedMentions, Embed, Intents, Interaction, Message, app_commands
 from discord.ext.commands import Bot, CommandError
 from dotenv import load_dotenv
+from httpx import AsyncClient
 from loguru import logger as log
 
 from bot.api import APIClient
@@ -100,6 +101,7 @@ class Xythrion(Bot):
         api_url = getenv("API_URL", "http://localhost:8000")
 
         self.api = APIClient(api_url)
+        self.http_client = AsyncClient()
 
         for extension in EXTENSIONS:
             await self.load_extension(extension)

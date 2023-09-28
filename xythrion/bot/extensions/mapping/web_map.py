@@ -52,7 +52,7 @@ class WebMapper(Cog):
         for row in rows:
             if row.matches in message.content:
                 full_url = self.get_first_url(message.content)
-                webpage = await self.bot.api.http_client.get(full_url, headers=HEADERS)
+                webpage = await self.bot.http_client.get(full_url, headers=HEADERS)
                 soup = BeautifulSoup(webpage.content, "html.parser")
                 dom = etree.HTML(str(soup))
                 extracted = dom.xpath(row.xpath)

@@ -18,7 +18,7 @@ class MarsWeather(Cog):
         self.mars_api_key = getenv("NASA_API_KEY", None)
 
     async def get_mars_weather(self) -> dict:
-        j = await self.bot.api.http_client.get(BASE_API_URL.format(self.mars_api_key))
+        j = await self.bot.http_client.get(BASE_API_URL.format(self.mars_api_key))
 
         return j.json()
 
