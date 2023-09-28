@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from discord.ext.commands import Cog, group, is_owner
+from httpx import Response
 
-from bot.api import InternalAPIResponse
 from bot.bot import Xythrion
 from bot.context import Context
 from bot.utils import dict_to_human_table
@@ -32,25 +32,27 @@ class Trusted(Cog):
     @trust.command(aliases=("list",))
     @is_owner()
     async def list_trusted(self, ctx: Context) -> None:
-        data: InternalAPIResponse = await self.bot.api.get("/v1/trusted/")
+        r: Response = await self.bot.api.get("/v1/trusted/")
 
-        table = dict_to_human_table(data.data, "at")
+        table = dict_to_human_table(r.json(), datetime_key="at")
 
         await ctx.send(table)
 
     @trust.command(aliases=("add",))
     @is_owner()
     async def add_trust(self, ctx: Context, user_id: int) -> None:
-        data: InternalAPIResponse = await self.bot.api.post(
+        response: Response = await self.bot.api.post(
             "/v1/trusted/", data={"user_id": user_id}
         )
 
-        if data.status != 201:
+        if not response.is_success:
             await ctx.send("Trust for this user already exists")
 
             return
 
-        await ctx.send(f"Trust given to <@{user_id}> at {data.data['at']}")
+        data = response.json()
+
+        await ctx.send(f"Trust given to <@{user_id}> at {data['at']}")
 
     @trust.command(aliases=("remove", "delete"))
     @is_owner()

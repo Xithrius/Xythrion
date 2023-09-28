@@ -23,7 +23,9 @@ class Links(Cog):
     async def info(self, ctx: Context) -> None:
         """Information about bot origin."""
         embed = Embed(
-            description=markdown_link("Xythrion Github Repository", GITHUB_URL)
+            description=markdown_link(
+                desc="Xythrion Github Repository", link=GITHUB_URL
+            )
         )
 
         await ctx.send(embed=embed)
@@ -33,7 +35,12 @@ class Links(Cog):
         """Provides an invitation link that refers to this bot."""
         url = oauth_url(BOT_ID_INTEGER, permissions=Permissions(PERMISSIONS_INTEGER))
 
-        embed = Embed(description=markdown_link("Invite link", url))
+        embed = Embed(
+            description=markdown_link(
+                desc="Invite link",
+                link=url,
+            )
+        )
 
         await ctx.send(embed=embed)
 

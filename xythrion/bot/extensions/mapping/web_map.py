@@ -9,6 +9,7 @@ from lxml import etree
 
 from bot.bot import Xythrion
 from bot.context import Context
+from bot.utils import is_trusted
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
@@ -63,11 +64,13 @@ class WebMapper(Cog):
                 break
 
     @group(aliases=("webmap",))
+    @is_trusted()
     async def web_map(self, ctx: Context) -> None:
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")
 
     @web_map.command()
+    @is_trusted()
     async def create_web_map(
         self,
         ctx: Context,
@@ -96,6 +99,7 @@ class WebMapper(Cog):
         await self.bot.api.post("/v1/web_maps/", data=data)
 
     @web_map.command()
+    @is_trusted()
     async def get_user_web_maps(
         self,
         ctx: Context,
@@ -108,6 +112,7 @@ class WebMapper(Cog):
         await ctx.send(j)
 
     @web_map.command()
+    @is_trusted()
     async def remove_user_web_map(self, ctx: Context, id: int) -> None:
         j = await self.bot.api.delete(f"/v1/web_maps/{id}")
 

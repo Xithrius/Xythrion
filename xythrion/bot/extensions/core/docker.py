@@ -23,7 +23,7 @@ class Docker(Cog):
     async def list_containers(self, ctx: Context) -> None:
         data = await self.bot.api.get("/v1/docker/containers")
 
-        table = dict_to_human_table(data.data, "created")
+        table = dict_to_human_table(data.data, datetime_key="created")
 
         await ctx.send(table)
 

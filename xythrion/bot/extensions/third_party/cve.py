@@ -8,12 +8,26 @@ from bot.context import Context
 
 CVE_PATTERN = re.compile(r"CVE-\d{4}-\d{4,}")
 
+# TODO: Pydantic models
 
 class CVE(Cog):
     """CVE information."""
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
+
+    @staticmethod
+    def cve_embed_builder(
+        title: str, description: str, url: str, published: str
+    ) -> Embed:
+        embed = Embed(
+            title=title,
+            description=description,
+            url=url,
+        )
+        embed.set_footer(text=f"Published on {published}")
+
+        return embed
 
     @group()
     async def cve(self, ctx: Context) -> None:
@@ -29,24 +43,32 @@ class CVE(Cog):
 
             data = r.json()
 
-            cve_url = f"[{cve}](https://www.cve.org/CVERecord?id={cve})"
+            cve_url = f"https://www.cve.org/CVERecord?id={cve}"
 
             descriptions = data["containers"]["cna"]["descriptions"]
+            published = data["cveMetadata"]["datePublished"]
 
             for desc in descriptions:
                 if desc["lang"] == "en":
-                    embed = Embed(title=desc["value"], description=cve_url)
-
-                    await ctx.send(embed=embed)
+                    await ctx.send(
+                        embed=self.cve_embed_builder(
+                            cve,
+                            desc["value"],
+                            cve_url,
+                            published,
+                        )
+                    )
 
                     return
 
-            embed = Embed(
-                title="CVE found, but no English description was provided.",
-                description=cve_url,
+            await ctx.send(
+                embed=self.cve_embed_builder(
+                    cve,
+                    "CVE found, but no English description was provided.",
+                    cve_url,
+                    published,
+                )
             )
-
-            await ctx.send(embed=embed)
 
             return
 

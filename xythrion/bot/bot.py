@@ -105,6 +105,7 @@ class Xythrion(Bot):
 
         for extension in EXTENSIONS:
             await self.load_extension(extension)
+
             ext_name = ".".join(extension.split(".")[-2:])
             log.info(f'Loading extension "{ext_name}"')
 
@@ -120,7 +121,8 @@ class Xythrion(Bot):
 
     async def close(self) -> None:
         """Things to run before the bot logs off."""
-        await self.api.close()
+        await self.api.aclose()
+        await self.http_client.aclose()
 
         await super().close()
 
