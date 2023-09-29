@@ -11,8 +11,8 @@ router = APIRouter()
     response_model=Pin,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_pin(server_id: int, user_id: int, message: str) -> Pin:
-    return await Pin(server_id=server_id, user_id=user_id, message=message).save()
+async def create_pin(pin: Pin) -> Pin:
+    return await pin.save()
 
 
 @router.get(
