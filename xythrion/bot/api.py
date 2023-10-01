@@ -12,7 +12,9 @@ class APIClient:
 
     async def request(self, method: str, partial_endpoint: str, **kwargs) -> Response:
         r: Response = await self.http_client.request(
-            method.upper(), partial_endpoint, **kwargs
+            method.upper(),
+            partial_endpoint,
+            **kwargs,
         )
 
         r.raise_for_status()
@@ -20,12 +22,23 @@ class APIClient:
         return r
 
     async def get(self, partial_endpoint: str, **kwargs) -> Response:
-        return await self.request("GET", partial_endpoint, **kwargs)
+        return await self.request(
+            "GET",
+            partial_endpoint,
+            **kwargs,
+        )
 
     async def post(self, partial_endpoint: str, **kwargs) -> Response:
         return await self.request(
-            "POST", partial_endpoint, data=json.dumps(kwargs.get("data"), default=str)
+            "POST",
+            partial_endpoint,
+            data=json.dumps(kwargs.get("data"), default=str),
+            **kwargs,
         )
 
     async def delete(self, partial_endpoint: str, **kwargs) -> Response:
-        return await self.request("DELETE", partial_endpoint, **kwargs)
+        return await self.request(
+            "DELETE",
+            partial_endpoint,
+            **kwargs,
+        )

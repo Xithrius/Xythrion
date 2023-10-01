@@ -86,6 +86,25 @@ class Pins(Cog):
                 embed=Embed(title=f"Migrated {success} pin(s)"),
             )
 
+    @pin.command(aliases=("list",))
+    @is_trusted()
+    async def list_pins(self, ctx: Context, amount: int | None = 10) -> None:
+        data = await self.bot.api.get("/v1/pins/")
+
+        pins = "\n".join(
+            [
+                f"{i}. <@{pin['user_id']}>: [{pin['created_at']}]({pin['message']})"
+                for (i, pin) in enumerate(data.json())
+            ]
+        )
+
+        embed = Embed(
+            title=f"First {amount} pin(s)",
+            description=pins,
+        )
+
+        await ctx.send(embed=embed)
+
 
 async def setup(bot: Xythrion) -> None:
     await bot.add_cog(Pins(bot))
