@@ -2,6 +2,7 @@ from collections.abc import Callable
 
 from discord.ext.commands import check
 from httpx import Response
+from discord.ext.commands.errors import MissingPermissions
 
 from bot.context import Context
 
@@ -15,6 +16,9 @@ def is_trusted() -> Callable:
             f"/v1/trusted/{ctx.message.author.id}"
         )
 
-        return response.is_success
+        if not response.is_success:
+            raise MissingPermissions
+
+        return True
 
     return check(predicate)

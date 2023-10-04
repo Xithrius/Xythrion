@@ -29,10 +29,12 @@ class APIClient:
         )
 
     async def post(self, partial_endpoint: str, **kwargs) -> Response:
+        data = kwargs.pop("data")
+
         return await self.request(
             "POST",
             partial_endpoint,
-            data=json.dumps(kwargs.get("data"), default=str),
+            data=json.dumps(data, default=str),
             **kwargs,
         )
 
