@@ -24,7 +24,7 @@ class DeepRockGalacticBuilds(Cog):
 
     @drg_builds.command()
     async def create_build(
-        self, ctx: Context, dwarf_class: str, build: str, overclock: str | None
+        self, ctx: Context, dwarf_class: str, build: str, overclock: str | None,
     ) -> None:
         data = {
             "user_id": ctx.author.id,

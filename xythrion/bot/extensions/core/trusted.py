@@ -42,7 +42,7 @@ class Trusted(Cog):
     @is_owner()
     async def add_trust(self, ctx: Context, user_id: int) -> None:
         response: Response = await self.bot.api.post(
-            "/v1/trusted/", data={"user_id": user_id}
+            "/v1/trusted/", data={"user_id": user_id},
         )
 
         if not response.is_success:

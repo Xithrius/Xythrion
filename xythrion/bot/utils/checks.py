@@ -13,7 +13,7 @@ def is_trusted() -> Callable:
             return True
 
         response: Response = await ctx.bot.api.get(
-            f"/v1/trusted/{ctx.message.author.id}"
+            f"/v1/trusted/{ctx.message.author.id}",
         )
 
         if not response.is_success:

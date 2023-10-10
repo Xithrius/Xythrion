@@ -27,7 +27,7 @@ def walk_extensions() -> Iterator[str]:
         raise ImportError(name=name)
 
     for module in pkgutil.walk_packages(
-        extensions.__path__, f"{extensions.__name__}.", onerror=on_error
+        extensions.__path__, f"{extensions.__name__}.", onerror=on_error,
     ):
         if module.name.rsplit(".", maxsplit=1)[-1].startswith("_"):
             continue
@@ -79,7 +79,7 @@ class Xythrion(Bot):
         log.error(f"Ignoring exception in command {ctx.command}:", file=sys.stderr)
 
         traceback.print_exception(
-            type(error), error, error.__traceback__, file=sys.stderr
+            type(error), error, error.__traceback__, file=sys.stderr,
         )
 
         data = {"command_name": ctx.command.name, "successfully_completed": False}

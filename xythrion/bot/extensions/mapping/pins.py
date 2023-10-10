@@ -86,7 +86,7 @@ class Pins(Cog):
                         continue
 
                     raise ValueError(
-                        f"Error when migrating pin with jump message '{pin.jump_url}': {e.response.text}"
+                        f"Error when migrating pin with jump message '{pin.jump_url}': {e.response.text}",
                     )
 
                 if r.is_success:
@@ -123,7 +123,7 @@ class Pins(Cog):
             [
                 f"{i}. <@{pin['user_id']}>: [{pin['created_at']}]({pin['message']})"
                 for (i, pin) in enumerate(data if len(data) < amount else data[:amount])
-            ]
+            ],
         )
 
         embed = Embed(
@@ -157,7 +157,7 @@ class Pins(Cog):
                 [
                     f"Server: {server_id}" if server_id is not None else "",
                     f"User: {user_id}" if user_id is not None else "",
-                ]
+                ],
             ),
         )
 

@@ -69,7 +69,7 @@ class LinkMapper(Cog):
             data["server_id"] = ctx.guild.id
         else:
             await ctx.send(
-                "Command sent was not in guild channel, and no guild channel specified."
+                "Command sent was not in guild channel, and no guild channel specified.",
             )
 
             return

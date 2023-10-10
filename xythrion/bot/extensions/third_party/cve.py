@@ -18,7 +18,7 @@ class CVE(Cog):
 
     @staticmethod
     def cve_embed_builder(
-        title: str, description: str, url: str, published: str
+        title: str, description: str, url: str, published: str,
     ) -> Embed:
         embed = Embed(
             title=title,
@@ -38,7 +38,7 @@ class CVE(Cog):
     async def search(self, ctx: Context, cve: str) -> None:
         if CVE_PATTERN.match(cve) is not None:
             r = await self.bot.http_client.get(
-                f"https://cveawg.mitre.org/api/cve/{cve}"
+                f"https://cveawg.mitre.org/api/cve/{cve}",
             )
 
             data = r.json()
@@ -56,7 +56,7 @@ class CVE(Cog):
                             desc["value"],
                             cve_url,
                             published,
-                        )
+                        ),
                     )
 
                     return
@@ -67,7 +67,7 @@ class CVE(Cog):
                     "CVE found, but no English description was provided.",
                     cve_url,
                     published,
-                )
+                ),
             )
 
             return

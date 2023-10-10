@@ -11,7 +11,7 @@ fileConfig(config.config_file_name)
 target_metadata = metadata
 
 config.set_main_option(
-    "sqlalchemy.url", "postgresql://xythrion:xythrion@localhost:5432/xythrion"
+    "sqlalchemy.url", "postgresql://xythrion:xythrion@localhost:5432/xythrion",
 )
 
 

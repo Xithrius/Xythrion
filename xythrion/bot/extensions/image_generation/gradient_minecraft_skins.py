@@ -70,7 +70,7 @@ class GradientMinecraftSkins(Cog):
         end: convert_3d_tuples,
     ) -> None:
         buffer = await asyncio.to_thread(
-            lambda: self.generate_gradient_skin_image(start, end)
+            lambda: self.generate_gradient_skin_image(start, end),
         )
 
         await ctx.send_buffer(buffer)

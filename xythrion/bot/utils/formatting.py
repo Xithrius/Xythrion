@@ -40,7 +40,7 @@ def convert_to_deltas(
 ) -> dict:
     """Converts a datetime in a dictionary to a human-readable delta."""
     current_time = datetime.now(
-        tz=tz if tz is not None else timezone(timedelta(hours=0.0))
+        tz=tz if tz is not None else timezone(timedelta(hours=0.0)),
     )
 
     for item in data:
