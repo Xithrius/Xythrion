@@ -7,14 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.dependencies import get_db_session
 from app.database.models.trusted import TrustedModel
 
-from .schemas import Trusted
+from .schemas import Trusted, TrustedCreate
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=list[TrustedModel],
+    response_model=list[Trusted],
     status_code=status.HTTP_200_OK,
 )
 async def get_all_trusted_users(
@@ -31,7 +31,7 @@ async def get_all_trusted_users(
 
 @router.get(
     "/{user_id}",
-    response_model=TrustedModel,
+    response_model=Trusted,
     status_code=status.HTTP_200_OK,
 )
 async def get_trusted_user(
@@ -49,12 +49,12 @@ async def get_trusted_user(
 
 @router.post(
     "/",
-    response_model=TrustedModel,
+    response_model=Trusted,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_trusted_user(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    trusted: Trusted,
+    trusted: TrustedCreate,
 ) -> TrustedModel:
     new_item = TrustedModel(**trusted.model_dump())
 
@@ -66,7 +66,7 @@ async def create_trusted_user(
 
 @router.delete(
     "/{user_id}",
-    response_model=TrustedModel,
+    response_model=Trusted,
     status_code=status.HTTP_200_OK,
 )
 async def remove_trusted_user(

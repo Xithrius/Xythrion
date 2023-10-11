@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class DockerContainerModel(BaseModel):
+class DockerContainer(BaseModel):
     container_id: str
     image: str
     created: str

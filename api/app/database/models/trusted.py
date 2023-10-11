@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import BigInteger, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql.functions import now
@@ -10,5 +12,5 @@ class TrustedModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
 
-    user_id = mapped_column(BigInteger, unique=True)
-    at = mapped_column(DateTime, default=now)
+    user_id: Mapped[int] = mapped_column(BigInteger, unique=True)
+    at: Mapped[datetime] = mapped_column(DateTime, default=now)

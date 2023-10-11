@@ -7,14 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.dependencies import get_db_session
 from app.database.models.link_map import LinkMapModel
 
-from .schemas import LinkMap
+from .schemas import LinkMap, LinkMapCreate
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=list[LinkMapModel],
+    response_model=list[LinkMap],
     status_code=status.HTTP_200_OK,
 )
 async def get_link_maps(
@@ -40,12 +40,12 @@ async def get_link_maps(
 
 @router.post(
     "/",
-    response_model=LinkMapModel,
+    response_model=LinkMap,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    link_map: LinkMap,
+    link_map: LinkMapCreate,
 ) -> LinkMapModel:
     new_item = LinkMapModel(**link_map.model_dump())
 
@@ -57,7 +57,7 @@ async def create_link_map(
 
 @router.delete(
     "/{id}",
-    response_model=LinkMapModel,
+    response_model=LinkMap,
     status_code=status.HTTP_200_OK,
 )
 async def remove_link_map(

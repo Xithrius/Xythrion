@@ -47,7 +47,7 @@ class GunicornApplication(BaseApplication):
         self.options = {
             "bind": f"{host}:{port}",
             "workers": workers,
-            "worker_class": "fastapi_template.gunicorn_runner.UvicornWorker",
+            "worker_class": "app.gunicorn_runner.UvicornWorker",
             **kwargs,
         }
         self.app = app

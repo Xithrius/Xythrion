@@ -7,14 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.dependencies import get_db_session
 from app.database.models.pin import PinModel
 
-from .schemas import Pin
+from .schemas import Pin, PinCreate
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=list[PinModel],
+    response_model=list[Pin],
     status_code=status.HTTP_200_OK,
 )
 async def get_all_pins(
@@ -38,12 +38,12 @@ async def get_all_pins(
 
 @router.post(
     "/",
-    response_model=PinModel,
+    response_model=Pin,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_pin(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    pin: Pin,
+    pin: PinCreate,
 ) -> PinModel:
     new_item = PinModel(**pin.model_dump())
 
@@ -55,7 +55,7 @@ async def create_pin(
 
 @router.delete(
     "/{id}",
-    response_model=PinModel,
+    response_model=Pin,
     status_code=status.HTTP_200_OK,
 )
 async def remove_pin(

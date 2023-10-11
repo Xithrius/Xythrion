@@ -6,19 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.dependencies import get_db_session
 from app.database.models.command_metric import CommandMetricModel
 
-from .schemas import CommandMetric
+from .schemas import CommandMetric, CommandMetricCreate
 
 router = APIRouter()
 
 
 @router.post(
     "/",
-    response_model=CommandMetricModel,
+    response_model=CommandMetric,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_command_usage_metric(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    command_metric: CommandMetric,
+    command_metric: CommandMetricCreate,
 ) -> CommandMetricModel:
     new_item = CommandMetricModel(**command_metric.model_dump())
 

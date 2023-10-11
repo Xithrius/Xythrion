@@ -8,7 +8,7 @@ def main() -> None:
     """Entrypoint of the application."""
     if settings.reload:
         uvicorn.run(
-            "fastapi_template.web.application:get_app",
+            "app.routers.application:get_app",
             workers=settings.workers_count,
             host=settings.host,
             port=settings.port,
@@ -18,7 +18,7 @@ def main() -> None:
         )
     else:
         GunicornApplication(
-            "fastapi_template.web.application:get_app",
+            "app.routers.application:get_app",
             host=settings.host,
             port=settings.port,
             workers=settings.workers_count,

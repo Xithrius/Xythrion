@@ -1,20 +1,20 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.dependencies import get_db_session
 from app.database.models.web_map import WebMapModel
 
-from .schemas import WebMap
+from .schemas import WebMap, WebMapCreate
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=list[WebMapModel],
+    response_model=list[WebMap],
     status_code=status.HTTP_200_OK,
 )
 async def get_web_maps(
@@ -40,12 +40,12 @@ async def get_web_maps(
 
 @router.post(
     "/",
-    response_model=WebMapModel,
+    response_model=WebMap,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_web_map(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    web_map: WebMap,
+    web_map: WebMapCreate,
 ) -> WebMapModel:
     new_item = WebMapModel(**web_map.model_dump())
 
@@ -57,10 +57,15 @@ async def create_web_map(
 
 @router.delete(
     "/{id}",
-    response_model=WebMapModel,
+    response_model=WebMap,
     status_code=status.HTTP_200_OK,
 )
 async def remove_web_map(
-    session: Annotated[AsyncSession, Depends(get_db_session)], id: int,
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    id: int,
 ) -> WebMapModel:
-    ...
+    stmt = delete(WebMapModel).where(WebMapModel.id == id).returning()
+
+    items = await session.execute(stmt)
+
+    return items

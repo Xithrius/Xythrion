@@ -7,19 +7,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.dependencies import get_db_session
 from app.database.models.deep_rock_galactic import DeepRockGalacticBuildModel
 
-from .schemas import DeepRockGalacticBuild
+from .schemas import DeepRockGalacticBuild, DeepRockGalacticBuildCreate
 
 router = APIRouter()
 
 
 @router.post(
     "/",
-    response_model=DeepRockGalacticBuildModel,
+    response_model=DeepRockGalacticBuild,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_build(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    build: DeepRockGalacticBuild,
+    build: DeepRockGalacticBuildCreate,
 ) -> DeepRockGalacticBuildModel:
     new_item = DeepRockGalacticBuildModel(**build.model_dump())
 
@@ -31,7 +31,7 @@ async def create_build(
 
 @router.get(
     "/",
-    response_model=list[DeepRockGalacticBuildModel],
+    response_model=list[DeepRockGalacticBuild],
     status_code=status.HTTP_200_OK,
 )
 async def get_all_builds(
@@ -48,7 +48,7 @@ async def get_all_builds(
 
 @router.delete(
     "/{id}",
-    response_model=DeepRockGalacticBuildModel,
+    response_model=DeepRockGalacticBuild,
     status_code=status.HTTP_200_OK,
 )
 async def remove_build(
