@@ -7,7 +7,7 @@ x-logging: &logging
       max-file: "5"
       max-size: "10m"
 
-x-restart-policy: &restart_policy
+x-restart-policy:
   restart: unless-stopped
 
 services:
@@ -19,7 +19,7 @@ services:
     image: postgres:15-alpine
 
     ports:
-      - "5432:5432"
+    - "5432:5432"
 
     environment:
       POSTGRES_DB: xythrion
@@ -40,7 +40,7 @@ services:
     image: "metabase/metabase:latest"
 
     ports:
-      - "3000:3000"
+    - "3000:3000"
 
     environment:
       MB_DB_TYPE: postgres
@@ -64,7 +64,7 @@ services:
     image: adminer:latest
 
     ports:
-      - "8080:8080"
+    - "8080:8080"
 
   api:
     <<: *logging
@@ -76,19 +76,19 @@ services:
       dockerfile: dev.Dockerfile
 
     env_file:
-      - .env
+    - .env
 
     environment:
       POSTGRES_HOST: postgres
 
     volumes:
-      - ./api:/api
+    - ./api:/api
 
     depends_on:
-      - postgres
+    - postgres
 
     ports:
-      - "8000:8000"
+    - "8000:8000"
 
   bot:
     <<: *logging
@@ -103,10 +103,10 @@ services:
       API_URL: "http://api:8000"
 
     env_file:
-      - .env
+    - .env
 
     depends_on:
-      - api
+    - api
 
     volumes:
-      - ./bot:/bot
+    - ./bot:/bot

@@ -53,8 +53,8 @@ class GradientImages(Cog):
 
         buffer = await asyncio.to_thread(
             lambda: self.generate_gradient_image(
-                start, end, (size_h, size_v), gradient_direction
-            )
+                start, end, (size_h, size_v), gradient_direction,
+            ),
         )
 
         await ctx.send_buffer(buffer)

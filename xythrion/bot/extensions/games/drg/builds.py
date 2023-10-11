@@ -18,13 +18,17 @@ class DeepRockGalacticBuilds(Cog):
 
     @drg_builds.command()
     async def get_builds(self, ctx: Context) -> None:
-        data = await self.bot.api.get("/v1/drg/")
+        data = await self.bot.api.get("/api/drg/")
 
         await ctx.send(data)
 
     @drg_builds.command()
     async def create_build(
-        self, ctx: Context, dwarf_class: str, build: str, overclock: str | None
+        self,
+        ctx: Context,
+        dwarf_class: str,
+        build: str,
+        overclock: str | None,
     ) -> None:
         data = {
             "user_id": ctx.author.id,
@@ -33,7 +37,7 @@ class DeepRockGalacticBuilds(Cog):
             "overclock": overclock,
         }
 
-        await self.bot.api.post("/v1/drg/", data=data)
+        await self.bot.api.post("/api/drg/", data=data)
 
 
 async def setup(bot: Xythrion) -> None:

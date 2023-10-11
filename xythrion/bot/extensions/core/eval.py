@@ -111,7 +111,7 @@ class Eval(Cog):
 
         else:
             if isinstance(out, str) and out.startswith(
-                "Traceback (most recent call last):\n"
+                "Traceback (most recent call last):\n",
             ):
                 # Leave out the traceback message
                 out = "\n" + "\n".join(out.split("\n")[1:])
@@ -178,7 +178,7 @@ async def func():  # (None,) -> Any
     finally:
         self.env.update(locals())
 """.format(
-            textwrap.indent(code, "            ")
+            textwrap.indent(code, "            "),
         )
 
         try:

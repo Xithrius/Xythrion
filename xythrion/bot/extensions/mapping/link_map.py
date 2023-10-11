@@ -31,7 +31,7 @@ class LinkMapper(Cog):
 
         data = {"server_id": message.guild.id, "user_id": message.author.id}
 
-        response = await self.bot.api.get("/v1/link_maps/", params=data)
+        response = await self.bot.api.get("/api/link_maps/", params=data)
 
         rows: list[LinkMapData] = response.data
 
@@ -69,24 +69,24 @@ class LinkMapper(Cog):
             data["server_id"] = ctx.guild.id
         else:
             await ctx.send(
-                "Command sent was not in guild channel, and no guild channel specified."
+                "Command sent was not in guild channel, and no guild channel specified.",
             )
 
             return
 
-        await self.bot.api.post("/v1/link_maps/", data=data)
+        await self.bot.api.post("/api/link_maps/", data=data)
 
     @link_map.command()
     async def get_user_link_maps(self, ctx: Context) -> None:
         data = {"server_id": ctx.guild.id, "user_id": ctx.author.id}
 
-        j = await self.bot.api.get("/v1/link_maps/", params=data)
+        j = await self.bot.api.get("/api/link_maps/", params=data)
 
         await ctx.send(j)
 
     @link_map.command()
     async def remove_user_link_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"/v1/link_maps/{id}")
+        j = await self.bot.api.delete(f"/api/link_maps/{id}")
 
         await ctx.send(j)
 

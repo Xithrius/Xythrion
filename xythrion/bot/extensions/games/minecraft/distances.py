@@ -22,7 +22,7 @@ class MinecraftDistances(Cog):
 
     @mc.command()
     async def distance(
-        self, ctx: Context, start: convert_3d_tuples, end: convert_3d_tuples
+        self, ctx: Context, start: convert_3d_tuples, end: convert_3d_tuples,
     ) -> None:
         (x0, y0, z0), (x1, y1, z1) = start, end
 
@@ -34,7 +34,7 @@ class MinecraftDistances(Cog):
             d = sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2 + (z1 - z0) ** 2)
 
         embed = Embed(
-            description=f"`({x0}, {y0}, {z0})` -> `({x1}, {y1}, {z1})` is {int(d)} blocks"
+            description=f"`({x0}, {y0}, {z0})` -> `({x1}, {y1}, {z1})` is {int(d)} blocks",
         )
 
         await ctx.send(embed=embed)
@@ -45,7 +45,7 @@ class MinecraftDistances(Cog):
         x1, y1, z1 = int(x0 / 8), int(y0 / 8), int(z0 / 8)
 
         embed = Embed(
-            description=f"`overworld ({x0}, {y0}, {z0})` -> `nether ({x1}, {y1}, {z1})`"
+            description=f"`overworld ({x0}, {y0}, {z0})` -> `nether ({x1}, {y1}, {z1})`",
         )
 
         await ctx.send(embed=embed)
@@ -56,7 +56,7 @@ class MinecraftDistances(Cog):
         x1, y1, z1 = x0 * 8, y0 * 8, z0 * 8
 
         embed = Embed(
-            description=f"`nether ({x0}, {y0}, {z0})` -> `overworld ({x1}, {y1}, {z1})`"
+            description=f"`nether ({x0}, {y0}, {z0})` -> `overworld ({x1}, {y1}, {z1})`",
         )
 
         await ctx.send(embed=embed)

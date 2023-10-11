@@ -27,7 +27,9 @@ def walk_extensions() -> Iterator[str]:
         raise ImportError(name=name)
 
     for module in pkgutil.walk_packages(
-        extensions.__path__, f"{extensions.__name__}.", onerror=on_error
+        extensions.__path__,
+        f"{extensions.__name__}.",
+        onerror=on_error,
     ):
         if module.name.rsplit(".", maxsplit=1)[-1].startswith("_"):
             continue
@@ -79,12 +81,15 @@ class Xythrion(Bot):
         log.error(f"Ignoring exception in command {ctx.command}:", file=sys.stderr)
 
         traceback.print_exception(
-            type(error), error, error.__traceback__, file=sys.stderr
+            type(error),
+            error,
+            error.__traceback__,
+            file=sys.stderr,
         )
 
         data = {"command_name": ctx.command.name, "successfully_completed": False}
 
-        await self.api.post("/v1/command_metrics/", data=data)
+        await self.api.post("/api/command_metrics/", data=data)
 
         await ctx.send(embed=Embed(description=f"`{error}`"))
 
@@ -94,7 +99,7 @@ class Xythrion(Bot):
 
         data = {"command_name": ctx.command.name, "successfully_completed": True}
 
-        await self.api.post("/v1/command_metrics/", data=data)
+        await self.api.post("/api/command_metrics/", data=data)
 
     async def setup_hook(self) -> None:
         """Things to setup before the bot logs on."""
