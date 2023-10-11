@@ -31,7 +31,7 @@ class Pins(Cog):
             "message": message.jump_url,
         }
 
-        r: Response = await self.bot.api.post("/v1/pins/", data=pin)
+        r: Response = await self.bot.api.post("/api/pins/", data=pin)
 
         data = r.json()
 
@@ -46,7 +46,7 @@ class Pins(Cog):
     @pin.command(aliases=("remove", "delete", "del"))
     @is_trusted()
     async def delete_pin(self, ctx: Context, id: str) -> None:
-        r: Response = await self.bot.api.delete(f"/v1/pins/{id}")
+        r: Response = await self.bot.api.delete(f"/api/pins/{id}")
 
         if r.is_success:
             data = r.json()
@@ -79,7 +79,7 @@ class Pins(Cog):
                 }
 
                 try:
-                    r: Response = await self.bot.api.post("/v1/pins/", data=pin)
+                    r: Response = await self.bot.api.post("/api/pins/", data=pin)
                 except HTTPStatusError as e:
                     if e.response.status_code == 409:
                         already_migrated += 1
@@ -115,7 +115,7 @@ class Pins(Cog):
         if user_id is not None:
             params["user_id"] = user_id
 
-        r = await self.bot.api.get("/v1/pins/", params=params)
+        r = await self.bot.api.get("/api/pins/", params=params)
 
         data = r.json()
 
@@ -147,7 +147,7 @@ class Pins(Cog):
         if user_id is not None:
             params["user_id"] = user_id
 
-        r = await self.bot.api.get("/v1/pins/", params=params)
+        r = await self.bot.api.get("/api/pins/", params=params)
 
         data = r.json()
 

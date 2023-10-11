@@ -1,3 +1,21 @@
-from .v1 import v1
+from fastapi import APIRouter
 
-__all__ = ("v1",)
+from .command_metric import router as command_metrics_router
+from .deep_rock_galactic import router as drg_router
+from .docker import router as docker_router
+from .link_map import router as link_maps_router
+from .monitoring import router as monitor_router
+from .pin import router as pin_router
+from .trusted import router as trusted_router
+from .web_map import router as web_maps_router
+
+api_router = APIRouter(prefix="/api")
+
+api_router.include_router(command_metrics_router, prefix="/command_metrics")
+api_router.include_router(drg_router, prefix="/drg")
+api_router.include_router(docker_router, prefix="/docker")
+api_router.include_router(link_maps_router, prefix="/link_maps")
+api_router.include_router(pin_router, prefix="/pins")
+api_router.include_router(trusted_router, prefix="/trusted")
+api_router.include_router(web_maps_router, prefix="/web_maps")
+api_router.include_router(monitor_router)

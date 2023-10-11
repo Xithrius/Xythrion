@@ -48,7 +48,7 @@ class WebMapper(Cog):
 
         data = {"server_id": message.guild.id, "user_id": message.author.id}
 
-        rows: list[WebMapData] = await self.bot.api.get("/v1/web_maps/", params=data)
+        rows: list[WebMapData] = await self.bot.api.get("/api/web_maps/", params=data)
 
         for row in rows:
             if row.matches in message.content:
@@ -96,7 +96,7 @@ class WebMapper(Cog):
 
             return
 
-        await self.bot.api.post("/v1/web_maps/", data=data)
+        await self.bot.api.post("/api/web_maps/", data=data)
 
     @web_map.command()
     @is_trusted()
@@ -107,14 +107,14 @@ class WebMapper(Cog):
     ) -> None:
         data = {"user_id": ctx.author.id}
 
-        j = await self.bot.api.get("/v1/web_maps/", params=data)
+        j = await self.bot.api.get("/api/web_maps/", params=data)
 
         await ctx.send(j)
 
     @web_map.command()
     @is_trusted()
     async def remove_user_web_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"/v1/web_maps/{id}")
+        j = await self.bot.api.delete(f"/api/web_maps/{id}")
 
         await ctx.send(j)
 

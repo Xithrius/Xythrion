@@ -19,7 +19,7 @@ class Ping(Cog):
     @ping.command()
     async def api(self, ctx: Context) -> None:
         """Is *that* thing on?"""
-        j = await self.bot.api.get("/v1/ping/")
+        j = await self.bot.api.get("/api/ping/")
 
         await ctx.send(f"API received ping at: {j.data['ping']}")
 
