@@ -5,13 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sympy import Symbol, parse_expr
 
-from app.utils.decorators import noblock
 
 matplotlib.use("Agg")
 plt.style.use("dark_background")
 
 
-@noblock
+# @noblock
 def calculate(
     expression: str,
     restrict_x: tuple[int | float, int | float],
@@ -28,7 +27,7 @@ def calculate(
     return x, y
 
 
-@noblock
+# @noblock
 def graph2d(
     x: np.ndarray,
     y: np.ndarray,

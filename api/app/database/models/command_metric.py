@@ -11,7 +11,11 @@ from app.database.base import Base
 class CommandMetricModel(Base):
     __tablename__ = "command_metrics"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
+    )
 
     used_at: Mapped[datetime] = mapped_column(DateTime, default=now())
 
