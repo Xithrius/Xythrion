@@ -22,7 +22,7 @@ repos:
   - id: ruff
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.4.0
+  rev: v4.5.0
   hooks:
   - id: check-ast
   - id: trailing-whitespace
@@ -30,12 +30,12 @@ repos:
   - id: end-of-file-fixer
 
 - repo: https://github.com/asottile/add-trailing-comma
-  rev: v2.1.0
+  rev: v3.1.0
   hooks:
   - id: add-trailing-comma
 
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.1.0
+  rev: v2.11.0
   hooks:
   - id: pretty-format-yaml
     args:
