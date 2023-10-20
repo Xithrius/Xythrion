@@ -1,11 +1,26 @@
+import os
+import shutil
+
 import uvicorn
 
 from .gunicorn_runner import GunicornApplication
 from .settings import settings
 
 
+def set_multiproc_dir() -> None:
+    shutil.rmtree(settings.prometheus_dir, ignore_errors=True)
+
+    os.makedirs(settings.prometheus_dir, exist_ok=True)
+
+    os.environ["PROMETHEUS_MULTIPROC_DIR"] = str(
+        settings.prometheus_dir.expanduser().absolute(),
+    )
+    os.environ["PROMETHEUS_MULTIPROC_DIR"] = str(
+        settings.prometheus_dir.expanduser().absolute(),
+    )
+
+
 def main() -> None:
-    """Entrypoint of the application."""
     if settings.reload:
         uvicorn.run(
             "app.routers.application:get_app",

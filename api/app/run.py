@@ -13,7 +13,7 @@ import uvicorn
 def main() -> None:
     """Run server with hot reloading."""
     uvicorn.run(
-        "app.main:app",
+        "app.routers.application:get_app",
         host="127.0.0.1",
         port=8000,
         reload=True,

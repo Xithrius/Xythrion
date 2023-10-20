@@ -16,4 +16,4 @@ COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
 
 COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
 
-CMD [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD [ "uvicorn", "app.routers.application:get_app", "--host", "0.0.0.0", "--port", "8000"]

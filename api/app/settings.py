@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     workers_count: int = 1
 
     # Enable uvicorn reloading
-    reload: bool = False
+    reload: bool = True
 
     # Current environment
     environment: str = "dev"
@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     db_pass: str = "xythrion"
     db_base: str = "xythrion"
     db_echo: bool = False
+
+    # This variable is used to define
+    # multiproc_dir. It's required for [uvi|guni]corn projects.
+    prometheus_dir: Path = TEMP_DIR / "prom"
 
     @property
     def db_url(self) -> URL:
