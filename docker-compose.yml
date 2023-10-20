@@ -16,7 +16,7 @@ services:
 
     container_name: postgres
 
-    image: postgres:15-alpine
+    image: "docker.io/postgres:15-alpine"
 
     ports:
     - "5432:5432"
@@ -37,7 +37,7 @@ services:
 
     container_name: metabase
 
-    image: "metabase/metabase:latest"
+    image: "docker.io/metabase/metabase:latest"
 
     ports:
     - "3000:3000"
@@ -61,7 +61,7 @@ services:
 
     container_name: adminer
 
-    image: adminer:latest
+    image: "docker.io/adminer:latest"
 
     ports:
     - "8080:8080"
@@ -84,8 +84,8 @@ services:
     volumes:
     - ./api:/api
 
-    depends_on:
-    - postgres
+    # depends_on:
+    #   - postgres
 
     ports:
     - "8000:8000"
@@ -110,3 +110,29 @@ services:
 
     volumes:
     - ./bot:/bot
+
+  grafana:
+    <<: *logging
+
+    container_name: grafana
+
+    image: "docker.io/grafana/grafana"
+
+    volumes:
+    - ./services/grafana/dashboards:/etc/grafana/provisioning/dashboards/
+
+    ports:
+    - "3030:3000"
+
+  prometheus:
+    <<: *logging
+
+    container_name: prometheus
+
+    image: "docker.io/prom/prometheus"
+
+    volumes:
+    - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+    ports:
+    - "9090:9090"
