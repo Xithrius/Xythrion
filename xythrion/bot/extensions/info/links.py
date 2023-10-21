@@ -3,10 +3,9 @@ from discord.ext.commands import Cog, command
 from discord.utils import oauth_url
 
 from bot.bot import Xythrion
+from bot.constants import GITHUB_URL
 from bot.context import Context
 from bot.utils import markdown_link
-
-GITHUB_URL = "https://github.com/Xithrius/Xythrion"
 
 PERMISSIONS_INTEGER = 412317764672
 
