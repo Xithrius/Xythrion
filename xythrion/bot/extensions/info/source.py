@@ -22,12 +22,12 @@ class Source(Cog):
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
-    @command(name="source", aliases=("src",))
-    async def source_command(
+    @command(aliases=("src",))
+    async def source(
         self,
         ctx: Context,
         *,
-        source_item: SourceConverter = None,
+        source_item: SourceConverter | None = None,
     ) -> None:
         """Display information and a GitHub link to the source code of a command, tag, or cog."""
         if not source_item:
