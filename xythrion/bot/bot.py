@@ -18,6 +18,7 @@ from bot.api import APIClient
 from bot.context import Context
 
 from . import extensions
+from .constants import COMMAND_PREFIX
 
 load_dotenv()
 
@@ -59,7 +60,7 @@ class Xythrion(Bot):
         self.tzinfo = timezone(timedelta(hours=timezone_offset))
 
         super().__init__(
-            command_prefix="^",
+            command_prefix=COMMAND_PREFIX,
             case_insensitive=True,
             allowed_mentions=AllowedMentions(everyone=False),
             intents=intents,

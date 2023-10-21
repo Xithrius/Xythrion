@@ -1,12 +1,14 @@
 import re
 
-from discord.ext.commands import Converter
+from discord.ext.commands import Converter, HelpCommand, Cog, ExtensionNotLoaded, Command
 
 from bot.bot import EXTENSIONS
 from bot.context import Context
 
 WHITESPACE_PATTERN = re.compile(r"\s+")
 TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")
+
+SourceType = HelpCommand | Command | Cog | ExtensionNotLoaded
 
 
 def remove_whitespace(argument: str) -> str:
@@ -42,3 +44,23 @@ class Extension(Converter):
             return argument
 
         raise ValueError(f"Invalid argument {argument}")
+
+
+class SourceConverter(Converter):
+    """Convert an argument into a help command, command, or cog."""
+
+    @staticmethod
+    async def convert(ctx: Context, argument: str) -> SourceType | None:
+        """Convert argument into source object."""
+        if argument.lower() == "help":
+            return ctx.bot.help_command
+
+        cog = ctx.bot.get_cog(argument)
+        if cog:
+            return cog
+
+        cmd = ctx.bot.get_command(argument)
+        if cmd:
+            return cmd
+
+        return None
