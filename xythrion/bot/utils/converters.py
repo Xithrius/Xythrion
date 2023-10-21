@@ -55,12 +55,4 @@ class SourceConverter(Converter):
         if argument.lower() == "help":
             return ctx.bot.help_command
 
-        cog = ctx.bot.get_cog(argument)
-        if cog:
-            return cog
-
-        cmd = ctx.bot.get_command(argument)
-        if cmd:
-            return cmd
-
-        return None
+        return ctx.bot.get_cog(argument) or ctx.bot.get_command(argument)
