@@ -3,7 +3,11 @@ import numpy as np
 
 # https://github.com/nkmk/python-snippets/blob/master/notebook/numpy_generate_gradient_image.py
 def gradient2(
-    start: int, stop: int, width: int, height: int, is_horizontal: bool,
+    start: int,
+    stop: int,
+    width: int,
+    height: int,
+    is_horizontal: bool,
 ) -> np.array:
     if is_horizontal:
         return np.tile(np.linspace(start, stop, width), (height, 1))

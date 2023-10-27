@@ -10,6 +10,7 @@ CVE_PATTERN = re.compile(r"CVE-\d{4}-\d{4,}")
 
 # TODO: Pydantic models
 
+
 class CVE(Cog):
     """CVE information."""
 
@@ -18,7 +19,10 @@ class CVE(Cog):
 
     @staticmethod
     def cve_embed_builder(
-        title: str, description: str, url: str, published: str,
+        title: str,
+        description: str,
+        url: str,
+        published: str,
     ) -> Embed:
         embed = Embed(
             title=title,

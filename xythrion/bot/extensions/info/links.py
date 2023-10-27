@@ -24,7 +24,8 @@ class Links(Cog):
         """Information about bot origin."""
         embed = Embed(
             description=markdown_link(
-                desc="Xythrion Github Repository", link=GITHUB_URL,
+                desc="Xythrion Github Repository",
+                link=GITHUB_URL,
             ),
         )
 
