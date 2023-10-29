@@ -39,7 +39,7 @@ fmt = "ruff format ."
 precommit = "pre-commit install"
 test = "pytest -n auto --ff"
 retest = "pytest -n auto --lf"
-test-cov = "pytest -n auto --cov-report= --cov"
+test-cov = "pytest -n auto --cov=./ --cov-report=xml"
 html = "coverage html"
 report = "coverage report"
 
