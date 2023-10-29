@@ -37,7 +37,11 @@ start = "python -m bot"
 lint = "pre-commit run --all-files"
 fmt = "ruff format ."
 precommit = "pre-commit install"
-test = "pytest"
+test = "pytest -n auto --ff"
+retest = "pytest -n auto --lf"
+test-cov = "pytest -n auto --cov-report= --cov"
+html = "coverage html"
+report = "coverage report"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
@@ -45,7 +49,6 @@ build-backend = "pdm.pep517.api"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
-
 
 [tool.ruff]
 target-version = "py311"

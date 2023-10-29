@@ -42,14 +42,16 @@ jobs:
       working-directory: ${{ matrix.directory }}
       run: pdm lint
 
-    - name: Run tests
+    - name: Run tests with coverage
       working-directory: ${{ matrix.directory }}
-      run: pdm test
+      run: pdm test-cov
 
-    - name: Upload coverage reports to Codecov
+    - name: Upload coverage to Codecov
+      working-directory: ${{ matrix.directory }}
       uses: codecov/codecov-action@v3
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml
 
     - name: Prepare Pull Request Payload artifact
       working-directory: ${{ matrix.directory }}

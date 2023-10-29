@@ -50,7 +50,11 @@ fmt = "ruff format ."
 precommit = "pre-commit install"
 migrate = "alembic revision --autogenerate -m"
 upgrade = "alembic upgrade head"
-test = "pytest"
+test = "pytest -n auto --ff"
+retest = "pytest -n auto --lf"
+test-cov = "pytest -n auto --cov=./ --cov-report=xml"
+html = "coverage html"
+report = "coverage report"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
