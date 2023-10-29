@@ -44,13 +44,12 @@ jobs:
 
     - name: Run tests
       working-directory: ${{ matrix.directory }}
-        # Matplotlib tests are currently broken, skipping for now.
-      run: |
-        if [ "${{ matrix.directory }}" != 'api' ]; then
-          pdm test
-        else
-          echo "Skipping tests for 'api' directory."
-        fi
+      run: pdm test
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Prepare Pull Request Payload artifact
       working-directory: ${{ matrix.directory }}
