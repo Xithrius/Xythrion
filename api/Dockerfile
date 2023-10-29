@@ -16,4 +16,5 @@ COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
 
 COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
 
-CMD [ "uvicorn", "app.routers.application:get_app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["alembic upgrade head && app.routers.application:get_app --host 0.0.0.0 --port 8000"]

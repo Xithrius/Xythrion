@@ -1,7 +1,7 @@
 [project]
-name = "Xythrion-API"
+name = "xythrion-api"
 version = "0.1.0"
-description = "..."
+description = "API portion of Xythrion"
 authors = [{ name = "Xithrius", email = "xithrius@gmail.com" }]
 requires-python = ">=3.11"
 license = { text = "MIT" }

@@ -1,16 +1,16 @@
 """
-Base models.
+Created base tables.
 
-Revision ID: b1a0d03ccfce
+Revision ID: e53d084bab02
 Revises:
-Create Date: 2023-10-11 01:01:51.976366
+Create Date: 2023-10-28 20:25:20.885616
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "b1a0d03ccfce"
+revision = "e53d084bab02"
 down_revision = None
 branch_labels = None
 depends_on = None

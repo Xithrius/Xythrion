@@ -1,7 +1,7 @@
 [project]
-name = "Xythrion"
+name = "xythrion-bot"
 version = "0.1.0"
-description = "Discord graphing bot"
+description = "Bot portion of Xythrion"
 authors = [
     {name = "Xithrius", email = "xithrius@gmail.com"},
 ]
