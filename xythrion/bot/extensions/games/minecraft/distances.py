@@ -22,7 +22,10 @@ class MinecraftDistances(Cog):
 
     @mc.command()
     async def distance(
-        self, ctx: Context, start: convert_3d_tuples, end: convert_3d_tuples,
+        self,
+        ctx: Context,
+        start: convert_3d_tuples,
+        end: convert_3d_tuples,
     ) -> None:
         (x0, y0, z0), (x1, y1, z1) = start, end
 

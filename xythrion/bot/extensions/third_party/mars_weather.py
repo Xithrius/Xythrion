@@ -33,10 +33,7 @@ class MarsWeather(Cog):
 
         try:
             first_sol_checked = j["validity_checks"]["sols_checked"][0]
-            valid = any(
-                j["validity_checks"][first_sol_checked][x]["valid"]
-                for x in DATA_SECTIONS
-            )
+            valid = any(j["validity_checks"][first_sol_checked][x]["valid"] for x in DATA_SECTIONS)
 
             if not valid:
                 err = True

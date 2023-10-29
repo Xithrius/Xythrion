@@ -10,11 +10,11 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from testcontainers.postgres import PostgresContainer
 
 from app.database.dependencies import get_db_session
 from app.database.utils import create_database, drop_database
 from app.routers.application import get_app
-from app.settings import settings
 
 
 @pytest.fixture(scope="session")
@@ -39,9 +39,15 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
 
     load_all_models()
 
-    await create_database()
+    # https://github.com/testcontainers/testcontainers-python/issues/263#issuecomment-1471334905
+    postgres = PostgresContainer("postgres:15-alpine")
+    postgres.start()
+    postgres.driver = "asyncpg"
+    url = postgres.get_connection_url()
 
-    engine = create_async_engine(str(settings.db_url))
+    await create_database(url)
+
+    engine = create_async_engine(url)
     async with engine.begin() as conn:
         await conn.run_sync(meta.create_all)
 
@@ -49,7 +55,8 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
         yield engine
     finally:
         await engine.dispose()
-        await drop_database()
+        await drop_database(url)
+        postgres.stop()
 
 
 @pytest.fixture

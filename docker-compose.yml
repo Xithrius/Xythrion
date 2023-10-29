@@ -73,19 +73,19 @@ services:
 
     build:
       context: ./api
-      dockerfile: dev.Dockerfile
+      dockerfile: Dockerfile
 
     env_file:
     - .env
 
     environment:
-      POSTGRES_HOST: postgres
+      DATABASE_URL: postgresql://xythrion:xythrion@postgres:5432/xythrion
 
     volumes:
     - ./api:/api
 
-    # depends_on:
-    #   - postgres
+    depends_on:
+    - postgres
 
     ports:
     - "8000:8000"
@@ -97,7 +97,7 @@ services:
 
     build:
       context: ./xythrion
-      dockerfile: dev.Dockerfile
+      dockerfile: Dockerfile
 
     environment:
       API_URL: "http://api:8000"

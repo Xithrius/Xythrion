@@ -55,11 +55,7 @@ async def remove_build(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     id: int,
 ) -> DeepRockGalacticBuildModel:
-    stmt = (
-        delete(DeepRockGalacticBuildModel)
-        .where(DeepRockGalacticBuildModel.id == id)
-        .returning()
-    )
+    stmt = delete(DeepRockGalacticBuildModel).where(DeepRockGalacticBuildModel.id == id).returning()
 
     items = await session.execute(stmt)
 

@@ -15,4 +15,5 @@ ENV PYTHONPATH=/project/pkgs
 COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
 COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
 
-CMD [ "python", "-m", "bot" ]
+ENTRYPOINT ["python", "-m"]
+CMD ["bot"]

@@ -5,10 +5,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from app.settings import settings
 
 
-async def create_database() -> None:
+async def create_database(
+    url: str | None = make_url(str(settings.db_url.with_path("/postgres"))),
+) -> None:
     """Create a database."""
-    db_url = make_url(str(settings.db_url.with_path("/postgres")))
-    engine = create_async_engine(db_url, isolation_level="AUTOCOMMIT")
+    engine = create_async_engine(url, isolation_level="AUTOCOMMIT")
 
     async with engine.connect() as conn:
         database_existance = await conn.execute(
@@ -29,10 +30,12 @@ async def create_database() -> None:
         )
 
 
-async def drop_database() -> None:
+async def drop_database(
+    url: str | None = make_url(str(settings.db_url.with_path("/postgres"))),
+) -> None:
     """Drop current database."""
-    db_url = make_url(str(settings.db_url.with_path("/postgres")))
-    engine = create_async_engine(db_url, isolation_level="AUTOCOMMIT")
+    engine = create_async_engine(url, isolation_level="AUTOCOMMIT")
+
     async with engine.connect() as conn:
         disc_users = (
             "SELECT pg_terminate_backend(pg_stat_activity.pid) "  # noqa: S608
