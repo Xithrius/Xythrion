@@ -30,7 +30,7 @@ jobs:
         cache-dependency-path: "${{ matrix.directory }}/pyproject.toml"
 
     - name: Set up PDM
-      uses: pdm-project/setup-pdm@v2
+      uses: pdm-project/setup-pdm@v3
       with:
         python-version: "3.11"
 
