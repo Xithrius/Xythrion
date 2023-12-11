@@ -1,9 +1,11 @@
 from io import BytesIO
+from typing import TYPE_CHECKING
 
 from discord import Embed
 from discord.ext.commands import Context as BaseContext
 
-from bot.utils import send_image_buffer
+if TYPE_CHECKING:
+    from bot.utils import send_image_buffer
 
 
 class Context(BaseContext):
