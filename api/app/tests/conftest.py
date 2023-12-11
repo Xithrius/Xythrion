@@ -39,9 +39,10 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
 
     load_all_models()
 
-    # https://github.com/testcontainers/testcontainers-python/issues/263#issuecomment-1471334905
     postgres = PostgresContainer("postgres:15-alpine")
     postgres.start()
+
+    # https://github.com/testcontainers/testcontainers-python/issues/263#issuecomment-1471334905
     postgres.driver = "asyncpg"
     url = postgres.get_connection_url()
 
