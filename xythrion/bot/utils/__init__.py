@@ -6,7 +6,7 @@ from bot.utils.converters import (
     remove_whitespace,
 )
 from bot.utils.dataframes import remove_outliers
-from bot.utils.decorators import to_thread
+from bot.utils.decorators import to_async
 from bot.utils.formatting import (
     and_join,
     codeblock,
@@ -29,5 +29,5 @@ __all__ = (
     "dict_to_human_table",
     "send_image_buffer",
     "remove_outliers",
-    "to_thread",
+    "to_async",
 )

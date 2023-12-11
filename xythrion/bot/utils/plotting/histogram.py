@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 from discord.ext.commands import Context
 
-from bot.utils import remove_outliers, send_image_buffer, to_thread
+from bot.utils import remove_outliers, send_image_buffer, to_async
 
 
 async def plot_histogram_2d(
@@ -16,8 +16,8 @@ async def plot_histogram_2d(
     include_outliers: bool | None = False,
     ctx: Context | None,
 ) -> BytesIO | None:
-    @to_thread
-    async def __build_histogram_2d(data: pd.DataFrame) -> BytesIO:
+    @to_async
+    def __build_histogram_2d(data: pd.DataFrame) -> BytesIO:
         sns.set_theme()
         svm = sns.histplot(data, kde=True, x=x_label)
 

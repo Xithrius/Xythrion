@@ -1,13 +1,10 @@
 import asyncio
-import warnings
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from typing import Any
 
-warnings.filterwarnings("ignore", category=UserWarning)
 
-
-async def to_thread(func: Callable) -> Callable:
-    async def decorator(*args, **kwargs) -> Any:
+def to_async(func: Callable) -> Coroutine[Any, Any, Any]:
+    async def wrapper(*args, **kwargs) -> Any:
         return await asyncio.to_thread(func, *args, **kwargs)
 
-    return decorator
+    return wrapper
