@@ -24,7 +24,7 @@ dependencies = [
 [tool]
 [tool.pdm]
 [tool.pdm.dev-dependencies]
-lint-format = ["ruff>=0.1.3"]
+lint-format = ["ruff>=0.1.8"]
 precommit = ["pre-commit>=3.3.3"]
 test = [
     "pytest>=7.4.0",

@@ -32,7 +32,7 @@ dependencies = [
 [tool]
 [tool.pdm]
 [tool.pdm.dev-dependencies]
-lint-format = ["ruff>=0.1.7"]
+lint-format = ["ruff>=0.1.8"]
 precommit = ["pre-commit>=3.3.3"]
 test = [
     "anyio>=3.7.1",
