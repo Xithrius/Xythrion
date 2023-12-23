@@ -1,6 +1,6 @@
 import asyncio
 
-from bot.bot import Xythrion
+from .bot import Xythrion
 
 
 async def main() -> None:

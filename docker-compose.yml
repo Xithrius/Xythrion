@@ -14,12 +14,10 @@ services:
   postgres:
     <<: *logging
 
-    container_name: postgres
-
     image: "docker.io/postgres:15-alpine"
 
     ports:
-    - "5432:5432"
+    - "5431:5432"
 
     environment:
       POSTGRES_DB: xythrion
@@ -32,34 +30,8 @@ services:
       timeout: 1s
       retries: 5
 
-  metabase:
-    <<: *logging
-
-    container_name: metabase
-
-    image: "docker.io/metabase/metabase:latest"
-
-    ports:
-    - "3000:3000"
-
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: xythrion
-      MB_DB_USER: xythrion
-      MB_DB_PASS: xythrion
-      MB_DB_HOST: postgres
-      MB_DB_PORT: 5432
-
-    healthcheck:
-      test: curl --fail -I http://localhost:3000/api/health || exit 1
-      interval: 15s
-      timeout: 5s
-      retries: 5
-
   adminer:
     <<: *logging
-
-    container_name: adminer
 
     image: "docker.io/adminer:latest"
 
@@ -68,8 +40,6 @@ services:
 
   api:
     <<: *logging
-
-    container_name: api
 
     build:
       context: ./api
@@ -88,19 +58,17 @@ services:
     - postgres
 
     ports:
-    - "8000:8000"
+    - "8001:8000"
 
   bot:
     <<: *logging
-
-    container_name: bot
 
     build:
       context: ./xythrion
       dockerfile: Dockerfile
 
     environment:
-      API_URL: "http://api:8000"
+      API_URL: "http://api:8001"
 
     env_file:
     - .env
@@ -110,6 +78,30 @@ services:
 
     volumes:
     - ./bot:/bot
+
+  metabase:
+    <<: *logging
+
+    container_name: metabase
+
+    image: "docker.io/metabase/metabase:latest"
+
+    ports:
+    - "3000:3000"
+
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: xythrion
+      MB_DB_USER: xythrion
+      MB_DB_PASS: xythrion
+      MB_DB_HOST: postgres
+      MB_DB_PORT: 5431
+
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   grafana:
     <<: *logging
