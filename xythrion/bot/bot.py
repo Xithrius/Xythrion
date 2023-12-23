@@ -15,9 +15,11 @@ from discord.ext.commands import Bot, CommandError, when_mentioned_or
 from dotenv import load_dotenv
 from httpx import AsyncClient
 from loguru import logger as log
+from tabulate import tabulate
 
 from bot import extensions
 from bot.api import APIClient
+from bot.constants import XYTHRION_LOGO
 from bot.context import Context
 from bot.extensions.core._utils.formatting import format_nanosecond_time
 
@@ -111,10 +113,9 @@ class Xythrion(Bot):
         self.api = APIClient(api_url)
         self.http_client = AsyncClient()
 
-        exts = list(walk_extensions(extensions))
+        print(XYTHRION_LOGO)  # noqa: T201
 
-        max_ext_name = max(list(map(len, exts)))
-        prefix_msg = "Loaded extension "
+        exts = list(walk_extensions(extensions))
 
         ext_times = []
 
@@ -128,9 +129,14 @@ class Xythrion(Bot):
             ext_name = ".".join(extension.split(".")[-2:])
             ext_times.append((ext_name, elapsed_ns, elapsed_str))
 
-        for ext_name, _, ns_formatted in sorted(ext_times, key=lambda x: x[1]):
-            spaces = " " * (max_ext_name - (len(ext_name) + len(prefix_msg) - 2))
-            log.info(f"{prefix_msg}{ext_name}{spaces} | {ns_formatted}")
+        print(  # noqa: T201
+            tabulate(
+                [[x[0], x[2]] for x in sorted(ext_times, key=lambda x: x[1])],
+                headers=["Cog", "Load time"],
+                colalign=["right", "left"],
+            ),
+            end="\n\n",
+        )
 
     async def start(self) -> None:
         """Things to run before bot starts."""
