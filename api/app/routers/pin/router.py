@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,17 +19,10 @@ router = APIRouter()
 )
 async def get_all_pins(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    server_id: int | None = None,
-    user_id: int | None = None,
     limit: int | None = 10,
     offset: int | None = 0,
 ) -> list[PinModel]:
     stmt = select(PinModel).limit(limit).offset(offset)
-
-    if server_id is not None:
-        stmt = stmt.where(PinModel.server_id == server_id)
-    if user_id is not None:
-        stmt = stmt.where(PinModel.user_id == user_id)
 
     items = await session.execute(stmt)
 
@@ -45,10 +38,24 @@ async def create_pin(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     pin: PinCreate,
 ) -> PinModel:
+    stmt = select(PinModel).where(
+        PinModel.server_id == pin.server_id,
+        PinModel.channel_id == pin.channel_id,
+        PinModel.message_id == pin.message_id,
+    )
+
+    items = await session.execute(stmt)
+
+    if items.scalar_one_or_none() is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Pin already exists",
+        )
+
     new_item = PinModel(**pin.model_dump())
 
     session.add(new_item)
-    await session.flush()
+    await session.commit()
 
     return new_item
 

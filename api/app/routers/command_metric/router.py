@@ -14,10 +14,11 @@ router = APIRouter()
 
 @router.get(
     "/",
+    description="All the command metrics you could ever want",
     response_model=list[CommandMetric],
     status_code=status.HTTP_200_OK,
 )
-async def get_all_builds(
+async def get_all_command_metrics(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     limit: int | None = 10,
     offset: int | None = 0,
