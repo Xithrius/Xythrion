@@ -2,48 +2,52 @@ import importlib
 import inspect
 import pkgutil
 import sys
+import time
 import traceback
+import types
 from collections.abc import Iterator
 from datetime import timedelta, timezone
 from os import getenv
 from typing import NoReturn
 
 from discord import AllowedMentions, Embed, Intents, Interaction, Message, app_commands
-from discord.ext.commands import Bot, CommandError
+from discord.ext.commands import Bot, CommandError, when_mentioned_or
 from dotenv import load_dotenv
 from httpx import AsyncClient
 from loguru import logger as log
+from tabulate import tabulate
 
+from bot import extensions
 from bot.api import APIClient
+from bot.constants import XYTHRION_LOGO
 from bot.context import Context
-
-from . import extensions
-from .constants import COMMAND_PREFIX
+from bot.extensions.core._utils.formatting import format_nanosecond_time
 
 load_dotenv()
 
 
-def walk_extensions() -> Iterator[str]:
+def ignore_module(module: pkgutil.ModuleInfo) -> bool:
+    return any(name.startswith("_") for name in module.name.split("."))
+
+
+def walk_extensions(module: types.ModuleType) -> Iterator[str]:
     def on_error(name: str) -> NoReturn:
         raise ImportError(name=name)
 
-    for module in pkgutil.walk_packages(
-        extensions.__path__,
-        f"{extensions.__name__}.",
-        onerror=on_error,
-    ):
-        if module.name.rsplit(".", maxsplit=1)[-1].startswith("_"):
+    modules = set()
+
+    for module_info in pkgutil.walk_packages(module.__path__, f"{module.__name__}.", onerror=on_error):
+        if ignore_module(module_info):
             continue
 
-        if module.ispkg:
-            imported = importlib.import_module(module.name)
+        if module_info.ispkg:
+            imported = importlib.import_module(module_info.name)
             if not inspect.isfunction(getattr(imported, "setup", None)):
                 continue
 
-        yield module.name
+        modules.add(module_info.name)
 
-
-EXTENSIONS = frozenset(walk_extensions())
+    return frozenset(modules)
 
 
 class Xythrion(Bot):
@@ -60,7 +64,7 @@ class Xythrion(Bot):
         self.tzinfo = timezone(timedelta(hours=timezone_offset))
 
         super().__init__(
-            command_prefix=COMMAND_PREFIX,
+            command_prefix=when_mentioned_or("^"),
             case_insensitive=True,
             allowed_mentions=AllowedMentions(everyone=False),
             intents=intents,
@@ -104,16 +108,35 @@ class Xythrion(Bot):
 
     async def setup_hook(self) -> None:
         """Things to setup before the bot logs on."""
-        api_url = getenv("API_URL", "http://localhost:8000")
+        api_url = getenv("API_URL", "http://localhost:8001")
 
         self.api = APIClient(api_url)
         self.http_client = AsyncClient()
 
-        for extension in EXTENSIONS:
+        print(XYTHRION_LOGO)  # noqa: T201
+
+        exts = list(walk_extensions(extensions))
+
+        ext_times = []
+
+        for extension in exts:
+            start_time = time.perf_counter_ns()
             await self.load_extension(extension)
+            end_time = time.perf_counter_ns()
+            elapsed_ns = end_time - start_time
+            elapsed_str = format_nanosecond_time(elapsed_ns)
 
             ext_name = ".".join(extension.split(".")[-2:])
-            log.info(f'Loading extension "{ext_name}"')
+            ext_times.append((ext_name, elapsed_ns, elapsed_str))
+
+        print(  # noqa: T201
+            tabulate(
+                [[x[0], x[2]] for x in sorted(ext_times, key=lambda x: x[1])],
+                headers=["Cog", "Load time"],
+                colalign=["right", "left"],
+            ),
+            end="\n\n",
+        )
 
     async def start(self) -> None:
         """Things to run before bot starts."""

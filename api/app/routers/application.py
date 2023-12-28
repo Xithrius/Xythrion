@@ -21,6 +21,6 @@ def get_app() -> FastAPI:
     register_startup_event(app)
     register_shutdown_event(app)
 
-    app.include_router(router=api_router, prefix="/api")
+    app.include_router(router=api_router)
 
     return app

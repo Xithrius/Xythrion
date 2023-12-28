@@ -15,6 +15,6 @@ def main() -> None:
     uvicorn.run(
         "app.routers.application:get_app",
         host="127.0.0.1",
-        port=8000,
+        port=8001,
         reload=True,
     )
