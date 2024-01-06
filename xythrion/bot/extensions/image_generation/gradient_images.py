@@ -2,12 +2,12 @@ import asyncio
 from io import BytesIO
 
 import numpy as np
-from PIL import Image
 from discord.ext.commands import Cog, command
+from PIL import Image
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import convert_3d_tuples, gradient3
+from bot.utils import convert_3d_tuples, gradient3, send_image_buffer
 
 
 class GradientImages(Cog):
@@ -60,7 +60,7 @@ class GradientImages(Cog):
             ),
         )
 
-        await ctx.send_buffer(buffer)
+        await send_image_buffer(buffer, ctx=ctx)
 
 
 async def setup(bot: Xythrion) -> None:
