@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.database.dependencies import get_db_session
 from app.database.models.link_map import LinkMapChannelModel, LinkMapModel
@@ -37,8 +38,17 @@ async def get_all_link_map_channels(
 async def get_all_link_map_converters(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     server_id: int | None = None,
+    input_channel_id: int | None = None,
 ) -> list[LinkMapModel]:
-    stmt = select(LinkMapModel).where(LinkMapModel.channel_map_server_id == server_id)
+    stmt = (
+        select(LinkMapModel)
+        .join(LinkMapChannelModel, LinkMapModel.channel_map)
+        .where(
+            LinkMapModel.channel_map_server_id == server_id,
+            LinkMapChannelModel.input_channel_id == input_channel_id,
+        )
+        .options(selectinload(LinkMapModel.channel_map))
+    )
 
     items = await session.execute(stmt)
     items.unique()

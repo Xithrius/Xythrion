@@ -12,10 +12,9 @@ from bot.context import Context
 class LinkMapData:
     id: int
     server_id: int
-    user_id: int
     created_at: datetime
-    from_match: str
-    to_match: str
+    from_link: str
+    to_link: str
 
 
 class LinkMapper(Cog):
@@ -29,15 +28,22 @@ class LinkMapper(Cog):
         if message.guild is None:
             return
 
-        data = {"server_id": message.guild.id, "user_id": message.author.id}
+        response = await self.bot.api.get(
+            "/api/link_maps/converters",
+            params={
+                "server_id": message.guild.id,
+                "input_channel_id": message.channel.id,
+            },
+        )
 
-        response = await self.bot.api.get("/api/link_maps/", params=data)
+        if not response.is_success:
+            return
 
-        rows: list[LinkMapData] = response.data
+        rows: list[LinkMapData] = response.json()
 
         for row in rows:
-            if row.from_match in message.content:
-                res = message.content.replace(row.from_match, row.to_match)
+            if row.from_link in message.content:
+                res = message.content.replace(row.from_link, row.to_link)
 
                 await message.reply(res)
 
@@ -57,8 +63,6 @@ class LinkMapper(Cog):
         guild_id: int | None = None,
     ) -> None:
         data = {
-            "created_at": ctx.message.created_at.replace(tzinfo=None),
-            "user_id": ctx.author.id,
             "from_match": from_match,
             "to_match": to_match,
         }
@@ -75,20 +79,6 @@ class LinkMapper(Cog):
             return
 
         await self.bot.api.post("/api/link_maps/", data=data)
-
-    @link_map.command()
-    async def get_user_link_maps(self, ctx: Context) -> None:
-        data = {"server_id": ctx.guild.id, "user_id": ctx.author.id}
-
-        j = await self.bot.api.get("/api/link_maps/", params=data)
-
-        await ctx.send(j)
-
-    @link_map.command()
-    async def remove_user_link_map(self, ctx: Context, id: int) -> None:
-        j = await self.bot.api.delete(f"/api/link_maps/{id}")
-
-        await ctx.send(j)
 
 
 async def setup(bot: Xythrion) -> None:
