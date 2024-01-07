@@ -2,19 +2,28 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+class LinkMapChannelCreate(BaseModel):
+    server_id: int
+    input_channel_id: int
+    output_channel_id: int
+
+
+class LinkMapChannel(BaseModel):
+    server_id: int
+    input_channel_id: int
+    output_channel_id: int
+    created_at: datetime
+
 
 class LinkMapCreate(BaseModel):
-    server_id: int
-    user_id: int
-    created_at: datetime
-    from_match: str
-    to_match: str
+    channel_map_server_id: int
+    from_link: str
+    to_link: str
 
 
 class LinkMap(BaseModel):
     id: int
-    server_id: int
-    user_id: int
+    channel_map_server_id: int
     created_at: datetime
-    from_match: str
-    to_match: str
+    from_link: str
+    to_link: str

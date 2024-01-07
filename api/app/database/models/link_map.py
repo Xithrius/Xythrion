@@ -1,22 +1,37 @@
+from __future__ import annotations
+
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import BigInteger, DateTime, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.functions import now
-from sqlalchemy.sql.sqltypes import String
 
 from app.database.base import Base
+
+
+class LinkMapChannelModel(Base):
+    __tablename__ = "link_map_channels"
+
+    server_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+
+    input_channel_id: Mapped[int] = mapped_column(BigInteger)
+    output_channel_id: Mapped[int] = mapped_column(BigInteger)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now())
+
+    link_maps: Mapped[list[LinkMapModel]] = relationship(back_populates="channel_map", lazy="joined")
 
 
 class LinkMapModel(Base):
     __tablename__ = "link_maps"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    server_id: Mapped[int] = mapped_column(BigInteger)
-    user_id: Mapped[int] = mapped_column(BigInteger)
+    channel_map_server_id: Mapped[int] = mapped_column(ForeignKey("link_map_channels.server_id"))
+
+    from_link: Mapped[str] = mapped_column(String)
+    to_link: Mapped[str] = mapped_column(String)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now())
 
-    from_match: Mapped[str] = mapped_column(String)
-    to_match: Mapped[str] = mapped_column(String)
+    channel_map: Mapped[LinkMapChannelModel] = relationship(back_populates="link_maps", lazy="joined")
