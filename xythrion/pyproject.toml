@@ -6,7 +6,7 @@ authors = [{ name = "Xithrius", email = "xithrius@gmail.com" }]
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
-    "discord-py>=2.3.2",
+    "discord-py[voice]>=2.3.2",
     "python-dotenv>=1.0.0",
     "loguru>=0.7.0",
     "httpx>=0.24.1",
@@ -19,6 +19,7 @@ dependencies = [
     "humanize>=4.8.0",
     "seaborn>=0.13.0",
     "scipy>=1.11.4",
+    "openai>=1.8.0",
 ]
 
 [tool]

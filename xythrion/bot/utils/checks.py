@@ -4,6 +4,7 @@ from discord.ext.commands import check
 from discord.ext.commands.errors import MissingPermissions
 from httpx import Response
 
+from bot.bot import Xythrion
 from bot.context import Context
 
 
@@ -12,7 +13,9 @@ def is_trusted() -> Callable:
         if await ctx.bot.is_owner(ctx.message.author):
             return True
 
-        response: Response = await ctx.bot.api.get(
+        bot: Xythrion = ctx.bot
+
+        response: Response = await bot.api.get(
             f"/api/trusted/{ctx.message.author.id}",
         )
 

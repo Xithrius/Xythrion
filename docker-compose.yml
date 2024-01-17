@@ -17,7 +17,7 @@ services:
     image: "docker.io/postgres:15-alpine"
 
     ports:
-    - "5431:5432"
+    - "5432:5432"
 
     environment:
       POSTGRES_DB: xythrion
@@ -95,7 +95,7 @@ services:
       MB_DB_USER: xythrion
       MB_DB_PASS: xythrion
       MB_DB_HOST: postgres
-      MB_DB_PORT: 5431
+      MB_DB_PORT: 5432
 
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1

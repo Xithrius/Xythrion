@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     log_level: LogLevel = LogLevel.INFO
     # Variables for the database
     db_host: str = "localhost"
-    db_port: int = 5431
+    db_port: int = 5432
     db_user: str = "xythrion"
     db_pass: str = "xythrion"
     db_base: str = "xythrion"
