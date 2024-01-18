@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -40,7 +40,7 @@ async def get_trusted_user(
     limit: int | None = 10,
     offset: int | None = 0,
 ) -> list[TrustedModel]:
-    stmt = select(TrustedModel).limit(limit).offset(offset)
+    stmt = select(TrustedModel).where(TrustedModel.user_id == user_id).limit(limit).offset(offset)
 
     items = await session.execute(stmt)
 
@@ -56,6 +56,16 @@ async def create_trusted_user(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     trusted: TrustedCreate,
 ) -> TrustedModel:
+    stmt = select(TrustedModel).where(TrustedModel.user_id == trusted.user_id)
+
+    items = await session.execute(stmt)
+
+    if items.scalar_one_or_none() is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="User is already trusted",
+        )
+
     new_item = TrustedModel(**trusted.model_dump())
 
     session.add(new_item)

@@ -10,7 +10,7 @@ from app.database.base import Base
 class TrustedModel(Base):
     __tablename__ = "trusted"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     user_id: Mapped[int] = mapped_column(BigInteger, unique=True)
-    at: Mapped[datetime] = mapped_column(DateTime, default=now)
+    at: Mapped[datetime] = mapped_column(DateTime, default=now())
