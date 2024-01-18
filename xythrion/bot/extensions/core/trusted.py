@@ -34,9 +34,15 @@ class Trusted(Cog):
     async def list_trusted(self, ctx: Context) -> None:
         r: Response = await self.bot.api.get("/api/trusted/")
 
-        table = dict_to_human_table(r.json(), datetime_key="at")
+        if data := r.json():
+            table = dict_to_human_table(data, datetime_key="at")
 
-        await ctx.send(table)
+            await ctx.send(table)
+
+            return
+
+        await ctx.send("No one is trusted at this moment.")
+
 
     @trust.command(aliases=("add",))
     @is_owner()
