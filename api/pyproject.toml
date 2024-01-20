@@ -53,7 +53,7 @@ test = "python3 -m pytest --ff"
 retest = "python3 -m pytest --lf"
 test-cov = "python3 -m pytest --cov=./ --cov-report=xml"
 html = "coverage html"
-report = "coverage report"
+report = "coverage report --sort=Cover"
 
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
