@@ -27,11 +27,12 @@ class LinkMapModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    channel_map_server_id: Mapped[int] = mapped_column(ForeignKey("link_map_channels.server_id"))
-
     from_link: Mapped[str] = mapped_column(String)
     to_link: Mapped[str] = mapped_column(String)
+    xpath: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now())
+
+    channel_map_server_id: Mapped[int] = mapped_column(ForeignKey("link_map_channels.server_id"))
 
     channel_map: Mapped[LinkMapChannelModel] = relationship(back_populates="link_maps", lazy="joined")
