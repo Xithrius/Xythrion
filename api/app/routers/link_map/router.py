@@ -65,7 +65,9 @@ async def create_link_map_channel(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     link_map_channel: LinkMapChannelCreate,
 ) -> LinkMapChannelModel:
-    stmt = select(LinkMapChannelModel).where(LinkMapChannelModel.server_id == link_map_channel.server_id)
+    stmt = select(LinkMapChannelModel).where(
+        LinkMapChannelModel.server_id == link_map_channel.server_id,
+    )
 
     items = await session.execute(stmt)
     items.unique()
@@ -93,6 +95,12 @@ async def create_link_map_converter(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     link_map: LinkMapCreate,
 ) -> LinkMapModel:
+    if (link_map.to_link is None) == (link_map.xpath is None):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only populate `to_link` or `xpath`.",
+        )
+
     stmt = select(LinkMapChannelModel).where(LinkMapChannelModel.server_id == link_map.channel_map_server_id)
 
     items = await session.execute(stmt)

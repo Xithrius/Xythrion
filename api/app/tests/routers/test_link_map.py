@@ -48,7 +48,6 @@ async def test_create_invalid_link_map_converter_with_no_channels(
         "channel_map_server_id": 1000,
         "from_link": "http://example.com",
         "to_link": "http://example.com/example",
-        "xpath": "/",
     }
     response = await client.post(url, json=new_link_map)
 
@@ -98,6 +97,60 @@ async def test_create_two_same_link_map_channel_causes_conflict(
 
 
 @pytest.mark.anyio
+async def test_create_valid_channel_but_invalid_converter_with_link_and_xpath(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("create_link_map_channel")
+    new_link_map_channel = {
+        "server_id": 123,
+        "input_channel_id": 123,
+        "output_channel_id": 123,
+    }
+    response = await client.post(url, json=new_link_map_channel)
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    url = fastapi_app.url_path_for("create_link_map_converter")
+    new_link_map = {
+        "channel_map_server_id": 123,
+        "from_link": "http://example.com",
+        "to_link": "http://example.com/example",
+        "xpath": "/",
+    }
+    response = await client.post(url, json=new_link_map)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.anyio
+async def test_create_valid_channel_but_invalid_converter_with_no_link_and_no_xpath(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("create_link_map_channel")
+    new_link_map_channel = {
+        "server_id": 1,
+        "input_channel_id": 2,
+        "output_channel_id": 3,
+    }
+    response = await client.post(url, json=new_link_map_channel)
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    url = fastapi_app.url_path_for("create_link_map_converter")
+    new_link_map = {
+        "channel_map_server_id": 1,
+        "from_link": "http://example.com",
+    }
+    response = await client.post(url, json=new_link_map)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.anyio
 async def test_create_valid_channel_and_then_valid_link_map_converter(
     fastapi_app: FastAPI,
     client: AsyncClient,
@@ -127,8 +180,8 @@ async def test_create_valid_channel_and_then_valid_link_map_converter(
 
     assert data.pop("id")
     assert data.pop("created_at")
-
     assert data.pop("xpath") is None
+
     assert data == new_link_map
 
 
@@ -153,7 +206,6 @@ async def test_create_valid_channel_and_converter_and_search_with_input_channel(
         "channel_map_server_id": 1111,
         "from_link": "http://example.com",
         "to_link": "http://example.com/example",
-        "xpath": "/",
     }
     response = await client.post(url, json=new_link_map)
 
@@ -175,5 +227,6 @@ async def test_create_valid_channel_and_converter_and_search_with_input_channel(
 
     assert d.pop("id")
     assert d.pop("created_at")
+    assert d.pop("xpath") is None
 
     assert d == new_link_map

@@ -6,7 +6,7 @@ from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils.checks import is_trusted
+from bot.utils import is_trusted
 
 
 @dataclass

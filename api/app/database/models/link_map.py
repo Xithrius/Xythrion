@@ -28,7 +28,7 @@ class LinkMapModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     from_link: Mapped[str] = mapped_column(String)
-    to_link: Mapped[str] = mapped_column(String)
+    to_link: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     xpath: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now())

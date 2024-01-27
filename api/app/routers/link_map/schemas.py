@@ -19,7 +19,7 @@ class LinkMapChannel(BaseModel):
 class LinkMapCreate(BaseModel):
     channel_map_server_id: int
     from_link: str
-    to_link: str
+    to_link: str | None = None
     xpath: str | None = None
 
 
