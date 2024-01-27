@@ -75,13 +75,13 @@ class LinkMapper(Cog):
                     soup = BeautifulSoup(webpage.content, "html.parser")
                     dom = etree.HTML(str(soup))
                     extracted = dom.xpath(row["xpath"])
-                    xpath_url_extract = extracted[0].get("src")
+                    xpath_url_extract = extracted[0].get("src") or extracted[0].get("data-src")
 
                     new_url = xpath_url_extract
 
                 output_channel = utils.get(message.guild.channels, id=output_channel_id)
 
-                await output_channel.send(new_url)
+                await output_channel.send(f"<@{message.author.id}> {new_url}")
 
                 break
 
