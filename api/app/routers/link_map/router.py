@@ -22,7 +22,10 @@ async def get_all_link_map_channels(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     server_id: int | None = None,
 ) -> list[LinkMapChannelModel]:
-    stmt = select(LinkMapChannelModel).where(LinkMapChannelModel.server_id == server_id)
+    stmt = select(LinkMapChannelModel)
+
+    if server_id is not None:
+        stmt = stmt.where(LinkMapChannelModel.server_id == server_id)
 
     items = await session.execute(stmt)
     items.unique()
@@ -40,15 +43,17 @@ async def get_all_link_map_converters(
     server_id: int | None = None,
     input_channel_id: int | None = None,
 ) -> list[LinkMapModel]:
-    stmt = (
-        select(LinkMapModel)
-        .join(LinkMapChannelModel, LinkMapModel.channel_map)
-        .where(
-            LinkMapModel.channel_map_server_id == server_id,
-            LinkMapChannelModel.input_channel_id == input_channel_id,
+    stmt = select(LinkMapModel)
+
+    if server_id and input_channel_id:
+        stmt = (
+            stmt.join(LinkMapChannelModel, LinkMapModel.channel_map)
+            .where(
+                LinkMapModel.channel_map_server_id == server_id,
+                LinkMapChannelModel.input_channel_id == input_channel_id,
+            )
+            .options(selectinload(LinkMapModel.channel_map))
         )
-        .options(selectinload(LinkMapModel.channel_map))
-    )
 
     items = await session.execute(stmt)
     items.unique()

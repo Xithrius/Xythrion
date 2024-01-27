@@ -1,9 +1,9 @@
+import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime
+from sqlalchemy import UUID, Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql.functions import now
-from sqlalchemy.sql.sqltypes import String
 
 from app.database.base import Base
 
@@ -11,7 +11,11 @@ from app.database.base import Base
 class CommandMetricModel(Base):
     __tablename__ = "command_metrics"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
 
     used_at: Mapped[datetime] = mapped_column(DateTime, default=now())
 

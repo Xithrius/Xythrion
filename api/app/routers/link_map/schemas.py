@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -24,9 +25,9 @@ class LinkMapCreate(BaseModel):
 
 
 class LinkMap(BaseModel):
-    id: int
+    id: UUID
     channel_map_server_id: int
     created_at: datetime
     from_link: str
-    to_link: str
+    to_link: str | None = None
     xpath: str | None = None

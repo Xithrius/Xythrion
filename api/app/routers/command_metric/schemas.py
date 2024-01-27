@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
@@ -9,7 +10,7 @@ class CommandMetricCreate(BaseModel):
 
 
 class CommandMetric(BaseModel):
-    id: int
+    id: UUID
     used_at: datetime
     command_name: str
     successfully_completed: bool

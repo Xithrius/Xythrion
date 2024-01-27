@@ -75,6 +75,19 @@ async def test_create_valid_link_map_channel_and_list(
     assert data.pop("created_at")
     assert data == new_link_map_channel
 
+    url = fastapi_app.url_path_for("get_all_link_map_channels")
+
+    response = await client.get(url)
+
+    link_map_channels = response.json()
+
+    assert len(link_map_channels) == 1
+
+    channel = link_map_channels[0]
+
+    assert channel.pop("created_at")
+    assert data == channel
+
 
 @pytest.mark.anyio
 async def test_create_two_same_link_map_channel_causes_conflict(

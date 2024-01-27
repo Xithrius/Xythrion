@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -8,6 +9,6 @@ class TrustedCreate(BaseModel):
 
 
 class Trusted(BaseModel):
-    id: int
+    id: UUID
     user_id: int
     at: datetime

@@ -1,22 +1,20 @@
-from dataclasses import dataclass
-from datetime import datetime
+import re
 
-from discord import Message
+from bs4 import BeautifulSoup
+from discord import Message, utils
 from discord.ext.commands import Cog, group
+from lxml import etree
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import is_trusted
+from bot.utils import codeblock, dict_to_human_table, is_trusted
 
-
-@dataclass
-class LinkMapData:
-    id: int
-    server_id: int
-    created_at: datetime
-    from_link: str
-    to_link: str
-    xpath: str | None = None
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
+            (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36",
+    "Accept-Language": "en-US, en;q=0.5",
+}
+REGEX_URL_MATCH = re.compile(r"https?://\S+")
 
 
 class LinkMapper(Cog):
@@ -25,10 +23,32 @@ class LinkMapper(Cog):
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
+    @staticmethod
+    def get_first_url(message: str) -> str | None:
+        urls = re.findall(REGEX_URL_MATCH, message)
+
+        return urls[0] if len(urls) else None
+
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
-        if message.guild is None:
+        if message.guild is None or message.author.id == self.bot.user.id:
             return
+
+        response = await self.bot.api.get(
+            "/api/link_maps/channels",
+            params={"server_id": message.guild.id},
+        )
+
+        if not response.is_success:
+            return
+
+        channel_maps = response.json()
+
+        if not len(channel_maps):
+            return
+
+        # There should only be one per server
+        output_channel_id = channel_maps[0]["output_channel_id"]
 
         response = await self.bot.api.get(
             "/api/link_maps/converters",
@@ -41,13 +61,27 @@ class LinkMapper(Cog):
         if not response.is_success:
             return
 
-        rows: list[LinkMapData] = response.json()
+        rows = response.json()
 
         for row in rows:
-            if row.from_link in message.content:
-                res = message.content.replace(row.from_link, row.to_link)
+            if row["from_link"] in message.content:
+                new_url: str
 
-                await message.reply(res)
+                if row["to_link"] is not None:
+                    new_url = message.content.replace(row["from_link"], row["to_link"])
+                else:
+                    full_url = self.get_first_url(message.content)
+                    webpage = await self.bot.http_client.get(full_url, headers=HEADERS)
+                    soup = BeautifulSoup(webpage.content, "html.parser")
+                    dom = etree.HTML(str(soup))
+                    extracted = dom.xpath(row["xpath"])
+                    xpath_url_extract = extracted[0].get("src")
+
+                    new_url = xpath_url_extract
+
+                output_channel = utils.get(message.guild.channels, id=output_channel_id)
+
+                await output_channel.send(new_url)
 
                 break
 
@@ -84,145 +118,66 @@ class LinkMapper(Cog):
 
     @link_map.command()
     @is_trusted()
-    async def create_link_map(
+    async def list_link_map_channels(self, ctx: Context) -> None:
+        response = await self.bot.api.get("/api/link_maps/channels")
+
+        if not response.is_success:
+            await ctx.send(
+                f"Something went wrong when requesting link map channels. Status code {response.status_code}.",
+            )
+
+            return
+
+        data = response.json()
+
+        table = dict_to_human_table(data)
+
+        await ctx.send(table)
+
+    @link_map.command()
+    @is_trusted()
+    async def create_link_map_converter(
         self,
         ctx: Context,
-        from_match: str,
-        to_match: str,
+        from_link: str,
+        # to_match: str | None = None,
         xpath: str | None = None,
     ) -> None:
         data = {
             "channel_map_server_id": ctx.guild.id,
-            "from_match": from_match,
-            "to_match": to_match,
+            "from_link": from_link,
             "xpath": xpath,
         }
 
         response = await self.bot.api.post("/api/link_maps/converters", data=data)
+
+        data = response.json()
 
         if not response.is_success:
             await ctx.send(f"Link map creation failed with code {response.status_code}")
 
             return
 
-        await ctx.send("Link map created.")
+        await ctx.send(codeblock(data, language="json"))
+
+    @link_map.command()
+    @is_trusted()
+    async def list_link_map_converters(self, ctx: Context) -> None:
+        response = await self.bot.api.get("/api/link_maps/converters")
+
+        if not response.is_success:
+            await ctx.send(
+                f"Something went wrong when requesting link map converters. Status code {response.status_code}.",
+            )
+
+            return
+
+        data = response.json()
+
+        table = dict_to_human_table(data)
+
+        await ctx.send(table)
 
 
 async def setup(bot: Xythrion) -> None:
     await bot.add_cog(LinkMapper(bot))
-
-
-# from lxml import etree
-# from bs4 import BeautifulSoup
-
-# HEADERS = {
-#     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
-#             (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36",
-#     "Accept-Language": "en-US, en;q=0.5",
-# }
-# REGEX_URL_MATCH = re.compile(r"https?://\S+")
-
-
-# @dataclass
-# class WebMapData:
-#     id: int
-#     server_id: int
-#     user_id: int
-#     created_at: datetime
-#     matches: str
-#     xpath: str
-
-
-# class WebMapper(Cog):
-#     """Retrieve an XPATH from a website."""
-
-#     def __init__(self, bot: Xythrion):
-#         self.bot = bot
-
-#     @staticmethod
-#     def get_first_url(message: str) -> str | None:
-#         urls = re.findall(REGEX_URL_MATCH, message)
-
-#         return urls[0] if len(urls) else None
-
-#     @Cog.listener()
-#     async def on_message(self, message: Message) -> None:
-#         ...
-#         # if message.guild is None:
-#         #     return
-
-#         # data = {"server_id": message.guild.id, "user_id": message.author.id}
-
-#         # rows: list[WebMapData] = await self.bot.api.get("/api/web_maps/", params=data)
-
-#         # for row in rows:
-#         #     if row.matches in message.content:
-#         #         full_url = self.get_first_url(message.content)
-#         #         webpage = await self.bot.http_client.get(full_url, headers=HEADERS)
-#         #         soup = BeautifulSoup(webpage.content, "html.parser")
-#         #         dom = etree.HTML(str(soup))
-#         #         extracted = dom.xpath(row.xpath)
-#         #         xpath_url_extract = extracted[0].get("data-src")
-
-#         #         await message.reply(xpath_url_extract)
-
-#         #         break
-
-#     @group(aliases=("webmap",))
-#     @is_trusted()
-#     async def web_map(self, ctx: Context) -> None:
-#         if ctx.invoked_subcommand is None:
-#             await ctx.send("Missing subcommand")
-
-#     @web_map.command()
-#     @is_trusted()
-#     async def create_web_map(
-#         self,
-#         ctx: Context,
-#         matches: str,
-#         xpath: str,
-#         guild_id: int | None = None,
-#     ) -> None:
-#         data = {
-#             "user_id": ctx.author.id,
-#             "created_at": ctx.message.created_at.replace(tzinfo=None),
-#             "matches": matches,
-#             "xpath": xpath,
-#         }
-
-#         if guild_id is not None:
-#             data["server_id"] = guild_id
-#         elif ctx.guild is not None:
-#             data["server_id"] = ctx.guild.id
-#         else:
-#             await ctx.send(
-#                 "Command sent was not in guild channel, and no guild channel specified.",
-#             )
-
-#             return
-
-#         await self.bot.api.post("/api/web_maps/", data=data)
-
-#     @web_map.command()
-#     @is_trusted()
-#     async def get_user_web_maps(
-#         self,
-#         ctx: Context,
-#         guild_id: int | None = None,
-#     ) -> None:
-#         data = {"user_id": ctx.author.id}
-
-#         j = await self.bot.api.get("/api/web_maps/", params=data)
-
-#         await ctx.send(j)
-
-#     @web_map.command()
-#     @is_trusted()
-#     async def remove_user_web_map(self, ctx: Context, id: int) -> None:
-#         j = await self.bot.api.delete(f"/api/web_maps/{id}")
-
-#         await ctx.send(j)
-
-
-# async def setup(bot: Xythrion) -> None:
-#     await bot.add_cog(WebMapper(bot))
