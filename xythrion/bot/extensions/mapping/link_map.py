@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from discord import Message, utils
@@ -35,22 +36,6 @@ class LinkMapper(Cog):
             return
 
         response = await self.bot.api.get(
-            "/api/link_maps/channels",
-            params={"server_id": message.guild.id},
-        )
-
-        if not response.is_success:
-            return
-
-        channel_maps = response.json()
-
-        if not len(channel_maps):
-            return
-
-        # There should only be one per server
-        output_channel_id = channel_maps[0]["output_channel_id"]
-
-        response = await self.bot.api.get(
             "/api/link_maps/converters",
             params={
                 "server_id": message.guild.id,
@@ -62,6 +47,19 @@ class LinkMapper(Cog):
             return
 
         rows = response.json()
+
+        response = await self.bot.api.get(
+            "/api/link_maps/channels",
+            params={"server_id": message.guild.id},
+        )
+
+        if not response.is_success:
+            return
+
+        channel_maps = response.json()
+
+        # There should only be one channel map per server
+        output_channel_id = channel_maps[0]["output_channel_id"]
 
         for row in rows:
             if row["from_link"] in message.content:
@@ -81,16 +79,67 @@ class LinkMapper(Cog):
 
                 output_channel = utils.get(message.guild.channels, id=output_channel_id)
 
-                await output_channel.send(f"<@{message.author.id}> {new_url}")
+                await output_channel.send(f"<@{message.author.id}> {message.jump_url} {new_url}")
 
                 break
 
-    @group(aliases=("linkmap",))
+    @group(aliases=("linkmap", "lm"))
     async def link_map(self, ctx: Context) -> None:
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")
 
-    @link_map.command()
+    @link_map.group(aliases=("list", "l"))
+    @is_trusted()
+    async def link_map_list(self, ctx: Context) -> None:
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Missing subcommand")
+
+    @link_map_list.command(name="channels")
+    @is_trusted()
+    async def list_link_map_channels(self, ctx: Context) -> None:
+        response = await self.bot.api.get("/api/link_maps/channels")
+
+        if not response.is_success:
+            await ctx.send(
+                f"Something went wrong when requesting link map channels. Status code {response.status_code}.",
+            )
+
+            return
+
+        data = response.json()
+
+        table = dict_to_human_table(data)
+
+        await ctx.send(table)
+
+    @link_map_list.command(name="converters")
+    @is_trusted()
+    async def list_link_map_converters(self, ctx: Context) -> None:
+        response = await self.bot.api.get("/api/link_maps/converters")
+
+        if not response.is_success:
+            await ctx.send(
+                f"Something went wrong when requesting link map converters. Status code {response.status_code}.",
+            )
+
+            return
+
+        data = [
+            {"source": x["from_link"], "destination": x["to_link"] if x["to_link"] else x["xpath"]}
+            for x in response.json()
+        ]
+
+        table = dict_to_human_table(data)
+
+        await ctx.send(table)
+
+    @link_map.group(aliases=("create", "c"))
+    @is_trusted()
+    async def link_map_create(self, ctx: Context) -> None:
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Missing subcommand")
+
+    @link_map_create.command(name="channels")
     @is_trusted()
     async def create_link_map_channel(
         self,
@@ -116,38 +165,24 @@ class LinkMapper(Cog):
 
         await ctx.send(f"Link map channel redirection created: <#{input_channel_id}> -> <#{output_channel_id}>")
 
-    @link_map.command()
-    @is_trusted()
-    async def list_link_map_channels(self, ctx: Context) -> None:
-        response = await self.bot.api.get("/api/link_maps/channels")
-
-        if not response.is_success:
-            await ctx.send(
-                f"Something went wrong when requesting link map channels. Status code {response.status_code}.",
-            )
-
-            return
-
-        data = response.json()
-
-        table = dict_to_human_table(data)
-
-        await ctx.send(table)
-
-    @link_map.command()
+    @link_map_create.command(name="converters")
     @is_trusted()
     async def create_link_map_converter(
         self,
         ctx: Context,
-        from_link: str,
-        # to_match: str | None = None,
-        xpath: str | None = None,
+        source: str,
+        destination: str,
     ) -> None:
         data = {
             "channel_map_server_id": ctx.guild.id,
-            "from_link": from_link,
-            "xpath": xpath,
+            "from_link": source,
         }
+
+        try:
+            urlparse(destination)
+            data["to_link"] = destination
+        except ValueError:
+            data["xpath"] = destination
 
         response = await self.bot.api.post("/api/link_maps/converters", data=data)
 
@@ -159,24 +194,6 @@ class LinkMapper(Cog):
             return
 
         await ctx.send(codeblock(data, language="json"))
-
-    @link_map.command()
-    @is_trusted()
-    async def list_link_map_converters(self, ctx: Context) -> None:
-        response = await self.bot.api.get("/api/link_maps/converters")
-
-        if not response.is_success:
-            await ctx.send(
-                f"Something went wrong when requesting link map converters. Status code {response.status_code}.",
-            )
-
-            return
-
-        data = response.json()
-
-        table = dict_to_human_table(data)
-
-        await ctx.send(table)
 
 
 async def setup(bot: Xythrion) -> None:
