@@ -15,8 +15,8 @@ class Pins(Cog):
 
     @group(aliases=("pinned", "pins"))
     async def pin(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     @pin.command(aliases=("create",))
     @is_trusted()

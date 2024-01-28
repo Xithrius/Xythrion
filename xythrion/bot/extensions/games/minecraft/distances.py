@@ -17,8 +17,8 @@ class MinecraftDistances(Cog):
     @group()
     async def mc(self, ctx: Context) -> None:
         """Group command for Minecraft distances."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     @mc.command()
     async def distance(

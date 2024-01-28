@@ -35,8 +35,8 @@ class CVE(Cog):
 
     @group()
     async def cve(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     @cve.command()
     async def search(self, ctx: Context, cve: str) -> None:

@@ -13,8 +13,8 @@ class Ping(Cog):
     @group()
     async def ping(self, ctx: Context) -> None:
         """Is this thing on?"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send(":ping_pong: Pong!")
+        await ctx.check_subcommands()
+
 
     @ping.command()
     async def api(self, ctx: Context) -> None:

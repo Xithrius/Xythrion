@@ -15,8 +15,8 @@ class Dates(Cog):
     @group(aliases=("date",))
     async def dates(self, ctx: Context) -> None:
         """Group command for dates."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     @dates.command()
     async def delta(self, ctx: Context, timestamp: int) -> None:

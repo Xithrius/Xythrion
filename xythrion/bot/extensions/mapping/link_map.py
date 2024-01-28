@@ -58,13 +58,15 @@ class LinkMapper(Cog):
 
         channel_maps = response.json()
 
-        # There should only be one channel map per server
+        # There should only be one channel map per server given there's a successful response
         output_channel_id = channel_maps[0]["output_channel_id"]
 
         for row in rows:
             if row["from_link"] in message.content:
                 new_url: str
 
+                # XOR between to_link and xpath attributes are handled within the API,
+                # so we can assume that the data is valid at this point
                 if row["to_link"] is not None:
                     new_url = message.content.replace(row["from_link"], row["to_link"])
                 else:
@@ -73,9 +75,9 @@ class LinkMapper(Cog):
                     soup = BeautifulSoup(webpage.content, "html.parser")
                     dom = etree.HTML(str(soup))
                     extracted = dom.xpath(row["xpath"])
-                    xpath_url_extract = extracted[0].get("src") or extracted[0].get("data-src")
 
-                    new_url = xpath_url_extract
+                    # "src" for images, "data-src" for videos
+                    new_url = extracted[0].get("src") or extracted[0].get("data-src")
 
                 output_channel = utils.get(message.guild.channels, id=output_channel_id)
 
@@ -86,14 +88,14 @@ class LinkMapper(Cog):
     @group(aliases=("linkmap", "lm"))
     @is_trusted()
     async def link_map(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     @link_map.group(aliases=("list", "l"))
     @is_trusted()
     async def link_map_list(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     @link_map_list.command(name="channels")
     @is_trusted()
@@ -137,8 +139,7 @@ class LinkMapper(Cog):
     @link_map.group(aliases=("create", "c"))
     @is_trusted()
     async def link_map_create(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
 
     @link_map_create.command(name="channels")
     @is_trusted()

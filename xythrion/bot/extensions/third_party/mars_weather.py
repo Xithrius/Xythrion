@@ -26,8 +26,8 @@ class MarsWeather(Cog):
     @group()
     @is_trusted()
     async def mars(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     # TODO: Make this command look way better
     @mars.command(enabled=False)
