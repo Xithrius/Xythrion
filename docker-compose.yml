@@ -14,7 +14,7 @@ services:
   postgres:
     <<: *logging
 
-    image: "docker.io/postgres:15-alpine"
+    image: "docker.io/postgres:16-alpine"
 
     ports:
     - "5432:5432"
