@@ -4,6 +4,7 @@ from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
 from bot.context import Context
+from bot.utils import is_trusted
 
 # https://api.nasa.gov/assets/insight/InSight%20Weather%20API%20Documentation.pdf
 BASE_API_URL = "https://api.nasa.gov/insight_weather/?api_key={}&feedtype=json&ver=1.0"
@@ -23,11 +24,14 @@ class MarsWeather(Cog):
         return j.json()
 
     @group()
+    @is_trusted()
     async def mars(self, ctx: Context) -> None:
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")
 
-    @mars.command()
+    # TODO: Make this command look way better
+    @mars.command(enabled=False)
+    @is_trusted()
     async def weather(self, ctx: Context) -> None:
         j = await self.get_mars_weather()
 

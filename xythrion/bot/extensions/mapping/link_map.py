@@ -84,6 +84,7 @@ class LinkMapper(Cog):
                 break
 
     @group(aliases=("linkmap", "lm"))
+    @is_trusted()
     async def link_map(self, ctx: Context) -> None:
         if ctx.invoked_subcommand is None:
             await ctx.send("Missing subcommand")

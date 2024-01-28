@@ -21,6 +21,7 @@ class Extensions(Cog):
             await ctx.send("Missing subcommand")
 
     @extension.command(aliases=("load",))
+    @is_trusted()
     async def load_extension(self, ctx: Context, extension: Extension) -> None:
         """Loads a singular extension."""
         await self.bot.load_extension(str(extension))
@@ -28,6 +29,7 @@ class Extensions(Cog):
         await ctx.send(f"Loaded extension {extension}.")
 
     @extension.command(aliases=("unload",))
+    @is_trusted()
     async def unload_extension(self, ctx: Context, extension: Extension) -> None:
         """Unloads a singular extension."""
         await self.bot.unload_extension(str(extension))
@@ -35,6 +37,7 @@ class Extensions(Cog):
         await ctx.send(f"Unloaded extension {extension}.")
 
     @extension.command(aliases=("reload", "r"))
+    @is_trusted()
     async def reload_extensions(self, ctx: Context) -> None:
         """Reloads all extensions."""
         exts = walk_extensions(extensions)
