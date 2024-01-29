@@ -7,17 +7,21 @@ class Context(BaseContext):
     """Definition of a custom context."""
 
     async def check_subcommands(self) -> None:
+        if self.invoked_subcommand is not None:
+            return
+
         if not isinstance(self.command, Group):
             raise AttributeError("command is not a group command")
 
-        if self.invoked_subcommand is None:
-            group: Group = self.command
+        group: Group = self.command
 
-            subcommands = ", ".join([f"`{cmd.name}`" for cmd in group.commands])
+        subcommands = "\n".join(
+            [f"`{cmd.name} ({', '.join(cmd.aliases)})`" if cmd.aliases else f"`{cmd.name}`" for cmd in group.commands],
+        )
 
-            embed = Embed(
-                title="Missing subcommand",
-                description=f"Possibilities: {subcommands}",
-            )
+        embed = Embed(
+            title="Missing subcommand. Perhaps:",
+            description=subcommands,
+        )
 
-            await self.send(embed=embed)
+        await self.send(embed=embed)

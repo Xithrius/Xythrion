@@ -16,5 +16,7 @@ COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
 
 COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
 
+EXPOSE 8001
+
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["alembic upgrade head && app.routers.application:get_app --host 0.0.0.0 --port 8001"]
+CMD ["cd api && alembic upgrade head && python3 -m app"]

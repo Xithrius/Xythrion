@@ -49,7 +49,8 @@ services:
     - .env
 
     environment:
-      DATABASE_URL: postgresql://xythrion:xythrion@postgres:5432/xythrion
+      XYTHRION_API_RELOAD: "false"
+      XYTHRION_API_DB_HOST: "postgres"
 
     volumes:
     - ./api:/api
@@ -58,7 +59,10 @@ services:
     - postgres
 
     ports:
-    - "8001:8000"
+    - "8001:8001"
+
+    expose:
+    - 8001
 
   bot:
     <<: *logging
