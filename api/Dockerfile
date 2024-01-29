@@ -16,7 +16,5 @@ COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
 
 COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
 
-EXPOSE 8001
-
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["cd api && alembic upgrade head && python3 -m app"]
