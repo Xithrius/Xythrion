@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -125,17 +125,29 @@ async def create_link_map_converter(
     return new_item
 
 
-# @router.delete(
-#     "/{id}",
-#     response_model=LinkMap,
-#     status_code=status.HTTP_200_OK,
-# )
-# async def remove_link_map(
-#     session: Annotated[AsyncSession, Depends(get_db_session)],
-#     id: int,
-# ) -> LinkMapModel:
-#     stmt = delete(LinkMapModel).where(LinkMapModel.id == id).returning()
+@router.delete(
+    "/converters/{id}",
+    response_model=LinkMap,
+    status_code=status.HTTP_200_OK,
+)
+async def remove_link_map_converter(
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+    id: str,
+) -> LinkMapModel:
+    stmt = select(LinkMapModel).where(LinkMapModel.id == id)
 
-#     items = await session.execute(stmt)
+    items = await session.execute(stmt)
+    items.unique()
 
-#     return items
+    if (item := items.scalar_one_or_none()) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Converter by ID '{id}' not found",
+        )
+
+    stmt = delete(LinkMapModel).where(LinkMapModel.id == id)
+
+    await session.execute(stmt)
+    await session.commit()
+
+    return item

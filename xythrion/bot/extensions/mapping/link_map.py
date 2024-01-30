@@ -110,14 +110,22 @@ class LinkMapper(Cog):
 
         data = response.json()
 
+        if len(data) == 0:
+            await ctx.send("No redirect channels exist.")
+
+            return
+
         table = dict_to_human_table(data)
 
         await ctx.send(table)
 
     @link_map_list.command(name="converters")
     @is_trusted()
-    async def list_link_map_converters(self, ctx: Context) -> None:
-        response = await self.bot.api.get("/api/link_maps/converters")
+    async def list_link_map_converters(self, ctx: Context, attribute: str | None = None) -> None:
+        response = await self.bot.api.get(
+            "/api/link_maps/converters",
+            params={"server_id": ctx.guild.id},
+        )
 
         if not response.is_success:
             await ctx.send(
@@ -126,12 +134,26 @@ class LinkMapper(Cog):
 
             return
 
-        data = [
-            {"source": x["from_link"], "destination": x["to_link"] if x["to_link"] else x["xpath"]}
-            for x in response.json()
-        ]
+        data = response.json()
 
-        table = dict_to_human_table(data)
+        if len(data) == 0:
+            await ctx.send("No link converters exist.")
+
+            return
+
+        if attribute is None:
+            lst = [
+                {
+                    "source": x["from_link"],
+                    "type": "to_link" if x["to_link"] else "xpath",
+                    "destination": x["to_link"] if x["to_link"] else x["xpath"],
+                }
+                for x in data
+            ]
+        else:
+            lst = [{"source": x["from_link"], attribute: x[attribute]} for x in data]
+
+        table = dict_to_human_table(lst)
 
         await ctx.send(table)
 
@@ -193,6 +215,25 @@ class LinkMapper(Cog):
 
         if not response.is_success:
             await ctx.send(f"Link map creation failed with code {response.status_code}")
+
+            return
+
+        await ctx.send(codeblock(data, language="json"))
+
+    @link_map.group(aliases=("remove", "r"))
+    @is_trusted()
+    async def link_map_remove(self, ctx: Context) -> None:
+        await ctx.check_subcommands()
+
+    @link_map_remove.command(name="converters")
+    @is_trusted()
+    async def remove_link_map_converter(self, ctx: Context, id: str) -> None:
+        response = await self.bot.api.delete(f"/api/link_maps/converters/{id}")
+
+        data = response.json()
+
+        if not response.is_success:
+            await ctx.send(f"Link map deletion failed with code {response.status_code}")
 
             return
 
