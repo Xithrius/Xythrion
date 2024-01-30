@@ -1,5 +1,4 @@
 import re
-from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from discord import Message, utils
@@ -9,6 +8,8 @@ from lxml import etree
 from bot.bot import Xythrion
 from bot.context import Context
 from bot.utils import codeblock, dict_to_human_table, is_trusted
+
+from ._utils.link_converter import DestinationType, validate_destination
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
@@ -90,12 +91,10 @@ class LinkMapper(Cog):
     async def link_map(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-
     @link_map.group(aliases=("list", "l"))
     @is_trusted()
     async def link_map_list(self, ctx: Context) -> None:
         await ctx.check_subcommands()
-
 
     @link_map_list.command(name="channels")
     @is_trusted()
@@ -180,11 +179,13 @@ class LinkMapper(Cog):
             "from_link": source,
         }
 
-        try:
-            urlparse(destination)
-            data["to_link"] = destination
-        except ValueError:
-            data["xpath"] = destination
+        destination_type = validate_destination(destination)
+
+        match destination_type:
+            case DestinationType.XPATH:
+                data["xpath"] = destination
+            case DestinationType.URL:
+                data["to_link"] = destination
 
         response = await self.bot.api.post("/api/link_maps/converters", data=data)
 
