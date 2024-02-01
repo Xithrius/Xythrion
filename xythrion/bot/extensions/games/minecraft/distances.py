@@ -19,7 +19,6 @@ class MinecraftDistances(Cog):
         """Group command for Minecraft distances."""
         await ctx.check_subcommands()
 
-
     @mc.command()
     async def distance(
         self,

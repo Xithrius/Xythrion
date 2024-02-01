@@ -17,7 +17,6 @@ class Dates(Cog):
         """Group command for dates."""
         await ctx.check_subcommands()
 
-
     @dates.command()
     async def delta(self, ctx: Context, timestamp: int) -> None:
         now = int(datetime.now(tz=self.bot.tzinfo).timestamp())

@@ -28,7 +28,6 @@ class MarsWeather(Cog):
     async def mars(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-
     # TODO: Make this command look way better
     @mars.command(enabled=False)
     @is_trusted()

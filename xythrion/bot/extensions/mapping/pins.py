@@ -17,7 +17,6 @@ class Pins(Cog):
     async def pin(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-
     @pin.command(aliases=("create",))
     @is_trusted()
     async def create_pin(

@@ -37,7 +37,6 @@ class CVE(Cog):
     async def cve(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-
     @cve.command()
     async def search(self, ctx: Context, cve: str) -> None:
         if CVE_PATTERN.match(cve) is not None:

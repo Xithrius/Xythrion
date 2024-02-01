@@ -15,7 +15,6 @@ class Ping(Cog):
         """Is this thing on?"""
         await ctx.check_subcommands()
 
-
     @ping.command()
     async def api(self, ctx: Context) -> None:
         """Is *that* thing on?"""

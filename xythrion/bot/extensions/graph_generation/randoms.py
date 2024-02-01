@@ -28,7 +28,8 @@ class GraphRandom(Cog):
         counts = Counter(randint(1, 6) for _ in range(rolls))
 
         df = pd.DataFrame(
-            [[i, counts[i]] for i in range(1, 7)], columns=("roll", "amount"),
+            [[i, counts[i]] for i in range(1, 7)],
+            columns=("roll", "amount"),
         )
 
         await ctx.send(df)

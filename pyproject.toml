@@ -6,8 +6,8 @@ requires-python = ">=3.11"
 dev = [
     "-e file:///${PROJECT_ROOT}/xythrion",
     "-e file:///${PROJECT_ROOT}/api",
-    "ruff>=0.1.8",
-    "pre-commit>=3.3.3",
+    "ruff>=0.1.15",
+    "pre-commit>=3.6.0",
 ]
 
 [tool.pdm.scripts]

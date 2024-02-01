@@ -28,7 +28,6 @@ class Trusted(Cog):
         """Trust group command."""
         await ctx.check_subcommands()
 
-
     @trust.command(aliases=("list",))
     @is_owner()
     async def list_trusted(self, ctx: Context) -> None:
@@ -42,7 +41,6 @@ class Trusted(Cog):
             return
 
         await ctx.send("No one is trusted at this moment.")
-
 
     @trust.command(aliases=("add",))
     @is_owner()

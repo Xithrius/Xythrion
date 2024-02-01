@@ -17,7 +17,6 @@ class GraphExpression(Cog):
         """Group command for graphing."""
         await ctx.check_subcommands()
 
-
     # TODO: Re-create a stable parser which also has sanitization of inputs, and is sandboxed
     @graph.command(aliases=("ex", "expr"), enabled=False)
     @is_trusted()
