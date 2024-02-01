@@ -61,16 +61,37 @@ async def create_pin(
 
 
 @router.delete(
-    "/{id}",
+    "/{server_id}/{channel_id}/{message_id}",
     response_model=Pin,
     status_code=status.HTTP_200_OK,
 )
 async def remove_pin(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    id: int,
+    server_id: int,
+    channel_id: int,
+    message_id: int,
 ) -> PinModel:
-    stmt = delete(PinModel).where(PinModel.id == id).returning()
+    stmt = select(PinModel).where(
+        PinModel.server_id == server_id,
+        PinModel.channel_id == channel_id,
+        PinModel.message_id == message_id,
+    )
 
     items = await session.execute(stmt)
 
-    return items
+    if (item := items.scalar_one_or_none()) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Pin at {server_id}/{channel_id}/{message_id} not found",
+        )
+
+    stmt = delete(PinModel).where(
+        PinModel.server_id == server_id,
+        PinModel.channel_id == channel_id,
+        PinModel.message_id == message_id,
+    )
+
+    await session.execute(stmt)
+    await session.commit()
+
+    return item
