@@ -26,8 +26,8 @@ class Trusted(Cog):
     @is_owner()
     async def trust(self, ctx: Context) -> None:
         """Trust group command."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
+
 
     @trust.command(aliases=("list",))
     @is_owner()

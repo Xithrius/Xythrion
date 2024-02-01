@@ -15,10 +15,11 @@ class GraphExpression(Cog):
     @is_trusted()
     async def graph(self, ctx: Context) -> None:
         """Group command for graphing."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
 
-    @graph.command(aliases=("ex", "expr"))
+
+    # TODO: Re-create a stable parser which also has sanitization of inputs, and is sandboxed
+    @graph.command(aliases=("ex", "expr"), enabled=False)
     @is_trusted()
     async def expression(self, ctx: Context, *, expression: remove_whitespace) -> None:
         """Parse an expression into its components and graph it."""

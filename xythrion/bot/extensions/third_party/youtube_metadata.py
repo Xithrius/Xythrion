@@ -12,8 +12,7 @@ class YoutubeMetadata(Cog):
 
     @group(aliases=("yt",))
     async def youtube(self, ctx: Context) -> None:
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Missing subcommand")
+        await ctx.check_subcommands()
 
     @youtube.command()
     async def thumbnail(self, ctx: Context, id: str, quality: int | None = 0) -> None:

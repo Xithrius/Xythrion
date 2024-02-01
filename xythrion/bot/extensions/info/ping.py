@@ -13,15 +13,15 @@ class Ping(Cog):
     @group()
     async def ping(self, ctx: Context) -> None:
         """Is this thing on?"""
-        if ctx.invoked_subcommand is None:
-            await ctx.send(":ping_pong: Pong!")
+        await ctx.check_subcommands()
+
 
     @ping.command()
     async def api(self, ctx: Context) -> None:
         """Is *that* thing on?"""
-        j = await self.bot.api.get("/api/ping/")
+        response = await self.bot.api.get("/api/health")
 
-        await ctx.send(f"API received ping at: {j.data['ping']}")
+        await ctx.send("API is healthy" if response.is_success else "API is unhealthy")
 
     @ping.command(aliases=("discord",))
     async def latency(self, ctx: Context) -> None:

@@ -29,7 +29,7 @@ services:
   postgres:
     <<: *logging
 
-    image: "docker.io/postgres:15-alpine"
+    image: "docker.io/postgres:16-alpine"
 
     ports:
     - "5432:5432"
@@ -64,7 +64,9 @@ services:
     - .env
 
     environment:
-      DATABASE_URL: postgresql://xythrion:xythrion@postgres:5432/xythrion
+      XYTHRION_API_RELOAD: "false"
+      XYTHRION_API_DB_HOST: "postgres"
+      XYTHRION_API_HOST: "0.0.0.0"
 
     volumes:
     - ./api:/api
@@ -73,7 +75,7 @@ services:
     - postgres
 
     ports:
-    - "8001:8000"
+    - "8001:8001"
 
     labels:
     - "com.centurylinklabs.watchtower.enable=true"
@@ -93,6 +95,7 @@ services:
 
     depends_on:
     - api
+    - postgres
 
     volumes:
     - ./bot:/bot

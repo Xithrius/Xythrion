@@ -213,9 +213,7 @@ async def func():  # (None,) -> Any
     @group(name="internal", aliases=("int",))
     @is_trusted()
     async def internal_group(self, ctx: Context) -> None:
-        """Internal commands. Top secret!"""
-        if not ctx.invoked_subcommand:
-            await ctx.send_help(ctx.command)
+        await ctx.check_subcommands()
 
     @internal_group.command(name="eval", aliases=("e",))
     @is_trusted()

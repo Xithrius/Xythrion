@@ -243,3 +243,68 @@ async def test_create_valid_channel_and_converter_and_search_with_input_channel(
     assert d.pop("xpath") is None
 
     assert d == new_link_map
+
+
+@pytest.mark.anyio
+async def test_create_valid_channel_and_converter_then_delete_converter_then_list_nothing(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("create_link_map_channel")
+    new_link_map_channel = {
+        "server_id": 321,
+        "input_channel_id": 321,
+        "output_channel_id": 321,
+    }
+    response = await client.post(url, json=new_link_map_channel)
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    url = fastapi_app.url_path_for("create_link_map_converter")
+    new_link_map = {
+        "channel_map_server_id": 321,
+        "from_link": "http://example.com",
+        "to_link": "http://example.com/example",
+    }
+    response = await client.post(url, json=new_link_map)
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    new_converter = response.json()
+
+    url = fastapi_app.url_path_for("remove_link_map_converter", id=new_converter["id"])
+    response = await client.delete(url)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    deleted_converter = response.json()
+
+    assert new_converter == deleted_converter
+
+    url = fastapi_app.url_path_for("get_all_link_map_converters")
+    response = await client.get(
+        url,
+        params={"server_id": 321, "input_channel_id": 321},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data == []
+
+
+@pytest.mark.anyio
+async def test_delete_link_map_that_does_not_exist(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for(
+        "remove_link_map_converter",
+        id="3e552f84-ebeb-4afc-b5db-997abe6d9458",
+    )
+    response = await client.delete(url)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND

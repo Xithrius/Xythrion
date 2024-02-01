@@ -22,7 +22,8 @@ class Source(Cog):
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
-    @command(aliases=("src",))
+    # TODO: Fix unhealthy state of this cog, since it does not work at the moment
+    @command(aliases=("src",), enabled=False)
     async def source(
         self,
         ctx: Context,
