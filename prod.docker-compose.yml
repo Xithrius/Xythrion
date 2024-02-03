@@ -11,20 +11,13 @@ x-restart-policy:
   restart: unless-stopped
 
 services:
-  watchtower:
+  adminer:
     <<: *logging
 
-    container_name: watchtower
+    image: "docker.io/adminer:latest"
 
-    image: "docker.io/containrrr/watchtower"
-
-    volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-
-    environment:
-      # WATCHTOWER_NOTIFICATION_URL: "discord://token@channel"
-      WATCHTOWER_NOTIFICATION_TEMPLATE: "{{range .}}{{.Time.Format \"2006-01-02 15:04:05\"}} ({{.Level}}): {{.Message}}{{println}}{{end}}"
-      WATCHTOWER_LABEL_ENABLE: "true"
+    ports:
+    - "8080:8080"
 
   postgres:
     <<: *logging
@@ -45,20 +38,25 @@ services:
       timeout: 1s
       retries: 5
 
-  adminer:
+  watchtower:
     <<: *logging
 
-    image: "docker.io/adminer:latest"
+    container_name: watchtower
 
-    ports:
-    - "8080:8080"
+    image: "docker.io/containrrr/watchtower"
+
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
+    environment:
+      # WATCHTOWER_NOTIFICATION_URL: "discord://token@channel"
+      WATCHTOWER_NOTIFICATION_TEMPLATE: "{{range .}}{{.Time.Format \"2006-01-02 15:04:05\"}} ({{.Level}}): {{.Message}}{{println}}{{end}}"
+      WATCHTOWER_LABEL_ENABLE: "true"
 
   api:
     <<: *logging
 
-    build:
-      context: ./api
-      dockerfile: Dockerfile
+    image: "ghcr.io/Xithrius/Xythrion-api:latest"
 
     env_file:
     - .env
@@ -83,9 +81,7 @@ services:
   bot:
     <<: *logging
 
-    build:
-      context: ./xythrion
-      dockerfile: Dockerfile
+    image: "ghcr.io/Xithrius/Xythrion-bot:latest"
 
     environment:
       API_URL: "http://api:8001"
