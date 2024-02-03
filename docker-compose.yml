@@ -11,6 +11,21 @@ x-restart-policy:
   restart: unless-stopped
 
 services:
+  watchtower:
+    <<: *logging
+
+    container_name: watchtower
+
+    image: "docker.io/containrrr/watchtower"
+
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
+    environment:
+      # WATCHTOWER_NOTIFICATION_URL: "discord://token@channel"
+      WATCHTOWER_NOTIFICATION_TEMPLATE: "{{range .}}{{.Time.Format \"2006-01-02 15:04:05\"}} ({{.Level}}): {{.Message}}{{println}}{{end}}"
+      WATCHTOWER_LABEL_ENABLE: "true"
+
   postgres:
     <<: *logging
 
@@ -62,6 +77,9 @@ services:
     ports:
     - "8001:8001"
 
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
+
   bot:
     <<: *logging
 
@@ -82,29 +100,8 @@ services:
     volumes:
     - ./bot:/bot
 
-  metabase:
-    <<: *logging
-
-    container_name: metabase
-
-    image: "docker.io/metabase/metabase:latest"
-
-    ports:
-    - "3000:3000"
-
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: xythrion
-      MB_DB_USER: xythrion
-      MB_DB_PASS: xythrion
-      MB_DB_HOST: postgres
-      MB_DB_PORT: 5432
-
-    healthcheck:
-      test: curl --fail -I http://localhost:3000/api/health || exit 1
-      interval: 15s
-      timeout: 5s
-      retries: 5
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
 
   grafana:
     <<: *logging
