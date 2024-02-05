@@ -48,15 +48,18 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
 
+    env_file:
+    - .env
+
     environment:
-      # WATCHTOWER_NOTIFICATION_URL: "discord://token@channel"
-      WATCHTOWER_NOTIFICATION_TEMPLATE: "{{range .}}{{.Time.Format \"2006-01-02 15:04:05\"}} ({{.Level}}): {{.Message}}{{println}}{{end}}"
+      WATCHTOWER_NOTIFICATION_TEMPLATE: '{{range .}}{{.Time.Format "2006-01-02 15:04:05"}} ({{.Level}}): {{.Message}}{{println}}{{end}}'
       WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_POLL_INTERVAL: 30
 
   api:
     <<: *logging
 
-    image: "ghcr.io/Xithrius/Xythrion-api:latest"
+    image: "ghcr.io/xithrius/xythrion/api:latest"
 
     env_file:
     - .env
@@ -81,7 +84,7 @@ services:
   bot:
     <<: *logging
 
-    image: "ghcr.io/Xithrius/Xythrion-bot:latest"
+    image: "ghcr.io/xithrius/xythrion/bot:latest"
 
     environment:
       API_URL: "http://api:8001"
