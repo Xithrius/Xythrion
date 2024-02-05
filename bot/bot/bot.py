@@ -63,8 +63,10 @@ class Xythrion(Bot):
         timezone_offset: float = 0.0
         self.tzinfo = timezone(timedelta(hours=timezone_offset))
 
+        command_prefix: str = getenv("BOT_PREFIX", "^")
+
         super().__init__(
-            command_prefix=when_mentioned_or("^"),
+            command_prefix=when_mentioned_or(command_prefix),
             case_insensitive=True,
             allowed_mentions=AllowedMentions(everyone=False),
             intents=intents,
