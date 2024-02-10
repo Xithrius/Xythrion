@@ -22,6 +22,18 @@ async def test_check_no_trusted_users(
 
 
 @pytest.mark.anyio
+async def test_get_single_invalid_trusted_user_throws_404(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("get_trusted_user", user_id=1234)
+    response = await client.get(url)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.anyio
 async def test_trust_one_user(
     fastapi_app: FastAPI,
     client: AsyncClient,

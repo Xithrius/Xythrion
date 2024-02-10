@@ -37,14 +37,19 @@ async def get_all_trusted_users(
 async def get_trusted_user(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     user_id: int,
-    limit: int | None = 10,
-    offset: int | None = 0,
-) -> list[TrustedModel]:
-    stmt = select(TrustedModel).where(TrustedModel.user_id == user_id).limit(limit).offset(offset)
+) -> TrustedModel:
+    stmt = select(TrustedModel).where(TrustedModel.user_id == user_id)
 
     items = await session.execute(stmt)
+    items.unique()
 
-    return list(items.scalars().fetchall())
+    if (item := items.scalar_one_or_none()) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Trusted user with ID '{user_id}' not found",
+        )
+
+    return item
 
 
 @router.post(
