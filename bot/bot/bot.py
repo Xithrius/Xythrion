@@ -1,17 +1,15 @@
 import importlib
 import inspect
 import pkgutil
-import sys
 import time
-import traceback
 import types
 from collections.abc import Iterator
 from datetime import timedelta, timezone
 from os import getenv
 from typing import NoReturn
 
-from discord import AllowedMentions, Embed, Intents, Interaction, Message, app_commands
-from discord.ext.commands import Bot, CommandError, when_mentioned_or
+from discord import AllowedMentions, Intents, Message
+from discord.ext.commands import Bot, when_mentioned_or
 from dotenv import load_dotenv
 from httpx import AsyncClient
 from loguru import logger as log
@@ -75,30 +73,6 @@ class Xythrion(Bot):
     async def get_context(self, message: Message, *, cls: Context = Context) -> Context:
         """Defines the custom context."""
         return await super().get_context(message, cls=cls)
-
-    async def on_command_error(
-        self,
-        ctx: Context | Interaction,
-        error: CommandError | app_commands.AppCommandError,
-    ) -> None:
-        """Reporting errors to the console and the user."""
-        if isinstance(ctx, Interaction) or ctx.command is None:
-            return
-
-        log.error(f"Ignoring exception in command {ctx.command}:", file=sys.stderr)
-
-        traceback.print_exception(
-            type(error),
-            error,
-            error.__traceback__,
-            file=sys.stderr,
-        )
-
-        data = {"command_name": ctx.command.name, "successfully_completed": False}
-
-        await self.api.post("/api/command_metrics/", data=data)
-
-        await ctx.send(embed=Embed(description=f"`{error}`"))
 
     async def on_command_completion(self, ctx: Context) -> None:
         if ctx.command is None:

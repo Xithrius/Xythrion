@@ -1,27 +1,32 @@
 from collections.abc import Callable
 
-from discord.ext.commands import check
-from discord.ext.commands.errors import MissingPermissions
+from discord.ext.commands import CheckFailure, check
 from httpx import Response
 
-from bot.bot import Xythrion
 from bot.context import Context
+
+
+class TrustedUserCheckFailure(CheckFailure):
+    """User is not in the trusted database, and therefore cannot run a command."""
 
 
 def is_trusted() -> Callable:
     async def predicate(ctx: Context) -> bool:
+        raise TrustedUserCheckFailure
+
         if await ctx.bot.is_owner(ctx.message.author):
             return True
 
-        bot: Xythrion = ctx.bot
-
-        response: Response = await bot.api.get(
+        response: Response = await ctx.bot.api.get(
             f"/api/trusted/{ctx.message.author.id}",
         )
 
-        if not response.is_success:
-            raise MissingPermissions
+        if response.is_success:
+            return True
 
-        return True
+        if response.status_code == 404:
+            raise TrustedUserCheckFailure("User does not have sufficient trust to run this command")
+
+        raise Exception("Issue when requesting to the internal trusted API endpoint")
 
     return check(predicate)
