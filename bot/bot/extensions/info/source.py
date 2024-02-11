@@ -2,13 +2,13 @@ import inspect
 from pathlib import Path
 
 from discord import Embed
-
-from discord.ext.commands import command, Cog, Context, Command, BadArgument, HelpCommand
+from discord.ext.commands import BadArgument, Cog, Command, Context, HelpCommand, command
 
 from bot.bot import Xythrion
-from bot.constants import GITHUB_URL, DEPLOYMENT_FILE_PATH_PREFIX
+from bot.constants import GITHUB_URL
+from bot.utils.converters import SourceConverter, SourceType
 
-from bot.utils.converters import SourceType, SourceConverter
+DEPLOYMENT_FILE_PATH_PREFIX = Path("/project") / "pkgs"
 
 
 def build_source_filepath(base_file_name: str) -> Path:

@@ -8,18 +8,9 @@ from discord.ext.commands.errors import CommandError
 from loguru import logger as log
 
 from bot.bot import Xythrion
+from bot.constants import ERROR_REPLIES
 from bot.context import Context
 from bot.utils.checks import TrustedUserCheckFailure
-
-ERROR_REPLIES = (
-    "Nuh uh",
-    "Nah",
-    "Something broke",
-    "Oh good heavens",
-    "Oh dear me",
-    "Yeah, no",
-    "This part is broken",
-)
 
 
 class CommandErrorHandler(Cog):
@@ -38,6 +29,10 @@ class CommandErrorHandler(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, e: CommandError) -> None:
+        data = {"command_name": ctx.command.name, "successfully_completed": False}
+
+        await ctx.bot.api.post("/api/command_metrics/", data=data)
+
         if isinstance(e, TrustedUserCheckFailure):
             await ctx.send(embed=self.error_embed("You do not have sufficient trust to run this command"))
 
@@ -46,11 +41,7 @@ class CommandErrorHandler(Cog):
         log.error(f"Ignoring exception in command {ctx.command}:")
         traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
 
-        data = {"command_name": ctx.command.name, "successfully_completed": False}
-
-        await ctx.bot.api.post("/api/command_metrics/", data=data)
-
-        await ctx.send(embed=Embed(description=f"`{e}`"))
+        await ctx.send(embed=self.error_embed(str(e)))
 
 
 async def setup(bot: Xythrion) -> None:
