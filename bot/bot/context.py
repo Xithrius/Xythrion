@@ -1,10 +1,17 @@
+from typing import TYPE_CHECKING
+
 from discord import Embed
 from discord.ext.commands import Context as BaseContext
 from discord.ext.commands import Group
 
+if TYPE_CHECKING:
+    from bot.bot import Xythrion
+
 
 class Context(BaseContext):
     """Definition of a custom context."""
+
+    bot: "Xythrion"
 
     async def check_subcommands(self) -> None:
         if self.invoked_subcommand is not None:
