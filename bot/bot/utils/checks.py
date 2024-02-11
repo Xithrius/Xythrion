@@ -12,8 +12,6 @@ class TrustedUserCheckFailure(CheckFailure):
 
 def is_trusted() -> Callable:
     async def predicate(ctx: Context) -> bool:
-        raise TrustedUserCheckFailure
-
         if await ctx.bot.is_owner(ctx.message.author):
             return True
 
@@ -25,7 +23,7 @@ def is_trusted() -> Callable:
             return True
 
         if response.status_code == 404:
-            raise TrustedUserCheckFailure("User does not have sufficient trust to run this command")
+            raise TrustedUserCheckFailure
 
         raise Exception("Issue when requesting to the internal trusted API endpoint")
 

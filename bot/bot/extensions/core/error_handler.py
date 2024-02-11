@@ -17,6 +17,8 @@ ERROR_REPLIES = (
     "Something broke",
     "Oh good heavens",
     "Oh dear me",
+    "Yeah, no",
+    "This part is broken",
 )
 
 
