@@ -1,9 +1,10 @@
 import re
 
-from discord.ext.commands import Context, Converter, HelpCommand, Cog, ExtensionNotLoaded, Command
+from discord.ext.commands import Cog, Command, Converter, ExtensionNotLoaded, HelpCommand
 
 from bot import extensions
 from bot.bot import walk_extensions
+from bot.context import Context
 
 WHITESPACE_PATTERN = re.compile(r"\s+")
 TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")

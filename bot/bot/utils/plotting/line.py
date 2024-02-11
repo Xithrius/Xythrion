@@ -2,9 +2,9 @@ from io import BytesIO
 
 import pandas as pd
 import seaborn as sns
-from discord.ext.commands import Context
 
-from bot.utils import remove_outliers, send_image_buffer, to_async
+from bot.context import Context
+from bot.utils import remove_outliers, to_async
 
 
 async def plot_line_2d(
@@ -42,4 +42,4 @@ async def plot_line_2d(
     if ctx is None:
         return b
 
-    return await send_image_buffer(b, ctx=ctx)
+    return await ctx.send_image_buffer(b)

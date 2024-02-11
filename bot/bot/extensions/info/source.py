@@ -1,8 +1,9 @@
 import inspect
 from pathlib import Path
+from bot.context import Context
 
 from discord import Embed
-from discord.ext.commands import BadArgument, Cog, Command, Context, HelpCommand, command
+from discord.ext.commands import BadArgument, Cog, Command, HelpCommand, command
 
 from bot.bot import Xythrion
 from bot.constants import GITHUB_URL

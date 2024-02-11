@@ -111,7 +111,7 @@ class LinkMapper(Cog):
         data = response.json()
 
         if len(data) == 0:
-            await ctx.send("No redirect channels exist.")
+            await ctx.warning_embed("No redirect channels exist.")
 
             return
 
@@ -137,7 +137,7 @@ class LinkMapper(Cog):
         data = response.json()
 
         if len(data) == 0:
-            await ctx.send("No link converters exist.")
+            await ctx.warning_embed("No link converters exist.")
 
             return
 

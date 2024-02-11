@@ -1,5 +1,4 @@
 from .checks import is_trusted
-from .context import send_image_buffer
 from .converters import (
     Extension,
     convert_3d_tuples,
@@ -27,7 +26,6 @@ __all__ = (
     gradient3,
     convert_to_deltas,
     dict_to_human_table,
-    send_image_buffer,
     remove_outliers,
     to_async,
 )

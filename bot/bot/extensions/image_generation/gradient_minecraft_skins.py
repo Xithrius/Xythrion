@@ -7,7 +7,7 @@ from PIL import Image
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import convert_3d_tuples, gradient3, send_image_buffer
+from bot.utils import convert_3d_tuples, gradient3
 
 REMOVE_IMAGE_SECTIONS = [
     (0, 8, 0, 8),
@@ -73,7 +73,7 @@ class GradientMinecraftSkins(Cog):
             lambda: self.generate_gradient_skin_image(start, end),
         )
 
-        await send_image_buffer(buffer, ctx=ctx)
+        await ctx.send_image_buffer(buffer)
 
 
 async def setup(bot: Xythrion) -> None:
