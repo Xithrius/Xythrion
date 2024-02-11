@@ -29,16 +29,18 @@ class CommandErrorHandler(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, e: CommandError) -> None:
-        data = {"command_name": ctx.command.name, "successfully_completed": False}
-
-        await ctx.bot.api.post("/api/command_metrics/", data=data)
+        if ctx.command is not None:
+            await ctx.bot.api.post(
+                "/api/command_metrics/",
+                data={"command_name": ctx.command.name, "successfully_completed": False},
+            )
 
         if isinstance(e, TrustedUserCheckFailure):
             await ctx.send(embed=self.error_embed("You do not have sufficient trust to run this command"))
 
             return
 
-        log.error(f"Ignoring exception in command {ctx.command}:")
+        log.error("Ignoring exception in command")
         traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
 
         await ctx.send(embed=self.error_embed(str(e)))
