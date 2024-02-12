@@ -1,10 +1,28 @@
-from discord.ext.commands import Cog, ExtensionNotLoaded, group
+from discord import Embed
+from discord.ext.commands import Cog, ExtensionNotLoaded, command, group
 from loguru import logger as log
 
-from bot import extensions
-from bot.bot import Xythrion, walk_extensions
+from bot.bot import Xythrion, extensions, walk_extensions
 from bot.context import Context
 from bot.utils import Extension, codeblock, is_trusted
+from bot.utils.pagination import ButtonPaginator
+
+# can be a list of strings/embed/files/dict
+# need to attach a file to an embed? pass both as tuples:
+# (<embed>, <file>)
+# don't forget the url part in set_image/thumbnail `url="attachment://filename"`
+# need multiple embeds or files? that's supported too! either in the constructor or from format_page as a list/tuple.
+
+
+# # Subclassing (recommended)
+# # can be used to pass custom stuff or format the page
+# class TestPaginator(ButtonPaginator):
+#   def format_page(self, page: Any):
+#     # add "TEST" to all string pages
+#     if isinstance(page, str):
+#       return f"{page}\n\nTEST"
+
+#     return page
 
 
 class Extensions(Cog):
@@ -88,7 +106,14 @@ class Extensions(Cog):
 
                 cmd_tree.append(f"{spacing}{tree} {cmd.name}")
 
-        await ctx.send(codeblock(cmd_tree, language="python"))
+        await ctx.send(codeblock(cmd_tree))
+
+    @command()
+    async def pages(self, ctx: Context) -> None:
+        pages = ["hello", "world", "foo", Embed(description="bar")]
+        paginator = ButtonPaginator(pages)
+        # await paginator.start(<interaction or messageable (ctx, text channel, etc)>)
+        await paginator.start(ctx)
 
 
 async def setup(bot: Xythrion) -> None:
