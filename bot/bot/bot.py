@@ -1,12 +1,6 @@
-import importlib
-import inspect
-import pkgutil
 import time
-import types
-from collections.abc import Iterator
 from datetime import timedelta, timezone
 from os import getenv
-from typing import NoReturn
 
 from discord import AllowedMentions, Intents, Message
 from discord.ext.commands import Bot, when_mentioned_or
@@ -19,33 +13,9 @@ from bot import extensions
 from bot.api import APIClient
 from bot.constants import XYTHRION_LOGO
 from bot.context import Context
-from bot.extensions.core._utils.formatting import format_nanosecond_time
+from bot.utils import format_nanosecond_time, walk_extensions
 
 load_dotenv()
-
-
-def ignore_module(module: pkgutil.ModuleInfo) -> bool:
-    return any(name.startswith("_") for name in module.name.split("."))
-
-
-def walk_extensions(module: types.ModuleType) -> Iterator[str]:
-    def on_error(name: str) -> NoReturn:
-        raise ImportError(name=name)
-
-    modules = set()
-
-    for module_info in pkgutil.walk_packages(module.__path__, f"{module.__name__}.", onerror=on_error):
-        if ignore_module(module_info):
-            continue
-
-        if module_info.ispkg:
-            imported = importlib.import_module(module_info.name)
-            if not inspect.isfunction(getattr(imported, "setup", None)):
-                continue
-
-        modules.add(module_info.name)
-
-    return frozenset(modules)
 
 
 class Xythrion(Bot):

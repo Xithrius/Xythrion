@@ -1,10 +1,14 @@
 import re
+from typing import TYPE_CHECKING
 
 from discord.ext.commands import Cog, Command, Converter, ExtensionNotLoaded, HelpCommand
 
 from bot import extensions
-from bot.bot import walk_extensions
 from bot.context import Context
+
+if TYPE_CHECKING:
+    from bot.bot import walk_extensions
+
 
 WHITESPACE_PATTERN = re.compile(r"\s+")
 TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")
