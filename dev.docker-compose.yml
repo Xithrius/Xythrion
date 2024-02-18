@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 
 x-logging: &logging
   logging:
@@ -11,33 +11,6 @@ x-restart-policy:
   restart: unless-stopped
 
 services:
-  adminer:
-    <<: *logging
-
-    image: "docker.io/adminer:latest"
-
-    ports:
-    - "8080:8080"
-
-  postgres:
-    <<: *logging
-
-    image: "docker.io/postgres:16-alpine"
-
-    ports:
-    - "5432:5432"
-
-    environment:
-      POSTGRES_DB: xythrion
-      POSTGRES_PASSWORD: xythrion
-      POSTGRES_USER: xythrion
-
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U xythrion"]
-      interval: 2s
-      timeout: 1s
-      retries: 5
-
   api:
     <<: *logging
 
@@ -48,20 +21,15 @@ services:
     env_file:
     - .env
 
-    environment:
-      XYTHRION_API_RELOAD: "false"
-      XYTHRION_API_DB_HOST: "postgres"
-      XYTHRION_API_HOST: "0.0.0.0"
-
     volumes:
     - ./api:/api
-
-    depends_on:
-    - postgres
 
     ports:
     - "8001:8001"
 
+    networks:
+    - database-access
+    - xythrion
 
   bot:
     <<: *logging
@@ -78,7 +46,17 @@ services:
 
     depends_on:
     - api
-    - postgres
 
     volumes:
     - ./bot:/bot
+
+    networks:
+    - xythrion
+
+networks:
+  database-access:
+    name: database-access
+    external: true
+  xythrion:
+    name: xythrion
+    external: true

@@ -11,50 +11,6 @@ x-restart-policy:
   restart: unless-stopped
 
 services:
-  adminer:
-    <<: *logging
-
-    image: "docker.io/adminer:latest"
-
-    ports:
-    - "8080:8080"
-
-  postgres:
-    <<: *logging
-
-    image: "docker.io/postgres:16-alpine"
-
-    ports:
-    - "5432:5432"
-
-    environment:
-      POSTGRES_DB: xythrion
-      POSTGRES_PASSWORD: xythrion
-      POSTGRES_USER: xythrion
-
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U xythrion"]
-      interval: 2s
-      timeout: 1s
-      retries: 5
-
-  watchtower:
-    <<: *logging
-
-    container_name: watchtower
-
-    image: "docker.io/containrrr/watchtower"
-
-    volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-
-    env_file:
-    - .env
-
-    environment:
-      WATCHTOWER_LABEL_ENABLE: "true"
-      WATCHTOWER_POLL_INTERVAL: 30
-
   api:
     <<: *logging
 
@@ -72,7 +28,8 @@ services:
     - ./api:/api
 
     depends_on:
-    - postgres
+      postgres:
+        condition: service_healthy
 
     ports:
     - "8001:8001"
@@ -80,20 +37,22 @@ services:
     labels:
     - "com.centurylinklabs.watchtower.enable=true"
 
+    networks:
+    - database-access
+
   bot:
     <<: *logging
 
     image: "ghcr.io/xithrius/xythrion/bot:latest"
 
-    environment:
-      API_URL: "http://api:8001"
-
     env_file:
     - .env
 
+    environment:
+      API_URL: "http://api:8001"
+
     depends_on:
     - api
-    - postgres
 
     volumes:
     - ./bot:/bot
@@ -101,28 +60,10 @@ services:
     labels:
     - "com.centurylinklabs.watchtower.enable=true"
 
-  grafana:
-    <<: *logging
-
-    container_name: grafana
-
-    image: "docker.io/grafana/grafana"
-
-    volumes:
-    - ./services/grafana/dashboards:/etc/grafana/provisioning/dashboards/
-
-    ports:
-    - "3030:3000"
-
-  prometheus:
-    <<: *logging
-
-    container_name: prometheus
-
-    image: "docker.io/prom/prometheus"
-
-    volumes:
-    - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-
-    ports:
-    - "9090:9090"
+networks:
+  database-access:
+    name: database-access
+    external: true
+  xythrion:
+    name: xythrion
+    external: true
