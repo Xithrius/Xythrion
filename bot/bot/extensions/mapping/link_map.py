@@ -6,16 +6,12 @@ from discord.ext.commands import Cog, group
 from lxml import etree
 
 from bot.bot import Xythrion
+from bot.constants import BS4_HEADERS
 from bot.context import Context
 from bot.utils import codeblock, dict_to_human_table, is_trusted
 
 from ._utils.link_converter import DestinationType, validate_destination
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
-            (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36",
-    "Accept-Language": "en-US, en;q=0.5",
-}
 REGEX_URL_MATCH = re.compile(r"https?://\S+")
 
 
@@ -72,7 +68,7 @@ class LinkMapper(Cog):
                     new_url = message.content.replace(row["from_link"], row["to_link"])
                 else:
                     full_url = self.get_first_url(message.content)
-                    webpage = await self.bot.http_client.get(full_url, headers=HEADERS)
+                    webpage = await self.bot.http_client.get(full_url, headers=BS4_HEADERS)
                     soup = BeautifulSoup(webpage.content, "html.parser")
                     dom = etree.HTML(str(soup))
                     extracted = dom.xpath(row["xpath"])
