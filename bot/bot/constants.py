@@ -77,6 +77,7 @@ ERROR_REPLIES = (
     "I can't believe you've done this.",
     "Parry this, you filthy casual.",
     "L",
+    "Unprecedented risk management strategies through scalable micro actions",
 )
 
 WARNING_REPLIES = (
