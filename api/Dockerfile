@@ -1,20 +1,14 @@
-FROM --platform=amd64 python:3.11 as builder
+FROM python:3.11-slim
 
-RUN pip install -U pip setuptools wheel
-RUN pip install pdm
+WORKDIR /app
 
-COPY pyproject.toml pdm.lock /project/
-COPY app/ /project/app
+COPY . /app
 
-WORKDIR /project
-RUN mkdir __pypackages__ && pdm sync --prod --no-editable
+RUN pip install --upgrade pip && \
+    pip install uv && \
+    rye config --set-bool behavior.use-uv=true
 
-FROM python:3.11
-
-ENV PYTHONPATH=/project/pkgs
-COPY --from=builder /project/__pypackages__/3.11/lib /project/pkgs
-
-COPY --from=builder /project/__pypackages__/3.11/bin/* /bin/
+RUN rye sync
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["cd api && alembic upgrade head && python3 -m app"]

@@ -20,12 +20,11 @@ dependencies = [
     "scipy>=1.12.0",
 ]
 
-[tool]
-[tool.pdm]
-[tool.pdm.dev-dependencies]
-lint-format = ["ruff>=0.2.1"]
-precommit = ["pre-commit>=3.6.0"]
-test = [
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "pre-commit>=3.6.0",
+    "ruff>=0.2.1",
     "pytest>=8.0.0",
     "anyio>=4.2.0",
     "pytest-cov>=4.1.0",
@@ -33,7 +32,7 @@ test = [
     "pytest-xdist>=3.5.0",
 ]
 
-[tool.pdm.scripts]
+[tool.rye.scripts]
 start = "python3 -m bot"
 
 # Linting and formatting
@@ -49,8 +48,14 @@ html = "coverage html"
 report = "coverage report"
 
 [build-system]
-requires = ["pdm-pep517>=1.0.0"]
-build-backend = "pdm.pep517.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bot/"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
@@ -58,7 +63,7 @@ filterwarnings = ["ignore::DeprecationWarning"]
 [tool.ruff]
 target-version = "py311"
 extend-exclude = [".cache"]
-ignore = [
+lint.ignore = [
     "ANN002",
     "ANN003",
     "ANN101",
@@ -107,7 +112,7 @@ ignore = [
     "SIM108",
 ]
 line-length = 120
-select = [
+lint.select = [
     "ANN",
     "B",
     "C4",
@@ -115,7 +120,6 @@ select = [
     "DTZ",
     "E",
     "F",
-    "ISC",
     "N",
     "PGH",
     "PIE",

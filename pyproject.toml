@@ -1,19 +1,12 @@
 [project]
-dependencies = []
+name = "xythrion-mono"
+version = "0.1.0"
+authors = [{ name = "Xithrius", email = "xithrius@gmail.com" }]
 requires-python = ">=3.11"
+license = { text = "MIT" }
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "-e file:///${PROJECT_ROOT}/api",
-    "-e file:///${PROJECT_ROOT}/bot",
-    "ruff>=0.2.1",
-    "pre-commit>=3.6.0",
-]
+[tool.rye]
+virtual = true
 
-[tool.pdm.scripts]
-lint = "pre-commit run --all-files"
-fmt = "ruff format ."
-precommit = "pre-commit install"
-
-[tool.pytest.ini_options]
-filterwarnings = ["ignore::DeprecationWarning"]
+[tool.rye.workspace]
+members = ["api", "bot"]
