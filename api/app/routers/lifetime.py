@@ -1,4 +1,5 @@
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator.instrumentation import (
@@ -30,24 +31,13 @@ def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
     ).expose(app, should_gzip=True, name="prometheus_metrics")
 
 
-def register_startup_event(
-    app: FastAPI,
-) -> Callable[[], Awaitable[None]]:
-    @app.on_event("startup")
-    async def _startup() -> None:
-        app.middleware_stack = None
-        _setup_db(app)
-        setup_prometheus(app)
-        app.middleware_stack = app.build_middleware_stack()
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    app.middleware_stack = None
+    _setup_db(app)
+    setup_prometheus(app)
+    app.middleware_stack = app.build_middleware_stack()
 
-    return _startup
+    yield
 
-
-def register_shutdown_event(
-    app: FastAPI,
-) -> Callable[[], Awaitable[None]]:
-    @app.on_event("shutdown")
-    async def _shutdown() -> None:
-        await app.state.db_engine.dispose()
-
-    return _shutdown
+    await app.state.db_engine.dispose()

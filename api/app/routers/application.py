@@ -2,10 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
 
 from app.routers import api_router
-from app.routers.lifetime import (
-    register_shutdown_event,
-    register_startup_event,
-)
+from app.routers.lifetime import lifespan
 
 
 def get_app() -> FastAPI:
@@ -16,10 +13,8 @@ def get_app() -> FastAPI:
         redoc_url="/api/redoc",
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
+        lifespan=lifespan,
     )
-
-    register_startup_event(app)
-    register_shutdown_event(app)
 
     app.include_router(router=api_router)
 
