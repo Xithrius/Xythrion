@@ -1,6 +1,6 @@
 import pytest
 
-from bot.utils import and_join, markdown_link
+from bot.utils import final_join, markdown_link
 
 
 def test_markdown_link_no_desc() -> None:
@@ -23,16 +23,16 @@ def test_markdown_link_some_wrap() -> None:
 def test_and_join_no_items() -> None:
     items = []
 
-    assert and_join(items) == ""
+    assert final_join(items) == ""
 
 
 def test_and_join_one_item() -> None:
     items = ["testing"]
 
-    assert and_join(items) == "testing"
+    assert final_join(items) == "testing"
 
 
 def test_and_join_some_items() -> None:
     items = ["something", "another"]
 
-    assert and_join(items) == "something, and another"
+    assert final_join(items) == "something, and another"

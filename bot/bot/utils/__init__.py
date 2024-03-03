@@ -8,10 +8,10 @@ from .dataframes import remove_outliers
 from .decorators import to_async
 from .extensions import walk_extensions
 from .formatting import (
-    and_join,
     codeblock,
     convert_to_deltas,
     dict_to_human_table,
+    final_join,
     format_nanosecond_time,
     markdown_link,
 )
@@ -31,7 +31,7 @@ __all__ = (
     # extensions
     walk_extensions,
     # formatting
-    and_join,
+    final_join,
     codeblock,
     convert_to_deltas,
     dict_to_human_table,
