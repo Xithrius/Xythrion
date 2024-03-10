@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.sdk.resources import (
     DEPLOYMENT_ENVIRONMENT,
@@ -139,27 +138,6 @@ def metrics(request: Request) -> Response:
         generate_latest(REGISTRY),
         headers={"Content-Type": CONTENT_TYPE_LATEST},
     )
-
-
-def setting_otlp(
-    app: ASGIApp,
-    app_name: str,
-    endpoint: str,
-    log_correlation: bool = True,
-) -> None:
-    resource = Resource.create(
-        attributes={"service.name": app_name, "compose_service": app_name},
-    )
-
-    tracer = TracerProvider(resource=resource)
-    trace.set_tracer_provider(tracer)
-
-    tracer.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint)))
-
-    if log_correlation:
-        LoggingInstrumentor().instrument(set_logging_format=True)
-
-    FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer)
 
 
 def _setup_db(app: FastAPI) -> None:
