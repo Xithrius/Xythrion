@@ -6,16 +6,12 @@ from fastapi import FastAPI
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.resources import (
-    DEPLOYMENT_ENVIRONMENT,
-    SERVICE_NAME,
-    TELEMETRY_SDK_LANGUAGE,
     Resource,
 )
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.trace import set_tracer_provider
 from prometheus_client import REGISTRY, Counter, Gauge, Histogram
 from prometheus_client.openmetrics.exposition import (
     CONTENT_TYPE_LATEST,
@@ -150,54 +146,31 @@ def _setup_db(app: FastAPI) -> None:
     app.state.db_session_factory = session_factory
 
 
-def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
-    """
-    Enables opentelemetry instrumentation.
+def setup_opentelemetry(
+    app: FastAPI,
+    app_name: str | None = "xythrion-api",
+    endpoint: str | None = settings.opentelemetry_endpoint,
+    log_correlation: bool = True,
+) -> None:
+    resource = Resource.create(attributes={"service.name": app_name, "compose_service": app_name})
 
-    :param app: current application.
-    """
-    if not settings.opentelemetry_endpoint:
-        return
+    tracer = TracerProvider(resource=resource)
+    trace.set_tracer_provider(tracer)
 
-    tracer_provider = TracerProvider(
-        resource=Resource(
-            attributes={
-                SERVICE_NAME: "xythrion-api",
-                TELEMETRY_SDK_LANGUAGE: "python",
-                DEPLOYMENT_ENVIRONMENT: settings.environment,
-            },
-        ),
-    )
+    tracer.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint)))
 
-    tracer_provider.add_span_processor(
-        BatchSpanProcessor(
-            OTLPSpanExporter(
-                endpoint=settings.opentelemetry_endpoint,
-                insecure=True,
-            ),
-        ),
-    )
+    if log_correlation:
+        LoggingInstrumentor().instrument(set_logging_format=True)
 
-    excluded_endpoints = [
-        app.url_path_for("health_check"),
-        app.url_path_for("openapi"),
-        app.url_path_for("swagger_ui_html"),
-        app.url_path_for("swagger_ui_redirect"),
-        app.url_path_for("redoc_html"),
+    excluded_urls = [
         "/metrics",
     ]
 
-    FastAPIInstrumentor().instrument_app(
+    FastAPIInstrumentor.instrument_app(
         app,
-        tracer_provider=tracer_provider,
-        excluded_urls=",".join(excluded_endpoints),
+        tracer_provider=tracer,
+        excluded_urls=",".join(excluded_urls),
     )
-    SQLAlchemyInstrumentor().instrument(
-        tracer_provider=tracer_provider,
-        engine=app.state.db_engine.sync_engine,
-    )
-
-    set_tracer_provider(tracer_provider=tracer_provider)
 
 
 def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
@@ -209,8 +182,8 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     if not settings.opentelemetry_endpoint:
         return
 
+    LoggingInstrumentor().uninstrument()
     FastAPIInstrumentor().uninstrument_app(app)
-    SQLAlchemyInstrumentor().uninstrument()
 
 
 def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover

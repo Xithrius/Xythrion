@@ -1,10 +1,22 @@
+import logging
 import os
 import shutil
 
 import uvicorn
 
-from .gunicorn_runner import GunicornApplication
-from .settings import settings
+from app.gunicorn_runner import GunicornApplication
+
+from .settings import FILTER_LOG_ENDPOINTS, LOG_CONFIG, settings
+
+FILTER_LOGS = {f"GET {x} HTTP/1.1" for x in FILTER_LOG_ENDPOINTS}
+
+
+class EndpointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return all(record.getMessage().find(f) == -1 for f in FILTER_LOGS)
+
+
+logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
 
 def set_multiproc_dir() -> None:
@@ -21,20 +33,17 @@ def set_multiproc_dir() -> None:
 
 
 def main() -> None:
-    log_config = uvicorn.config.LOGGING_CONFIG
-    log_config["formatters"]["access"]["fmt"] = (
-        "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s resource.service.name=%(otelServiceName)s] - %(message)s"  # noqa: E501
-    )
+    set_multiproc_dir()
 
     if settings.reload:
         uvicorn.run(
             "app.routers.application:get_app",
+            workers=settings.workers_count,
             host=settings.host,
             port=settings.port,
-            workers=settings.workers_count,
             log_level=settings.log_level.value.lower(),
             factory=True,
-            log_config=log_config,
+            log_config=LOG_CONFIG,
         )
     else:
         GunicornApplication(
@@ -42,9 +51,10 @@ def main() -> None:
             host=settings.host,
             port=settings.port,
             workers=settings.workers_count,
-            loglevel=settings.log_level.value.lower(),
             factory=True,
-            log_config=log_config,
+            accesslog="-",
+            loglevel=settings.log_level.value.lower(),
+            access_log_format='%r "-" %s "-" %Tf',
         ).run()
 
 

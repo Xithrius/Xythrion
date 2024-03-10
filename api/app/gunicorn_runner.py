@@ -4,6 +4,8 @@ from gunicorn.app.base import BaseApplication
 from gunicorn.util import import_app
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
+from .settings import LOG_CONFIG
+
 try:
     import uvloop
 except ImportError:
@@ -25,6 +27,7 @@ class UvicornWorker(BaseUvicornWorker):
         "lifespan": "on",
         "factory": True,
         "proxy_headers": False,
+        "log_config": LOG_CONFIG,
     }
 
 
@@ -36,7 +39,7 @@ class GunicornApplication(BaseApplication):
     with custom uvicorn workers.
     """
 
-    def __init__(  # (Too many args)
+    def __init__(
         self,
         app: str,
         host: str,

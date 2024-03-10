@@ -2,10 +2,19 @@ import enum
 from pathlib import Path
 from tempfile import gettempdir
 
+import uvicorn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
+LOGGING_FORMAT = "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s resource.service.name=%(otelServiceName)s] - %(message)s"  # noqa: E501
+LOG_CONFIG = uvicorn.config.LOGGING_CONFIG
+LOG_CONFIG["formatters"]["access"]["fmt"] = LOGGING_FORMAT
+FILTER_LOG_ENDPOINTS = {
+    "/metrics",
+    "/api/openapi.json",
+    "/api/docs",
+}
 
 
 class LogLevel(str, enum.Enum):
