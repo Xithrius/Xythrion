@@ -20,14 +20,19 @@ class CommandErrorHandler(Cog):
         if ctx.command is not None:
             await ctx.bot.api.post(
                 "/api/command_metrics/",
-                data={"command_name": ctx.command.name, "successfully_completed": False},
+                data={
+                    "command_name": ctx.command.name,
+                    "successfully_completed": False,
+                },
             )
 
         if isinstance(e, errors.CommandNotFound):
             await ctx.error_embed("That command does not exist")
             return
         if isinstance(e, TrustedUserCheckFailure):
-            await ctx.error_embed("You do not have sufficient trust to run this command")
+            await ctx.error_embed(
+                "You do not have sufficient trust to run this command",
+            )
             return
 
         log.error("Ignoring exception in command")

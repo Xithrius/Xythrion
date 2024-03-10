@@ -23,7 +23,12 @@ class DeepRockGalactic(Cog):
         today = datetime.now(tz=self.bot.tzinfo)
         days_until_next_thursday = (3 - today.weekday() + 7) % 7
         next_thursday = today + timedelta(days=days_until_next_thursday)
-        next_thursday = next_thursday.replace(hour=11, minute=0, second=0, microsecond=0)
+        next_thursday = next_thursday.replace(
+            hour=11,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
 
         time_until_next_thursday = next_thursday - today
 

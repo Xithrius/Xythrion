@@ -68,7 +68,10 @@ class LinkMapper(Cog):
                     new_url = message.content.replace(row["from_link"], row["to_link"])
                 else:
                     full_url = self.get_first_url(message.content)
-                    webpage = await self.bot.http_client.get(full_url, headers=BS4_HEADERS)
+                    webpage = await self.bot.http_client.get(
+                        full_url,
+                        headers=BS4_HEADERS,
+                    )
                     soup = BeautifulSoup(webpage.content, "html.parser")
                     dom = etree.HTML(str(soup))
                     extracted = dom.xpath(row["xpath"])
@@ -78,7 +81,9 @@ class LinkMapper(Cog):
 
                 output_channel = utils.get(message.guild.channels, id=output_channel_id)
 
-                await output_channel.send(f"<@{message.author.id}> {message.jump_url} {new_url}")
+                await output_channel.send(
+                    f"<@{message.author.id}> {message.jump_url} {new_url}",
+                )
 
                 break
 
@@ -117,7 +122,11 @@ class LinkMapper(Cog):
 
     @link_map_list.command(name="converters")
     @is_trusted()
-    async def list_link_map_converters(self, ctx: Context, attribute: str | None = None) -> None:
+    async def list_link_map_converters(
+        self,
+        ctx: Context,
+        attribute: str | None = None,
+    ) -> None:
         response = await self.bot.api.get(
             "/api/link_maps/converters",
             params={"server_id": ctx.guild.id},
@@ -178,11 +187,15 @@ class LinkMapper(Cog):
             if response.status_code == 409:
                 await ctx.send("Link map channel redirection already exists.")
             else:
-                await ctx.send(f"Link map channel redirection failed with code {response.status_code}")
+                await ctx.send(
+                    f"Link map channel redirection failed with code {response.status_code}",
+                )
 
             return
 
-        await ctx.send(f"Link map channel redirection created: <#{input_channel_id}> -> <#{output_channel_id}>")
+        await ctx.send(
+            f"Link map channel redirection created: <#{input_channel_id}> -> <#{output_channel_id}>",
+        )
 
     @link_map_create.command(name="converters")
     @is_trusted()

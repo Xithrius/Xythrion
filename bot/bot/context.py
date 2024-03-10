@@ -28,10 +28,18 @@ class Context(BaseContext):
         group: Group = self.command
 
         subcommands = "\n".join(
-            [f"`{cmd.name} ({', '.join(cmd.aliases)})`" if cmd.aliases else f"`{cmd.name}`" for cmd in group.commands],
+            [
+                f"`{cmd.name} ({', '.join(cmd.aliases)})`"
+                if cmd.aliases
+                else f"`{cmd.name}`"
+                for cmd in group.commands
+            ],
         )
 
-        await self.warning_embed(subcommands, title="Missing subcommand. Perhaps one of these?")
+        await self.warning_embed(
+            subcommands,
+            title="Missing subcommand. Perhaps one of these?",
+        )
 
     async def send_image_buffer(
         self,
@@ -50,7 +58,12 @@ class Context(BaseContext):
         await self.send(embed=embed, file=file)
 
     @staticmethod
-    def __construct_reply_embed(description: str, title: str | None, color: Colours, replies: tuple[str]) -> Embed:
+    def __construct_reply_embed(
+        description: str,
+        title: str | None,
+        color: Colours,
+        replies: tuple[str],
+    ) -> Embed:
         embed = Embed(
             title=title or choice(replies),
             description=description,
@@ -60,10 +73,31 @@ class Context(BaseContext):
         return embed
 
     async def error_embed(self, description: str, title: str | None = None) -> Embed:
-        await self.send(embed=self.__construct_reply_embed(description, title, Colours.soft_red, ERROR_REPLIES))
+        await self.send(
+            embed=self.__construct_reply_embed(
+                description,
+                title,
+                Colours.soft_red,
+                ERROR_REPLIES,
+            ),
+        )
 
     async def warning_embed(self, description: str, title: str | None = None) -> Embed:
-        await self.send(embed=self.__construct_reply_embed(description, title, Colours.soft_orange, WARNING_REPLIES))
+        await self.send(
+            embed=self.__construct_reply_embed(
+                description,
+                title,
+                Colours.soft_orange,
+                WARNING_REPLIES,
+            ),
+        )
 
     async def success_embed(self, description: str, title: str | None = None) -> Embed:
-        await self.send(embed=self.__construct_reply_embed(description, title, Colours.soft_green, POSITIVE_REPLIES))
+        await self.send(
+            embed=self.__construct_reply_embed(
+                description,
+                title,
+                Colours.soft_green,
+                POSITIVE_REPLIES,
+            ),
+        )

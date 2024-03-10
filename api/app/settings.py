@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     # multiproc_dir. It's required for [uvi|guni]corn projects.
     prometheus_dir: Path = TEMP_DIR / "prom"
 
+    # Grpc endpoint for opentelemetry.
+    opentelemetry_endpoint: str | None = "http://localhost:4317"
+
     @property
     def db_url(self) -> URL:
         """

@@ -1,6 +1,9 @@
 import pytest
 
-from bot.extensions.mapping._utils.link_converter import DestinationType, validate_destination
+from bot.extensions.mapping._utils.link_converter import (
+    DestinationType,
+    validate_destination,
+)
 
 
 def test_validate_destination_no_path_raises_value_error() -> None:

@@ -16,7 +16,12 @@ def markdown_link(
     return f"[{desc_wrapper}{desc}{desc_wrapper}]({link})"
 
 
-def final_join(items: list[str], *, sep: str | None = ", ", final: str | None = "and") -> str:
+def final_join(
+    items: list[str],
+    *,
+    sep: str | None = ", ",
+    final: str | None = "and",
+) -> str:
     """Joins a list by a separator with a final join at the very end."""
     items_length = len(items)
 

@@ -106,7 +106,9 @@ async def create_link_map_converter(
             detail="Only populate `to_link` or `xpath`.",
         )
 
-    stmt = select(LinkMapChannelModel).where(LinkMapChannelModel.server_id == link_map.channel_map_server_id)
+    stmt = select(LinkMapChannelModel).where(
+        LinkMapChannelModel.server_id == link_map.channel_map_server_id,
+    )
 
     items = await session.execute(stmt)
     items.unique()

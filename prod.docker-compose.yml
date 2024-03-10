@@ -2,10 +2,15 @@ version: "3.7"
 
 x-logging: &logging
   logging:
-    driver: "json-file"
+    driver: loki
     options:
-      max-file: "5"
-      max-size: "10m"
+      loki-url: 'http://localhost:3100/api/prom/push'
+      loki-pipeline-stages: |
+        - multiline:
+            firstline: '^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}'
+            max_wait_time: 3s
+        - regex:
+            expression: '^(?P<time>\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2},d{3}) (?P<message>(?s:.*))$$'
 
 x-restart-policy:
   restart: unless-stopped
@@ -23,6 +28,7 @@ services:
       XYTHRION_API_RELOAD: "false"
       XYTHRION_API_DB_HOST: "postgres"
       XYTHRION_API_HOST: "0.0.0.0"
+      XYTHRION_API_OPENTELEMETRY_ENDPOINT: "http://tempo:4317"
 
     volumes:
     - ./api:/api
@@ -35,6 +41,7 @@ services:
 
     networks:
     - database-access
+    - api-metrics
     - xythrion
 
   bot:
@@ -66,4 +73,7 @@ networks:
     external: true
   xythrion:
     name: xythrion
+    external: true
+  api-metrics:
+    name: api-metrics
     external: true

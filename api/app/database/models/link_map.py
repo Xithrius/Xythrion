@@ -20,7 +20,10 @@ class LinkMapChannelModel(Base):
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now())
 
-    link_maps: Mapped[list[LinkMapModel]] = relationship(back_populates="channel_map", lazy="joined")
+    link_maps: Mapped[list[LinkMapModel]] = relationship(
+        back_populates="channel_map",
+        lazy="joined",
+    )
 
 
 class LinkMapModel(Base):
@@ -38,6 +41,11 @@ class LinkMapModel(Base):
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now())
 
-    channel_map_server_id: Mapped[int] = mapped_column(ForeignKey("link_map_channels.server_id"))
+    channel_map_server_id: Mapped[int] = mapped_column(
+        ForeignKey("link_map_channels.server_id"),
+    )
 
-    channel_map: Mapped[LinkMapChannelModel] = relationship(back_populates="link_maps", lazy="joined")
+    channel_map: Mapped[LinkMapChannelModel] = relationship(
+        back_populates="link_maps",
+        lazy="joined",
+    )
