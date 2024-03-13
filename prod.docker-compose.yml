@@ -1,10 +1,10 @@
 version: "3.7"
 
-x-logging: &logging
+x-logging-loki: &logging_loki
   logging:
     driver: loki
     options:
-      loki-url: 'http://localhost:3100/api/prom/push'
+      loki-url: "http://localhost:3100/api/prom/push"
       loki-pipeline-stages: |
         - multiline:
             firstline: '^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}'
@@ -12,12 +12,19 @@ x-logging: &logging
         - regex:
             expression: '^(?P<time>\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2},d{3}) (?P<message>(?s:.*))$$'
 
+x-logging-json: &logging_json
+  logging:
+    driver: "json-file"
+    options:
+      max-file: "5"
+      max-size: "10m"
+
 x-restart-policy:
   restart: unless-stopped
 
 services:
   api:
-    <<: *logging
+    <<: *logging_loki
 
     image: "ghcr.io/xithrius/xythrion/api:latest"
 
@@ -25,6 +32,7 @@ services:
     - .env
 
     environment:
+      XYTHRION_ENVIRONMENT: "production"
       XYTHRION_API_RELOAD: "false"
       XYTHRION_API_DB_HOST: "postgres"
       XYTHRION_API_HOST: "0.0.0.0"
@@ -33,19 +41,15 @@ services:
     volumes:
     - ./api:/api
 
-    ports:
-    - "8001:8001"
-
     labels:
     - "com.centurylinklabs.watchtower.enable=true"
 
     networks:
     - database-access
-    - api-metrics
-    - xythrion
+    - infra-metrics
 
   bot:
-    <<: *logging
+    <<: *logging_json
 
     image: "ghcr.io/xithrius/xythrion/bot:latest"
 
@@ -65,15 +69,12 @@ services:
     - "com.centurylinklabs.watchtower.enable=true"
 
     networks:
-    - xythrion
+    - infra-metrics
 
 networks:
   database-access:
     name: database-access
     external: true
-  xythrion:
-    name: xythrion
-    external: true
-  api-metrics:
-    name: api-metrics
+  infra-metrics:
+    name: infra-metrics
     external: true

@@ -6,7 +6,7 @@ import uvicorn
 
 from app.gunicorn_runner import GunicornApplication
 
-from .settings import FILTER_LOG_ENDPOINTS, LOG_CONFIG, settings
+from .settings import FILTER_LOG_ENDPOINTS, settings
 
 FILTER_LOGS = {f"GET {x} HTTP/1.1" for x in FILTER_LOG_ENDPOINTS}
 
@@ -41,9 +41,9 @@ def main() -> None:
             workers=settings.workers_count,
             host=settings.host,
             port=settings.port,
+            reload=settings.reload,
             log_level=settings.log_level.value.lower(),
             factory=True,
-            log_config=LOG_CONFIG,
         )
     else:
         GunicornApplication(

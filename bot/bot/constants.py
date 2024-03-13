@@ -1,25 +1,9 @@
 GITHUB_URL = "https://github.com/Xithrius/Xythrion"
-
-XYTHRION_LOGO = r"""
- _     _ __   __ _______ _     _  ______ _____  _____  __   _
-  \___/    \_/      |    |_____| |_____/   |   |     | | \  |
- _/   \_    |       |    |     | |    \_ __|__ |_____| |  \_|
-
-"""
-
 BS4_HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
             (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36",
     "Accept-Language": "en-US, en;q=0.5",
 }
-
-
-class Colours:
-    soft_green = 0x68C290
-    soft_orange = 0xF9CB54
-    soft_red = 0xCD6D6D
-
-
 ERROR_REPLIES = (
     "Nuh uh",
     "Nah",
@@ -79,7 +63,6 @@ ERROR_REPLIES = (
     "L",
     "Unprecedented risk management strategies through scalable micro actions",
 )
-
 WARNING_REPLIES = (
     "Holup.",
     "The cake is a lie.",
@@ -87,7 +70,6 @@ WARNING_REPLIES = (
     "There's like, nothing here.",
     "I swear I put it right there!",
 )
-
 POSITIVE_REPLIES = (
     "It is done.",
     "Yep.",
@@ -96,3 +78,9 @@ POSITIVE_REPLIES = (
     "Indeedingly.",
     "kerblam.",
 )
+
+
+class Colours:
+    soft_green = 0x68C290
+    soft_orange = 0xF9CB54
+    soft_red = 0xCD6D6D

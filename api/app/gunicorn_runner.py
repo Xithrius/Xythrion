@@ -1,15 +1,22 @@
 from typing import Any, ClassVar
 
+import uvicorn
 from gunicorn.app.base import BaseApplication
 from gunicorn.util import import_app
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
-from .settings import LOG_CONFIG
+from app.settings import settings
 
 try:
     import uvloop
 except ImportError:
     uvloop = None
+
+LOG_CONFIG = uvicorn.config.LOGGING_CONFIG
+
+if settings.environment == "production":
+    LOGGING_FORMAT = "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s resource.service.name=%(otelServiceName)s] - %(message)s"  # noqa: E501
+    LOG_CONFIG["formatters"]["access"]["fmt"] = LOGGING_FORMAT
 
 
 class UvicornWorker(BaseUvicornWorker):

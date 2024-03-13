@@ -17,10 +17,7 @@ def test_markdown_link_default_wrap() -> None:
 def test_markdown_link_some_wrap() -> None:
     linked = "[`GitHub`](https://github.com/)"
 
-    assert (
-        markdown_link(desc="GitHub", link="https://github.com/", desc_wrapper="`")
-        == linked
-    )
+    assert markdown_link(desc="GitHub", link="https://github.com/", desc_wrapper="`") == linked
 
 
 def test_and_join_no_items() -> None:
