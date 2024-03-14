@@ -6,14 +6,9 @@ requires-python = ">=3.11"
 dev = [
     "-e file:///${PROJECT_ROOT}/api",
     "-e file:///${PROJECT_ROOT}/bot",
-    "ruff>=0.3.0",
     "pre-commit>=3.6.0",
 ]
 
 [tool.pdm.scripts]
 lint = "pre-commit run --all-files"
-fmt = "ruff format ."
 precommit = "pre-commit install"
-
-[tool.pytest.ini_options]
-filterwarnings = ["ignore::DeprecationWarning"]

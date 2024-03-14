@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from loguru import logger as log
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -152,6 +153,7 @@ def setup_opentelemetry(
     log_correlation: bool = True,
 ) -> None:
     if settings.opentelemetry_endpoint is None:
+        log.warning("Telemetry endpoint not configured, no logs will be exported.")
         return
 
     resource = Resource.create(
