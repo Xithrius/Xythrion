@@ -1,10 +1,8 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.dependencies import get_db_session
+from app.database.crud.command_metric import CommandMetricCRUD
 from app.database.models.command_metric import CommandMetricModel
 
 from .schemas import CommandMetric, CommandMetricCreate
@@ -19,29 +17,21 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_command_metrics(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    crud: Annotated[CommandMetricCRUD, Depends()],
     limit: int | None = 10,
     offset: int | None = 0,
 ) -> list[CommandMetricModel]:
-    stmt = select(CommandMetricModel).limit(limit).offset(offset)
-
-    items = await session.execute(stmt)
-
-    return list(items.scalars().fetchall())
+    return await crud.get_all_command_metrics(limit=limit, offset=offset)
 
 
 @router.post(
     "/",
+    description="Create a command metric item",
     response_model=CommandMetric,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_command_usage_metric(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
     command_metric: CommandMetricCreate,
+    crud: Annotated[CommandMetricCRUD, Depends()],
 ) -> CommandMetricModel:
-    new_item = CommandMetricModel(**command_metric.model_dump())
-
-    session.add(new_item)
-    await session.flush()
-
-    return new_item
+    return await crud.create_command_metric(command_metric)
