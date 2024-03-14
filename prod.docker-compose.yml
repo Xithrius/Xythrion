@@ -32,7 +32,7 @@ services:
     - .env
 
     environment:
-      XYTHRION_ENVIRONMENT: "production"
+      XYTHRION_API_ENVIRONMENT: "production"
       XYTHRION_API_RELOAD: "false"
       XYTHRION_API_DB_HOST: "postgres"
       XYTHRION_API_HOST: "0.0.0.0"
