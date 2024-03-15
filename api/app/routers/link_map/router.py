@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 from app.database.dependencies import get_db_session
 from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
 
-from .schemas import LinkMapChannel, LinkMapChannelUpdate, LinkMapConverter, LinkMapConverterCreate
+from .schemas import LinkMapChannel, LinkMapChannelCreate, LinkMapConverter, LinkMapConverterCreate
 
 router = APIRouter()
 
@@ -68,7 +68,7 @@ async def get_all_link_map_converters(
 )
 async def create_link_map_channel(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    link_map_channel: LinkMapChannelUpdate,
+    link_map_channel: LinkMapChannelCreate,
 ) -> LinkMapChannelModel:
     stmt = select(LinkMapChannelModel).where(
         LinkMapChannelModel.server_id == link_map_channel.server_id,
