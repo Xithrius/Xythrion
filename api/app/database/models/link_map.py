@@ -20,13 +20,13 @@ class LinkMapChannelModel(Base):
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now())
 
-    link_maps: Mapped[list[LinkMapModel]] = relationship(
+    link_maps: Mapped[list[LinkMapConverterModel]] = relationship(
         back_populates="channel_map",
         lazy="joined",
     )
 
 
-class LinkMapModel(Base):
+class LinkMapConverterModel(Base):
     __tablename__ = "link_maps"
 
     id: Mapped[uuid.UUID] = mapped_column(

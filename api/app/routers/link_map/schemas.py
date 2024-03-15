@@ -10,6 +10,10 @@ class LinkMapChannelCreate(BaseModel):
     output_channel_id: int
 
 
+class LinkMapChannelUpdate(BaseModel):
+    pass
+
+
 class LinkMapChannel(BaseModel):
     server_id: int
     input_channel_id: int
@@ -17,14 +21,18 @@ class LinkMapChannel(BaseModel):
     created_at: datetime
 
 
-class LinkMapCreate(BaseModel):
+class LinkMapConverterCreate(BaseModel):
     channel_map_server_id: int
     from_link: str
     to_link: str | None = None
     xpath: str | None = None
 
 
-class LinkMap(BaseModel):
+class LinkMapConverterUpdate(BaseModel):
+    pass
+
+
+class LinkMapConverter(BaseModel):
     id: UUID
     channel_map_server_id: int
     created_at: datetime

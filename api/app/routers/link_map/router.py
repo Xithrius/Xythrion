@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database.dependencies import get_db_session
-from app.database.models.link_map import LinkMapChannelModel, LinkMapModel
+from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
 
-from .schemas import LinkMap, LinkMapChannel, LinkMapChannelCreate, LinkMapCreate
+from .schemas import LinkMapChannel, LinkMapChannelUpdate, LinkMapConverter, LinkMapConverterCreate
 
 router = APIRouter()
 
@@ -35,24 +35,24 @@ async def get_all_link_map_channels(
 
 @router.get(
     "/converters",
-    response_model=list[LinkMap],
+    response_model=list[LinkMapConverter],
     status_code=status.HTTP_200_OK,
 )
 async def get_all_link_map_converters(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     server_id: int | None = None,
     input_channel_id: int | None = None,
-) -> list[LinkMapModel]:
-    stmt = select(LinkMapModel)
+) -> list[LinkMapConverterModel]:
+    stmt = select(LinkMapConverterModel)
 
     if server_id and input_channel_id:
         stmt = (
-            stmt.join(LinkMapChannelModel, LinkMapModel.channel_map)
+            stmt.join(LinkMapChannelModel, LinkMapConverterModel.channel_map)
             .where(
-                LinkMapModel.channel_map_server_id == server_id,
+                LinkMapConverterModel.channel_map_server_id == server_id,
                 LinkMapChannelModel.input_channel_id == input_channel_id,
             )
-            .options(selectinload(LinkMapModel.channel_map))
+            .options(selectinload(LinkMapConverterModel.channel_map))
         )
 
     items = await session.execute(stmt)
@@ -68,7 +68,7 @@ async def get_all_link_map_converters(
 )
 async def create_link_map_channel(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    link_map_channel: LinkMapChannelCreate,
+    link_map_channel: LinkMapChannelUpdate,
 ) -> LinkMapChannelModel:
     stmt = select(LinkMapChannelModel).where(
         LinkMapChannelModel.server_id == link_map_channel.server_id,
@@ -93,13 +93,13 @@ async def create_link_map_channel(
 
 @router.post(
     "/converters",
-    response_model=LinkMap,
+    response_model=LinkMapConverter,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map_converter(
     session: Annotated[AsyncSession, Depends(get_db_session)],
-    link_map: LinkMapCreate,
-) -> LinkMapModel:
+    link_map: LinkMapConverterCreate,
+) -> LinkMapConverterModel:
     if (link_map.to_link is None) == (link_map.xpath is None):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -119,7 +119,7 @@ async def create_link_map_converter(
             detail=f"Relevant channel map does not exist for server ID '{link_map.channel_map_server_id}'",
         )
 
-    new_item = LinkMapModel(**link_map.model_dump())
+    new_item = LinkMapConverterModel(**link_map.model_dump())
 
     session.add(new_item)
     await session.flush()
@@ -129,14 +129,14 @@ async def create_link_map_converter(
 
 @router.delete(
     "/converters/{id}",
-    response_model=LinkMap,
+    response_model=LinkMapConverter,
     status_code=status.HTTP_200_OK,
 )
 async def remove_link_map_converter(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     id: str,
-) -> LinkMapModel:
-    stmt = select(LinkMapModel).where(LinkMapModel.id == id)
+) -> LinkMapConverterModel:
+    stmt = select(LinkMapConverterModel).where(LinkMapConverterModel.id == id)
 
     items = await session.execute(stmt)
     items.unique()
@@ -147,7 +147,7 @@ async def remove_link_map_converter(
             detail=f"Converter by ID '{id}' not found",
         )
 
-    stmt = delete(LinkMapModel).where(LinkMapModel.id == id)
+    stmt = delete(LinkMapConverterModel).where(LinkMapConverterModel.id == id)
 
     await session.execute(stmt)
     await session.commit()
