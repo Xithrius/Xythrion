@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import Select, and_, delete, desc, select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
@@ -12,25 +12,6 @@ from app.routers.command_metric.schemas import CommandMetricCreate, CommandMetri
 class CommandMetricCRUD(CRUDBase[CommandMetricModel, CommandMetricCreate, CommandMetricUpdate]):
     async def get(self, db: AsyncSession, *, pk: UUID) -> CommandMetricModel | None:
         return await self.get_(db, pk=pk)
-
-    async def get_list(
-        self,
-        command_name: str | None = None,
-        successfully_completed: bool | None = None,
-    ) -> Select:
-        se = select(self.model).order_by(desc(self.model.used_at))
-
-        where_list = []
-
-        if command_name:
-            where_list.append(self.model.command_name.like(f"%{command_name}%"))
-        if successfully_completed is not None:
-            where_list.append(self.model.successfully_completed == successfully_completed)
-
-        if where_list:
-            se = se.where(and_(*where_list))
-
-        return se
 
     async def get_all(self, db: AsyncSession, *, limit: int, offset: int) -> Sequence[CommandMetricModel]:
         items = await db.execute(select(self.model).limit(limit).offset(offset))
@@ -53,26 +34,4 @@ class CommandMetricCRUD(CRUDBase[CommandMetricModel, CommandMetricCreate, Comman
         return items.rowcount
 
 
-command_metric_dao: CommandMetricCRUD = CommandMetricCRUD(CommandMetricModel)
-
-
-# class CommandMetricCRUD:
-#     def __init__(self, session: Annotated[AsyncSession, Depends(get_db_session)]) -> None:
-#         self.session = session
-
-#     async def create_command_metric(self, item: CommandMetricCreate) -> None:
-#         self.session.add(CommandMetricModel(**item.model_dump()))
-
-#     async def get_all_command_metrics(self, limit: int, offset: int) -> list[CommandMetricModel]:
-#         raw_items = await self.session.execute(
-#             select(CommandMetricModel).limit(limit).offset(offset),
-#         )
-
-#         return list(raw_items.scalars().fetchall())
-
-# async def filter(self, name: str | None = None) -> list[CommandMetricModel]:
-#     query = select(CommandMetricModel)
-#     if name:
-#         query = query.where(CommandMetricModel.name == name)
-#     rows = await self.session.execute(query)
-#     return list(rows.scalars().fetchall())
+command_metric_dao = CommandMetricCRUD(CommandMetricModel)
