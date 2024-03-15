@@ -9,6 +9,10 @@ class CommandMetricCreate(BaseModel):
     successfully_completed: bool
 
 
+class CommandMetricUpdate(BaseModel):
+    pass
+
+
 class CommandMetric(BaseModel):
     id: UUID
     used_at: datetime

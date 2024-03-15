@@ -20,6 +20,10 @@ dependencies = [
     "scipy>=1.12.0",
 ]
 
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
 [tool]
 [tool.pdm]
 [tool.pdm.dev-dependencies]
@@ -48,6 +52,5 @@ test-cov = "python3 -m pytest --cov=./ --cov-report=xml"
 html = "coverage html"
 report = "coverage report"
 
-[build-system]
-requires = ["pdm-pep517>=1.0.0"]
-build-backend = "pdm.pep517.api"
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning"]
