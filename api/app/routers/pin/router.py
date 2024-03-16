@@ -1,10 +1,7 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from app.database.dependencies import DBSession
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.dependencies import get_db_session
 from app.database.models.pin import PinModel
 
 from .schemas import Pin, PinCreate
@@ -18,7 +15,7 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_pins(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     limit: int | None = 10,
     offset: int | None = 0,
 ) -> list[PinModel]:
@@ -35,7 +32,7 @@ async def get_all_pins(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_pin(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     pin: PinCreate,
 ) -> PinModel:
     stmt = select(PinModel).where(
@@ -66,7 +63,7 @@ async def create_pin(
     status_code=status.HTTP_200_OK,
 )
 async def remove_pin(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     server_id: int,
     channel_id: int,
     message_id: int,

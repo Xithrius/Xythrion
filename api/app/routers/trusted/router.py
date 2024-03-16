@@ -1,10 +1,7 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from app.database.dependencies import DBSession
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.dependencies import get_db_session
 from app.database.models.trusted import TrustedModel
 
 from .schemas import Trusted, TrustedCreate
@@ -18,7 +15,7 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_trusted_users(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     limit: int | None = 10,
     offset: int | None = 0,
 ) -> list[TrustedModel]:
@@ -35,7 +32,7 @@ async def get_all_trusted_users(
     status_code=status.HTTP_200_OK,
 )
 async def get_trusted_user(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     user_id: int,
 ) -> TrustedModel:
     stmt = select(TrustedModel).where(TrustedModel.user_id == user_id)
@@ -58,7 +55,7 @@ async def get_trusted_user(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_trusted_user(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     trusted: TrustedCreate,
 ) -> TrustedModel:
     stmt = select(TrustedModel).where(TrustedModel.user_id == trusted.user_id)
@@ -85,7 +82,7 @@ async def create_trusted_user(
     status_code=status.HTTP_200_OK,
 )
 async def remove_trusted_user(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     user_id: int,
 ) -> TrustedModel:
     stmt = delete(TrustedModel).where(TrustedModel.user_id == user_id).returning()

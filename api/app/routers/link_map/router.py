@@ -1,12 +1,9 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from app.database.dependencies import DBSession
+from fastapi import APIRouter, HTTPException, Response, status
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.link_map_channel import link_map_channel_dao
 from app.database.crud.link_map_converter import link_map_converter_dao
-from app.database.dependencies import get_db_session
 from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
 
 from .schemas import (
@@ -26,7 +23,7 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_link_map_channels(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
 ) -> list[LinkMapChannelModel]:
     return await link_map_channel_dao.get_all(session)
 
@@ -37,7 +34,7 @@ async def get_all_link_map_channels(
     status_code=status.HTTP_200_OK,
 )
 async def get_one_link_map_channel(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     server_id: int | None = None,
 ) -> LinkMapChannelModel:
     channel = await link_map_channel_dao.get_by_server_id(session, server_id=server_id)
@@ -56,7 +53,7 @@ async def get_one_link_map_channel(
     status_code=status.HTTP_200_OK,
 )
 async def get_all_channel_link_map_converters(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     server_id: int,
     input_channel_id: int,
 ) -> LinkMapChannelConverters | None:
@@ -76,7 +73,7 @@ async def get_all_channel_link_map_converters(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map_channel(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     new_link_map_channel: LinkMapChannelCreate,
 ) -> None:
     channels = await link_map_channel_dao.get_by_server_id(
@@ -99,7 +96,7 @@ async def create_link_map_channel(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map_converter(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     link_map: LinkMapConverterCreate,
 ) -> LinkMapConverterModel:
     if (link_map.to_link is None) == (link_map.xpath is None):
@@ -136,7 +133,7 @@ async def create_link_map_converter(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def remove_link_map_channel(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     id: str,
 ) -> None:
     count = await link_map_channel_dao.delete(session, pk=[id])
@@ -155,7 +152,7 @@ async def remove_link_map_channel(
     status_code=status.HTTP_200_OK,
 )
 async def remove_link_map_converter(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     id: str,
 ) -> None:
     count = await link_map_converter_dao.delete(session, pk=[id])
