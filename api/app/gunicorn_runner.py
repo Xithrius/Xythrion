@@ -1,11 +1,13 @@
+import logging
 from typing import Any, ClassVar
 
 import uvicorn
+from gunicorn.glogging import Logger
 from gunicorn.app.base import BaseApplication
 from gunicorn.util import import_app
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
-from app.settings import settings
+from app.settings import FILTER_LOG_ENDPOINTS, settings
 
 try:
     import uvloop
@@ -38,6 +40,22 @@ class UvicornWorker(BaseUvicornWorker):
     }
 
 
+FILTER_LOGS = {f"GET {x} HTTP/1.1" for x in FILTER_LOG_ENDPOINTS}
+
+
+class EndpointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return all(record.getMessage().find(f) == -1 for f in FILTER_LOGS)
+
+
+class CustomGunicornLogger(Logger):
+    def setup(self, cfg: Any) -> None:
+        super().setup(cfg)
+
+        access_logger = logging.getLogger("gunicorn.access")
+        access_logger.addFilter(EndpointFilter())
+
+
 class GunicornApplication(BaseApplication):
     """
     Custom gunicorn application.
@@ -58,6 +76,7 @@ class GunicornApplication(BaseApplication):
             "bind": f"{host}:{port}",
             "workers": workers,
             "worker_class": "app.gunicorn_runner.UvicornWorker",
+            "logger_class": CustomGunicornLogger,
             **kwargs,
         }
         self.app = app
