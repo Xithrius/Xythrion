@@ -39,3 +39,7 @@ class LinkMapConverter(BaseModel):
     from_link: str
     to_link: str | None = None
     xpath: str | None = None
+
+
+class LinkMapChannelConverters(LinkMapChannel):
+    link_maps: list[LinkMapConverter]

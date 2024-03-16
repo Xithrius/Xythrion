@@ -18,10 +18,10 @@ class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreat
 
         return items.scalars().all()
 
-    async def get_by_command_name(self, db: AsyncSession, *, command_name: str) -> LinkMapConverterModel | None:
-        items = await db.execute(select(self.model).where(self.model.command_name == command_name))
+    async def get_by_server_id(self, db: AsyncSession, *, server_id: str) -> Sequence[LinkMapConverterModel]:
+        items = await db.execute(select(self.model).where(self.model.channel_map_server_id == server_id))
 
-        return items.scalars().first()
+        return items.scalars().all()
 
     async def create(self, db: AsyncSession, *, obj_in: LinkMapConverterCreate) -> LinkMapConverterModel:
         new_item = await self.create_(db, obj_in=obj_in)

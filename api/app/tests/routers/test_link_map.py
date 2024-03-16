@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+from loguru import logger as log
 
 
 @pytest.mark.anyio
@@ -228,13 +229,17 @@ async def test_create_valid_channel_and_converter_and_search_with_input_channel(
 
     data = response.json()
 
-    assert len(data) == 1
+    assert len(data["link_maps"]) == 1
 
-    d = data[0]
+    d = data["link_maps"][0]
+
+    log.info(d)
 
     assert d.pop("id")
     assert d.pop("created_at")
     assert d.pop("xpath") is None
+
+    # TODO: Attributes
 
     assert d == new_link_map
 

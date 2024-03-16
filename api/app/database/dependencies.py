@@ -18,3 +18,12 @@ async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]
     finally:
         await session.commit()
         await session.close()
+
+
+# async def _get_db_session() -> AsyncGenerator[AsyncSession, None]:
+#     """Yield a database session, for use with a FastAPI dependency."""
+#     async with Connections.DB_SESSION_MAKER() as session, session.begin():
+#         yield session
+
+
+# DBSession = typing.Annotated[AsyncSession, Depends(_get_db_session)]
