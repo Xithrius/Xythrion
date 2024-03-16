@@ -13,20 +13,19 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
     async def get(self, db: AsyncSession, *, pk: UUID) -> LinkMapChannelModel | None:
         return await self.get_(db, pk=pk)
 
-    async def get_all(self, db: AsyncSession, *, limit: int, offset: int) -> Sequence[LinkMapChannelModel]:
-        items = await db.execute(select(self.model).limit(limit).offset(offset))
+    async def get_all(self, db: AsyncSession) -> Sequence[LinkMapChannelModel]:
+        items = await db.execute(select(self.model))
+        items.unique()
 
         return items.scalars().all()
 
-    async def get_by_command_name(self, db: AsyncSession, *, command_name: str) -> LinkMapChannelModel | None:
-        items = await db.execute(select(self.model).where(self.model.command_name == command_name))
+    async def get_by_server_id(self, db: AsyncSession, *, server_id: int) -> LinkMapChannelModel | None:
+        items = await db.execute(select(self.model).where(self.model.server_id == server_id))
 
         return items.scalars().first()
 
     async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> LinkMapChannelModel:
-        new_item = await self.create_(db, obj_in=obj_in)
-
-        return new_item
+        await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:
         items = await db.execute(delete(self.model).where(self.model.id.in_(pk)))

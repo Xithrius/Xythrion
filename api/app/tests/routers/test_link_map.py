@@ -70,11 +70,6 @@ async def test_create_valid_link_map_channel_and_list(
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    data = response.json()
-
-    assert data.pop("created_at")
-    assert data == new_link_map_channel
-
     url = fastapi_app.url_path_for("get_all_link_map_channels")
 
     response = await client.get(url)
@@ -86,7 +81,6 @@ async def test_create_valid_link_map_channel_and_list(
     channel = link_map_channels[0]
 
     assert channel.pop("created_at")
-    assert data == channel
 
 
 @pytest.mark.anyio

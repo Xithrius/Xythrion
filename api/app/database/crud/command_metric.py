@@ -24,9 +24,7 @@ class CommandMetricCRUD(CRUDBase[CommandMetricModel, CommandMetricCreate, Comman
         return items.scalars().first()
 
     async def create(self, db: AsyncSession, *, obj_in: CommandMetricCreate) -> CommandMetricModel:
-        new_item = await self.create_(db, obj_in=obj_in)
-
-        return new_item
+        await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:
         items = await db.execute(delete(self.model).where(self.model.id.in_(pk)))
