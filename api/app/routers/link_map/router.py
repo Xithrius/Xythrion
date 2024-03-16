@@ -55,11 +55,11 @@ async def get_one_link_map_channel(
     "/converters",
     status_code=status.HTTP_200_OK,
 )
-async def get_all_link_map_converters(
+async def get_all_channel_link_map_converters(
     session: Annotated[AsyncSession, Depends(get_db_session)],
     server_id: int,
     input_channel_id: int,
-) -> LinkMapChannelConverters:
+) -> LinkMapChannelConverters | None:
     stmt = select(LinkMapChannelModel).where(
         LinkMapChannelModel.server_id == server_id,
         LinkMapChannelModel.input_channel_id == input_channel_id,

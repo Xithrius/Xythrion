@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from loguru import logger as log
 
 
 @pytest.mark.anyio
@@ -28,14 +27,17 @@ async def test_check_no_link_map_converters(
     client: AsyncClient,
     dbsession: AsyncSession,
 ) -> None:
-    url = fastapi_app.url_path_for("get_all_link_map_converters")
-    response = await client.get(url)
+    url = fastapi_app.url_path_for("get_all_channel_link_map_converters")
+    response = await client.get(
+        url,
+        params={"server_id": 1234, "input_channel_id": 1234},
+    )
 
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
 
-    assert data == []
+    assert data is None
 
 
 @pytest.mark.anyio
@@ -219,7 +221,7 @@ async def test_create_valid_channel_and_converter_and_search_with_input_channel(
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    url = fastapi_app.url_path_for("get_all_link_map_converters")
+    url = fastapi_app.url_path_for("get_all_channel_link_map_converters")
     response = await client.get(
         url,
         params={"server_id": 1111, "input_channel_id": 2222},
@@ -232,8 +234,6 @@ async def test_create_valid_channel_and_converter_and_search_with_input_channel(
     assert len(data["link_maps"]) == 1
 
     d = data["link_maps"][0]
-
-    log.info(d)
 
     assert d.pop("id")
     assert d.pop("created_at")
@@ -275,13 +275,9 @@ async def test_create_valid_channel_and_converter_then_delete_converter_then_lis
     url = fastapi_app.url_path_for("remove_link_map_converter", id=new_converter["id"])
     response = await client.delete(url)
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    deleted_converter = response.json()
-
-    assert new_converter == deleted_converter
-
-    url = fastapi_app.url_path_for("get_all_link_map_converters")
+    url = fastapi_app.url_path_for("get_all_channel_link_map_converters")
     response = await client.get(
         url,
         params={"server_id": 321, "input_channel_id": 321},
@@ -291,7 +287,7 @@ async def test_create_valid_channel_and_converter_then_delete_converter_then_lis
 
     data = response.json()
 
-    assert data == []
+    assert data["link_maps"] == []
 
 
 @pytest.mark.anyio
