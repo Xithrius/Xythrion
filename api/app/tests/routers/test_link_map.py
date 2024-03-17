@@ -33,7 +33,7 @@ async def test_check_no_link_map_converters(
         params={"server_id": 1234, "input_channel_id": 1234},
     )
 
-    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 @pytest.mark.anyio

@@ -61,13 +61,7 @@ async def get_all_channel_link_map_converters(
         input_channel_id=input_channel_id,
     )
 
-    if converters is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No link map channels found for input channel with ID '{input_channel_id}'",
-        )
-
-    return converters
+    return converters or Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post(

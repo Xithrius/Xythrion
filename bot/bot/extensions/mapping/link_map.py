@@ -8,7 +8,7 @@ from lxml import etree
 from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
-from bot.utils import codeblock, dict_to_human_table, is_trusted
+from bot.utils import dict_to_human_table, is_trusted
 
 from ._utils.link_converter import DestinationType, validate_destination
 
@@ -43,29 +43,19 @@ class LinkMapper(Cog):
         if not response.is_success:
             return
 
-        rows = response.json()
+        data = response.json()
 
-        response = await self.bot.api.get(
-            "/api/link_maps/channels",
-            params={"server_id": message.guild.id},
-        )
+        output_channel_id = data["output_channel_id"]
+        converters = data["link_maps"]
 
-        if not response.is_success:
-            return
-
-        channel_maps = response.json()
-
-        # There should only be one channel map per server given there's a successful response
-        output_channel_id = channel_maps[0]["output_channel_id"]
-
-        for row in rows:
-            if row["from_link"] in message.content:
+        for converter in converters:
+            if converter["from_link"] in message.content:
                 new_url: str
 
                 # XOR between to_link and xpath attributes are handled within the API,
                 # so we can assume that the data is valid at this point
-                if row["to_link"] is not None:
-                    new_url = message.content.replace(row["from_link"], row["to_link"])
+                if converter["to_link"] is not None:
+                    new_url = message.content.replace(converter["from_link"], converter["to_link"])
                 else:
                     full_url = self.get_first_url(message.content)
                     webpage = await self.bot.http_client.get(
@@ -74,7 +64,7 @@ class LinkMapper(Cog):
                     )
                     soup = BeautifulSoup(webpage.content, "html.parser")
                     dom = etree.HTML(str(soup))
-                    extracted = dom.xpath(row["xpath"])
+                    extracted = dom.xpath(converter["xpath"])
 
                     # "src" for images, "data-src" for videos
                     new_url = extracted[0].get("src") or extracted[0].get("data-src")
@@ -125,11 +115,15 @@ class LinkMapper(Cog):
     async def list_link_map_converters(
         self,
         ctx: Context,
+        input_channel_id: str | None = None,
         attribute: str | None = None,
     ) -> None:
         response = await self.bot.api.get(
             "/api/link_maps/converters",
-            params={"server_id": ctx.guild.id},
+            params={
+                "server_id": ctx.guild.id,
+                "input_channel_id": input_channel_id or ctx.channel.id,
+            },
         )
 
         if not response.is_success:
@@ -139,9 +133,16 @@ class LinkMapper(Cog):
 
             return
 
+        if response.status_code == 204:
+            await ctx.warning_embed("No link converters exist.")
+
+            return
+
         data = response.json()
 
-        if len(data) == 0:
+        converters = data["link_maps"]
+
+        if len(converters) == 0:
             await ctx.warning_embed("No link converters exist.")
 
             return
@@ -153,10 +154,10 @@ class LinkMapper(Cog):
                     "type": "to_link" if x["to_link"] else "xpath",
                     "destination": x["to_link"] if x["to_link"] else x["xpath"],
                 }
-                for x in data
+                for x in converters
             ]
         else:
-            lst = [{"source": x["from_link"], attribute: x[attribute]} for x in data]
+            lst = [{"source": x["from_link"], attribute: x[attribute]} for x in converters]
 
         table = dict_to_human_table(lst)
 
@@ -227,7 +228,7 @@ class LinkMapper(Cog):
 
             return
 
-        await ctx.send(codeblock(data, language="json"))
+        await ctx.done()
 
     @link_map.group(aliases=("remove", "r"))
     @is_trusted()
@@ -239,14 +240,12 @@ class LinkMapper(Cog):
     async def remove_link_map_converter(self, ctx: Context, id: str) -> None:
         response = await self.bot.api.delete(f"/api/link_maps/converters/{id}")
 
-        data = response.json()
-
         if not response.is_success:
             await ctx.send(f"Link map deletion failed with code {response.status_code}")
 
             return
 
-        await ctx.send(codeblock(data, language="json"))
+        await ctx.done()
 
 
 async def setup(bot: Xythrion) -> None:

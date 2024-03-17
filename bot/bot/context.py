@@ -3,7 +3,7 @@ from random import choice
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from discord import Embed, File
+from discord import Embed, Emoji, File, PartialEmoji, Reaction
 from discord.ext.commands import Context as BaseContext
 from discord.ext.commands import Group
 
@@ -51,6 +51,9 @@ class Context(BaseContext):
         file = File(fp=buffer, filename=f"{file_name}.png")
 
         await self.send(embed=embed, file=file)
+
+    async def done(self, reaction: Emoji | PartialEmoji | Reaction | str = "✅") -> None:
+        await self.message.add_reaction(reaction)
 
     @staticmethod
     def __construct_reply_embed(

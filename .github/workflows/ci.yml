@@ -63,7 +63,7 @@ jobs:
 
     strategy:
       matrix:
-        dir: ["api", "bot"]
+        directory: ["api", "bot"]
 
     steps:
     - name: Checkout code
@@ -82,13 +82,13 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./${{ matrix.dir }}
-        file: ./${{ matrix.dir }}/Dockerfile
+        context: ./${{ matrix.directory }}
+        file: ./${{ matrix.directory }}/Dockerfile
         push: true
-        cache-from: type=registry,ref=ghcr.io/xithrius/xythrion/${{ matrix.dir }}:latest
+        cache-from: type=registry,ref=ghcr.io/xithrius/xythrion/${{ matrix.directory }}:latest
         cache-to: type=inline
         tags: |
-          ghcr.io/xithrius/xythrion/${{ matrix.dir }}:${{ github.sha }}
-          ghcr.io/xithrius/xythrion/${{ matrix.dir }}:latest
+          ghcr.io/xithrius/xythrion/${{ matrix.directory }}:${{ github.sha }}
+          ghcr.io/xithrius/xythrion/${{ matrix.directory }}:latest
         build-args: |
           git_sha=${{ github.sha }}
