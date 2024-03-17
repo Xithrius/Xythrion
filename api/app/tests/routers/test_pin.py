@@ -37,12 +37,6 @@ async def test_pin_create_one_returns_valid_response(
     response = await client.post(url, json=new_pin)
     assert response.status_code == status.HTTP_201_CREATED
 
-    data = response.json()
-    created_on = data.pop("created_at")
-
-    assert created_on
-    assert data == new_pin
-
 
 @pytest.mark.anyio
 async def test_pin_create_single_can_be_listed(
@@ -65,7 +59,10 @@ async def test_pin_create_single_can_be_listed(
 
     assert all_pins_response.status_code == status.HTTP_200_OK
 
-    assert pin_response.json() == all_pins_response.json()[0]
+    created_pin = all_pins_response.json()[0]
+
+    for k, v in new_pin.items():
+        assert created_pin[k] == v
 
 
 @pytest.mark.anyio
@@ -129,7 +126,7 @@ async def test_pin_create_and_delete_single_pin_lists_nothing(
     )
     response = await client.delete(url)
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     url = fastapi_app.url_path_for("get_all_pins")
     response = await client.get(url)

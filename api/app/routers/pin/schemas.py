@@ -16,3 +16,7 @@ class Pin(PinBase):
 
 class PinCreate(PinBase):
     user_id: int
+
+
+class PinUpdate(BaseModel):
+    pass

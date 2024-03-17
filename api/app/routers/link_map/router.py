@@ -1,14 +1,16 @@
-from typing import Annotated
+from fastapi import APIRouter, HTTPException, Response, status
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from app.database.crud.link_map_channel import link_map_channel_dao
+from app.database.crud.link_map_converter import link_map_converter_dao
+from app.database.dependencies import DBSession
+from app.database.models.link_map import LinkMapChannelModel
 
-from app.database.dependencies import get_db_session
-from app.database.models.link_map import LinkMapChannelModel, LinkMapModel
-
-from .schemas import LinkMap, LinkMapChannel, LinkMapChannelCreate, LinkMapCreate
+from .schemas import (
+    LinkMapChannel,
+    LinkMapChannelConverters,
+    LinkMapChannelCreate,
+    LinkMapConverterCreate,
+)
 
 router = APIRouter()
 
@@ -19,137 +21,138 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_link_map_channels(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
-    server_id: int | None = None,
+    session: DBSession,
 ) -> list[LinkMapChannelModel]:
-    stmt = select(LinkMapChannelModel)
+    return await link_map_channel_dao.get_all(session)
 
-    if server_id is not None:
-        stmt = stmt.where(LinkMapChannelModel.server_id == server_id)
 
-    items = await session.execute(stmt)
-    items.unique()
+@router.get(
+    "/channels",
+    response_model=LinkMapChannel,
+    status_code=status.HTTP_200_OK,
+)
+async def get_one_link_map_channel(
+    session: DBSession,
+    server_id: int | None = None,
+) -> LinkMapChannelModel:
+    channel = await link_map_channel_dao.get_by_server_id(session, server_id=server_id)
 
-    return list(items.scalars().fetchall())
+    if channel is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No link map channels could be found for server with ID '{server_id}'",
+        )
+
+    return channel
 
 
 @router.get(
     "/converters",
-    response_model=list[LinkMap],
     status_code=status.HTTP_200_OK,
 )
-async def get_all_link_map_converters(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
-    server_id: int | None = None,
-    input_channel_id: int | None = None,
-) -> list[LinkMapModel]:
-    stmt = select(LinkMapModel)
+async def get_all_channel_link_map_converters(
+    session: DBSession,
+    server_id: int,
+    input_channel_id: int,
+) -> LinkMapChannelConverters:
+    converters = await link_map_channel_dao.get_converters_for_channel(
+        session,
+        server_id=server_id,
+        input_channel_id=input_channel_id,
+    )
 
-    if server_id and input_channel_id:
-        stmt = (
-            stmt.join(LinkMapChannelModel, LinkMapModel.channel_map)
-            .where(
-                LinkMapModel.channel_map_server_id == server_id,
-                LinkMapChannelModel.input_channel_id == input_channel_id,
-            )
-            .options(selectinload(LinkMapModel.channel_map))
+    if converters is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No link map channels found for input channel with ID '{input_channel_id}'",
         )
 
-    items = await session.execute(stmt)
-    items.unique()
-
-    return list(items.scalars().fetchall())
+    return converters
 
 
 @router.post(
     "/channels",
-    response_model=LinkMapChannel,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map_channel(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
-    link_map_channel: LinkMapChannelCreate,
-) -> LinkMapChannelModel:
-    stmt = select(LinkMapChannelModel).where(
-        LinkMapChannelModel.server_id == link_map_channel.server_id,
+    session: DBSession,
+    new_link_map_channel: LinkMapChannelCreate,
+) -> None:
+    channels = await link_map_channel_dao.get_by_server_id(
+        session,
+        server_id=new_link_map_channel.server_id,
     )
 
-    items = await session.execute(stmt)
-    items.unique()
-
-    if items.scalar_one_or_none() is not None:
+    if channels is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Link map channel with ID '{link_map_channel.server_id}' already exists",
+            detail=f"Link map channel with ID '{new_link_map_channel.server_id}' already exists",
         )
 
-    new_item = LinkMapChannelModel(**link_map_channel.model_dump())
-
-    session.add(new_item)
-    await session.flush()
-
-    return new_item
+    await link_map_channel_dao.create(session, obj_in=new_link_map_channel)
 
 
 @router.post(
     "/converters",
-    response_model=LinkMap,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map_converter(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
-    link_map: LinkMapCreate,
-) -> LinkMapModel:
+    session: DBSession,
+    link_map: LinkMapConverterCreate,
+) -> None:
     if (link_map.to_link is None) == (link_map.xpath is None):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only populate `to_link` or `xpath`.",
         )
 
-    stmt = select(LinkMapChannelModel).where(
-        LinkMapChannelModel.server_id == link_map.channel_map_server_id,
+    channel = await link_map_channel_dao.get_by_server_id(
+        session,
+        server_id=link_map.channel_map_server_id,
     )
 
-    items = await session.execute(stmt)
-    items.unique()
-
-    if items.scalar_one_or_none() is None:
+    if channel is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Relevant channel map does not exist for server ID '{link_map.channel_map_server_id}'",
         )
 
-    new_item = LinkMapModel(**link_map.model_dump())
+    await link_map_converter_dao.create(session, obj_in=link_map)
 
-    session.add(new_item)
-    await session.flush()
 
-    return new_item
+@router.delete(
+    "/channels/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def remove_link_map_channel(
+    session: DBSession,
+    id: str,
+) -> None:
+    count = await link_map_channel_dao.delete(session, pk=[id])
+
+    if count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Link map channel with ID '{id}' does not exist.",
+        )
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.delete(
     "/converters/{id}",
-    response_model=LinkMap,
     status_code=status.HTTP_200_OK,
 )
 async def remove_link_map_converter(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     id: str,
-) -> LinkMapModel:
-    stmt = select(LinkMapModel).where(LinkMapModel.id == id)
+) -> None:
+    count = await link_map_converter_dao.delete(session, pk=[id])
 
-    items = await session.execute(stmt)
-    items.unique()
-
-    if (item := items.scalar_one_or_none()) is None:
+    if count == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Converter by ID '{id}' not found",
+            detail=f"Link map converter with ID '{id}' does not exist.",
         )
 
-    stmt = delete(LinkMapModel).where(LinkMapModel.id == id)
-
-    await session.execute(stmt)
-    await session.commit()
-
-    return item
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -1,10 +1,9 @@
-from typing import Annotated
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from app.database.dependencies import DBSession
+from fastapi import APIRouter, HTTPException, Response, status
 
-from app.database.dependencies import get_db_session
+from app.database.crud.command_metric import command_metric_dao
 from app.database.models.command_metric import CommandMetricModel
 
 from .schemas import CommandMetric, CommandMetricCreate
@@ -19,29 +18,39 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_command_metrics(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     limit: int | None = 10,
     offset: int | None = 0,
 ) -> list[CommandMetricModel]:
-    stmt = select(CommandMetricModel).limit(limit).offset(offset)
-
-    items = await session.execute(stmt)
-
-    return list(items.scalars().fetchall())
+    return await command_metric_dao.get_all(session, offset=offset, limit=limit)
 
 
 @router.post(
     "/",
-    response_model=CommandMetric,
+    description="Create a command metric item",
     status_code=status.HTTP_201_CREATED,
 )
 async def create_command_usage_metric(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    session: DBSession,
     command_metric: CommandMetricCreate,
-) -> CommandMetricModel:
-    new_item = CommandMetricModel(**command_metric.model_dump())
+) -> None:
+    await command_metric_dao.create(session, obj_in=command_metric)
 
-    session.add(new_item)
-    await session.flush()
 
-    return new_item
+@router.delete(
+    "/{item_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def remove_command_usage_metric(
+    session: DBSession,
+    item_id: UUID,
+) -> None:
+    count = await command_metric_dao.delete(session, pk=[item_id])
+
+    if count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Command metric with ID '{item_id}' does not exist.",
+        )
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
