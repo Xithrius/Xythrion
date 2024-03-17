@@ -19,8 +19,6 @@ API_HEALTHCHECK_ATTEMPTS = 5
 
 
 class Xythrion(Bot):
-    """A subclass where important tasks and connections are created."""
-
     def __init__(self) -> None:
         """Initializing the bot with proper permissions."""
         intents = Intents.default()
@@ -41,7 +39,6 @@ class Xythrion(Bot):
         )
 
     async def get_context(self, message: Message, *, cls: Context = Context) -> Context:
-        """Defines the custom context."""
         return await super().get_context(message, cls=cls)
 
     async def on_command_completion(self, ctx: Context) -> None:
@@ -65,7 +62,6 @@ class Xythrion(Bot):
         return False
 
     async def setup_hook(self) -> None:
-        """Things to setup before the bot logs on."""
         api_url = getenv("API_URL", "http://localhost:8001")
 
         log.info(f"Attempting to connect to API at {api_url}")
@@ -91,7 +87,6 @@ class Xythrion(Bot):
             log.info(f"Loaded extension {ext_name} in {elapsed_str}")
 
     async def start(self) -> None:
-        """Things to run before bot starts."""
         token = getenv("BOT_TOKEN")
 
         if token is None:
@@ -101,7 +96,6 @@ class Xythrion(Bot):
         await super().start(token=token)
 
     async def close(self) -> None:
-        """Things to run before the bot logs off."""
         await self.api.aclose()
         await self.http_client.aclose()
 
@@ -109,5 +103,4 @@ class Xythrion(Bot):
 
     @staticmethod
     async def on_ready() -> None:
-        """Updates the bot status when logged in successfully."""
         log.info("Awaiting...")

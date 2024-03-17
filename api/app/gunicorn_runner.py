@@ -1,24 +1,25 @@
 import logging
 from typing import Any, ClassVar
 
-import uvicorn
-from gunicorn.glogging import Logger
 from gunicorn.app.base import BaseApplication
+from gunicorn.glogging import Logger
 from gunicorn.util import import_app
 from uvicorn.workers import UvicornWorker as BaseUvicornWorker
 
-from app.settings import FILTER_LOG_ENDPOINTS, settings
+from .logging import LOG_CONFIG, EndpointFilter
 
 try:
     import uvloop
 except ImportError:
     uvloop = None
 
-LOG_CONFIG = uvicorn.config.LOGGING_CONFIG
 
-if settings.environment == "production":
-    LOGGING_FORMAT = "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s resource.service.name=%(otelServiceName)s] - %(message)s"  # noqa: E501
-    LOG_CONFIG["formatters"]["access"]["fmt"] = LOGGING_FORMAT
+class CustomGunicornLogger(Logger):
+    def setup(self, cfg: Any) -> None:
+        super().setup(cfg)
+
+        access_logger = logging.getLogger("gunicorn.access")
+        access_logger.addFilter(EndpointFilter())
 
 
 class UvicornWorker(BaseUvicornWorker):
@@ -38,22 +39,6 @@ class UvicornWorker(BaseUvicornWorker):
         "proxy_headers": False,
         "log_config": LOG_CONFIG,
     }
-
-
-FILTER_LOGS = {f"GET {x} HTTP/1.1" for x in FILTER_LOG_ENDPOINTS}
-
-
-class EndpointFilter(logging.Filter):
-    def filter(self, record: logging.LogRecord) -> bool:
-        return all(record.getMessage().find(f) == -1 for f in FILTER_LOGS)
-
-
-class CustomGunicornLogger(Logger):
-    def setup(self, cfg: Any) -> None:
-        super().setup(cfg)
-
-        access_logger = logging.getLogger("gunicorn.access")
-        access_logger.addFilter(EndpointFilter())
 
 
 class GunicornApplication(BaseApplication):

@@ -4,19 +4,9 @@ import shutil
 
 import uvicorn
 
-from app.gunicorn_runner import GunicornApplication
-
-from .settings import FILTER_LOG_ENDPOINTS, settings
-
-FILTER_LOGS = {f"GET {x} HTTP/1.1" for x in FILTER_LOG_ENDPOINTS}
-
-
-class EndpointFilter(logging.Filter):
-    def filter(self, record: logging.LogRecord) -> bool:
-        return all(record.getMessage().find(f) == -1 for f in FILTER_LOGS)
-
-
-logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
+from .gunicorn_runner import GunicornApplication
+from .logging import EndpointFilter
+from .settings import settings
 
 
 def set_multiproc_dir() -> None:
@@ -36,6 +26,8 @@ def main() -> None:
     set_multiproc_dir()
 
     if settings.reload:
+        logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
+
         uvicorn.run(
             "app.routers.application:get_app",
             workers=settings.workers_count,

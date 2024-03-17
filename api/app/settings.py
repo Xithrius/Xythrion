@@ -6,11 +6,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
-FILTER_LOG_ENDPOINTS = {
-    "/metrics",
-    "/api/openapi.json",
-    "/api/docs",
-}
 
 
 class LogLevel(str, enum.Enum):
@@ -44,8 +39,7 @@ class Settings(BaseSettings):
     db_base: str = "xythrion"
     db_echo: bool = False
 
-    # This variable is used to define
-    # multiproc_dir. It's required for [uvi|guni]corn projects.
+    # This variable is used to define multiproc_dir. It's required for [uvi|guni]corn projects.
     prometheus_dir: Path = TEMP_DIR / "prom"
 
     # Grpc endpoint for opentelemetry.
