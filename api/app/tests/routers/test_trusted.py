@@ -46,13 +46,6 @@ async def test_trust_one_user(
     response = await client.post(url, json=new_trusted_user)
     assert response.status_code == status.HTTP_201_CREATED
 
-    data = response.json()
-    user_id, at = data.pop("id"), data.pop("at")
-
-    assert user_id
-    assert at
-    assert data == new_trusted_user
-
 
 @pytest.mark.anyio
 async def test_trust_one_user_then_list(

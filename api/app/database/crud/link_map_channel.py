@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
@@ -24,13 +24,28 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
 
         return items.scalars().first()
 
+    async def get_converters_for_channel(
+        self,
+        db: AsyncSession,
+        *,
+        server_id: int,
+        input_channel_id: int,
+    ) -> LinkMapChannelModel | None:
+        items = await db.execute(
+            select(LinkMapChannelModel).where(
+                LinkMapChannelModel.server_id == server_id,
+                LinkMapChannelModel.input_channel_id == input_channel_id,
+            ),
+        )
+        items.unique()
+
+        return items.scalars().one_or_none()
+
     async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> LinkMapChannelModel:
         await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:
-        items = await db.execute(delete(self.model).where(self.model.id.in_(pk)))
-
-        return items.rowcount
+        return await self.delete_(db, pk=pk)
 
 
 link_map_channel_dao = LinkMapChannelCRUD(LinkMapChannelModel)

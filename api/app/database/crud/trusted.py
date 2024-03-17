@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
@@ -18,20 +18,16 @@ class TrustedCRUD(CRUDBase[TrustedModel, TrustedCreate, TrustedUpdate]):
 
         return items.scalars().all()
 
-    # async def get_by_command_name(self, db: AsyncSession, *, command_name: str) -> TrustedModel | None:
-    #     items = await db.execute(select(self.model).where(self.model.command_name == command_name))
+    async def get_by_user_id(self, db: AsyncSession, *, user_id: int) -> TrustedModel | None:
+        items = await db.execute(select(self.model).where(self.model.user_id == user_id))
 
-    #     return items.scalars().first()
+        return items.scalars().first()
 
     async def create(self, db: AsyncSession, *, obj_in: TrustedCreate) -> TrustedModel:
-        new_item = await self.create_(db, obj_in=obj_in)
+        await self.create_(db, obj_in=obj_in)
 
-        return new_item
-
-    async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:
-        items = await db.execute(delete(self.model).where(self.model.id.in_(pk)))
-
-        return items.rowcount
+    async def delete(self, db: AsyncSession, *, pk: list[int]) -> int:
+        return await self.delete_(db, pk=pk)
 
 
 trusted_dao = TrustedCRUD(TrustedModel)

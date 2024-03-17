@@ -33,11 +33,7 @@ async def test_check_no_link_map_converters(
         params={"server_id": 1234, "input_channel_id": 1234},
     )
 
-    assert response.status_code == status.HTTP_200_OK
-
-    data = response.json()
-
-    assert data is None
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.anyio
@@ -186,14 +182,6 @@ async def test_create_valid_channel_and_then_valid_link_map_converter(
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    data = response.json()
-
-    assert data.pop("id")
-    assert data.pop("created_at")
-    assert data.pop("xpath") is None
-
-    assert data == new_link_map
-
 
 @pytest.mark.anyio
 async def test_create_valid_channel_and_converter_and_search_with_input_channel(
@@ -270,7 +258,13 @@ async def test_create_valid_channel_and_converter_then_delete_converter_then_lis
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    new_converter = response.json()
+    url = fastapi_app.url_path_for("get_all_channel_link_map_converters")
+    response = await client.get(
+        url,
+        params={"server_id": 321, "input_channel_id": 321},
+    )
+
+    new_converter = response.json()["link_maps"][0]
 
     url = fastapi_app.url_path_for("remove_link_map_converter", id=new_converter["id"])
     response = await client.delete(url)

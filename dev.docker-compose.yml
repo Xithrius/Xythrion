@@ -26,6 +26,9 @@ services:
       XYTHRION_API_DB_HOST: "postgres"
       XYTHRION_API_HOST: "0.0.0.0"
 
+    ports:
+    - "127.0.0.1:8001:8001"
+
     volumes:
     - ./api:/api
 

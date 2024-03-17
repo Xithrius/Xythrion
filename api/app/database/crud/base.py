@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from typing import Generic, TypeVar
 from uuid import UUID
 
@@ -26,6 +27,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return result.scalars().first()
 
+    # async def get_by_(self, db: AsyncSession, **kwargs) -> ModelType | None:
+    #     result = await db.execute(
+    #         select(self.model).where(and_(*kwargs))
+    #     )
+
     async def create_(
         self,
         db: AsyncSession,
@@ -40,9 +46,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         db: AsyncSession,
         *,
-        pk: int | UUID,
+        pk: list[int | UUID] | Callable,
     ) -> int:
-        result = await db.execute(delete(self.model).where(self.model.id == pk))
+        result = await db.execute(delete(self.model).where(self.model.id.in_(pk) if isinstance(pk, list) else pk()))
 
         return result.rowcount
 

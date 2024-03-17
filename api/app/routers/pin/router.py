@@ -1,10 +1,10 @@
-from app.database.dependencies import DBSession
-from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import delete, select
+from fastapi import APIRouter, HTTPException, Response, status
 
+from app.database.crud.pin import pin_dao
+from app.database.dependencies import DBSession
 from app.database.models.pin import PinModel
 
-from .schemas import Pin, PinCreate
+from .schemas import Pin, PinBase, PinCreate
 
 router = APIRouter()
 
@@ -19,76 +19,51 @@ async def get_all_pins(
     limit: int | None = 10,
     offset: int | None = 0,
 ) -> list[PinModel]:
-    stmt = select(PinModel).limit(limit).offset(offset)
-
-    items = await session.execute(stmt)
-
-    return list(items.scalars().fetchall())
+    return await pin_dao.get_all(session, offset=offset, limit=limit)
 
 
 @router.post(
     "/",
-    response_model=Pin,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_pin(
     session: DBSession,
-    pin: PinCreate,
-) -> PinModel:
-    stmt = select(PinModel).where(
-        PinModel.server_id == pin.server_id,
-        PinModel.channel_id == pin.channel_id,
-        PinModel.message_id == pin.message_id,
-    )
+    new_pin: PinCreate,
+) -> None:
+    pins = await pin_dao.get_by_section_ids(session, pin=new_pin)
 
-    items = await session.execute(stmt)
-
-    if items.scalar_one_or_none() is not None:
+    if pins is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Pin already exists",
         )
 
-    new_item = PinModel(**pin.model_dump())
-
-    session.add(new_item)
-    await session.commit()
-
-    return new_item
+    await pin_dao.create(session, obj_in=new_pin)
 
 
 @router.delete(
     "/{server_id}/{channel_id}/{message_id}",
-    response_model=Pin,
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def remove_pin(
     session: DBSession,
     server_id: int,
     channel_id: int,
     message_id: int,
-) -> PinModel:
-    stmt = select(PinModel).where(
-        PinModel.server_id == server_id,
-        PinModel.channel_id == channel_id,
-        PinModel.message_id == message_id,
+) -> None:
+    count = await pin_dao.delete(
+        session,
+        pin=PinBase(
+            server_id=server_id,
+            channel_id=channel_id,
+            message_id=message_id,
+        ),
     )
 
-    items = await session.execute(stmt)
-
-    if (item := items.scalar_one_or_none()) is None:
+    if count == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Pin at {server_id}/{channel_id}/{message_id} not found",
+            detail=f"Pin at {server_id}/{channel_id}/{message_id} not found.",
         )
 
-    stmt = delete(PinModel).where(
-        PinModel.server_id == server_id,
-        PinModel.channel_id == channel_id,
-        PinModel.message_id == message_id,
-    )
-
-    await session.execute(stmt)
-    await session.commit()
-
-    return item
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
@@ -27,9 +27,7 @@ class CommandMetricCRUD(CRUDBase[CommandMetricModel, CommandMetricCreate, Comman
         await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:
-        items = await db.execute(delete(self.model).where(self.model.id.in_(pk)))
-
-        return items.rowcount
+        return await self.delete_(db, pk=pk)
 
 
 command_metric_dao = CommandMetricCRUD(CommandMetricModel)
