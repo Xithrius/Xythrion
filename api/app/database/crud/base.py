@@ -14,6 +14,7 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+    # class CRUDBase[ModelType: MappedBase]:
     def __init__(self, model: type[ModelType]) -> None:
         self.model = model
 
