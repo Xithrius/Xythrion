@@ -38,11 +38,9 @@ async def _engine() -> AsyncGenerator[AsyncEngine, None]:
 
     load_all_models()
 
-    postgres = PostgresContainer("postgres:15-alpine")
+    postgres = PostgresContainer("postgres:15-alpine", driver="psycopg")
     postgres.start()
 
-    # https://github.com/testcontainers/testcontainers-python/issues/263#issuecomment-1471334905
-    postgres.driver = "asyncpg"
     url = postgres.get_connection_url()
 
     await create_database(url)
