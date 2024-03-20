@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from typing import Generic, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -8,13 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.base import MappedBase
 
-ModelType = TypeVar("ModelType", bound=MappedBase)
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
-
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    # class CRUDBase[ModelType: MappedBase]:
+class CRUDBase[ModelType: MappedBase, CreateSchemaType: BaseModel, UpdateSchemaType: BaseModel]:
     def __init__(self, model: type[ModelType]) -> None:
         self.model = model
 
