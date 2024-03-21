@@ -47,6 +47,7 @@ test = [
     "pytest-xdist==3.5.0",
     "psycopg==3.1.18",
     "testcontainers[postgres]==4.1.1",
+    "gevent==24.2.1",
 ]
 
 [tool.pdm.scripts]
@@ -65,9 +66,14 @@ test = "python3 -m pytest --ff"
 atest = "python3 -m pytest -n auto --ff"
 vtest = "python3 -m pytest -vvv --ff"
 retest = "python3 -m pytest --lf"
+
+# Coverage
 test-cov = "python3 -m pytest --cov=./ --cov-report=xml"
 html = "coverage html"
 report = "coverage report --sort=Cover"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+concurrency = ["gevent"]
