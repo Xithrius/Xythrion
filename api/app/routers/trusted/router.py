@@ -5,7 +5,6 @@ from app.database.dependencies import DBSession
 from app.database.models.trusted import TrustedModel
 
 from .schemas import Trusted, TrustedCreate
-from loguru import logger as log
 
 router = APIRouter()
 
@@ -39,8 +38,6 @@ async def get_trusted_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Trusted user with ID '{user_id}' not found",
         )
-
-    log.info(user)
 
     return user
 

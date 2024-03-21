@@ -27,13 +27,26 @@ async def test_check_no_link_map_converters(
     client: AsyncClient,
     dbsession: AsyncSession,
 ) -> None:
-    url = fastapi_app.url_path_for("get_all_channel_link_map_converters")
-    response = await client.get(
-        url,
-        params={"server_id": 1234, "input_channel_id": 1234},
-    )
+    url = fastapi_app.url_path_for("get_all_link_map_converters")
+    response = await client.get(url)
 
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
+
+    data = response.json()
+
+    assert data == []
+
+
+@pytest.mark.anyio
+async def test_check_no_link_map_channels_on_invalid_server(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("get_one_link_map_channel")
+    response = await client.get(url, params={"server_id": 1234})
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.anyio
@@ -69,17 +82,39 @@ async def test_create_valid_link_map_channel_and_list(
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    url = fastapi_app.url_path_for("get_all_link_map_channels")
+    url = fastapi_app.url_path_for("get_one_link_map_channel")
 
-    response = await client.get(url)
+    response = await client.get(url, params={"server_id": 1})
 
-    link_map_channels = response.json()
-
-    assert len(link_map_channels) == 1
-
-    channel = link_map_channels[0]
+    channel = response.json()
 
     assert channel.pop("created_at")
+    assert new_link_map_channel == channel
+
+
+@pytest.mark.anyio
+async def test_create_valid_link_map_channel_and_delete(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("create_link_map_channel")
+    new_link_map_channel = {
+        "server_id": 1,
+        "input_channel_id": 2,
+        "output_channel_id": 3,
+    }
+    response = await client.post(url, json=new_link_map_channel)
+
+    assert response.status_code == status.HTTP_201_CREATED
+
+    url = fastapi_app.url_path_for(
+        "remove_link_map_channel",
+        id=1,
+    )
+    response = await client.delete(url)
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 @pytest.mark.anyio
@@ -285,7 +320,22 @@ async def test_create_valid_channel_and_converter_then_delete_converter_then_lis
 
 
 @pytest.mark.anyio
-async def test_delete_link_map_that_does_not_exist(
+async def test_delete_invalid_link_map_channel(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for(
+        "remove_link_map_channel",
+        id=55555,
+    )
+    response = await client.delete(url)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.anyio
+async def test_delete_invalid_link_map_converter(
     fastapi_app: FastAPI,
     client: AsyncClient,
     dbsession: AsyncSession,

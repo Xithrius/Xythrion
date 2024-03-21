@@ -3,12 +3,12 @@ from typing import Generic, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel
-from sqlalchemy import and_, delete, select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.base import MappedBase
+from app.database.base import Base
 
-ModelType = TypeVar("ModelType", bound=MappedBase)
+ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
@@ -23,7 +23,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         *,
         pk: int | UUID | None = None,
     ) -> ModelType | None:
-        result = await db.execute(select(self.model).where(and_(self.model.id == pk)))
+        result = await db.execute(select(self.model).where(self.model.id == pk))
 
         return result.scalars().first()
 

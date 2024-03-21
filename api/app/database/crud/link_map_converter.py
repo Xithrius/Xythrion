@@ -10,16 +10,8 @@ from app.routers.link_map.schemas import LinkMapConverterCreate, LinkMapConverte
 
 
 class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreate, LinkMapConverterUpdate]):
-    async def get(self, db: AsyncSession, *, pk: UUID) -> LinkMapConverterModel | None:
-        return await self.get_(db, pk=pk)
-
-    async def get_all(self, db: AsyncSession, *, limit: int, offset: int) -> Sequence[LinkMapConverterModel]:
-        items = await db.execute(select(self.model).limit(limit).offset(offset))
-
-        return items.scalars().all()
-
-    async def get_by_server_id(self, db: AsyncSession, *, server_id: str) -> Sequence[LinkMapConverterModel]:
-        items = await db.execute(select(self.model).where(self.model.channel_map_server_id == server_id))
+    async def get_all(self, db: AsyncSession) -> Sequence[LinkMapConverterModel]:
+        items = await db.execute(select(self.model))
 
         return items.scalars().all()
 

@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,9 +9,6 @@ from app.routers.link_map.schemas import LinkMapChannelCreate, LinkMapChannelUpd
 
 
 class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, LinkMapChannelUpdate]):
-    async def get(self, db: AsyncSession, *, pk: UUID) -> LinkMapChannelModel | None:
-        return await self.get_(db, pk=pk)
-
     async def get_all(self, db: AsyncSession) -> Sequence[LinkMapChannelModel]:
         items = await db.execute(select(self.model))
         items.unique()
@@ -44,8 +40,8 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
     async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> LinkMapChannelModel:
         await self.create_(db, obj_in=obj_in)
 
-    async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:
-        return await self.delete_(db, pk=pk)
+    async def delete(self, db: AsyncSession, *, pk: list[int]) -> int:
+        return await self.delete_(db, pk=lambda: self.model.server_id.in_(pk))
 
 
 link_map_channel_dao = LinkMapChannelCRUD(LinkMapChannelModel)

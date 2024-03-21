@@ -13,6 +13,8 @@ from app.database.base import Base
 class LinkMapChannelModel(Base):
     __tablename__ = "link_map_channels"
 
+    # TODO: Change to UUID primary key, this implementation is not good
+
     server_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
 
     input_channel_id: Mapped[int] = mapped_column(BigInteger)
