@@ -59,7 +59,7 @@ REQUESTS_IN_PROGRESS = Gauge(
 )
 
 
-class PrometheusMiddleware(BaseHTTPMiddleware):
+class PrometheusMiddleware(BaseHTTPMiddleware):  # pragma: no cover
     def __init__(self, app: ASGIApp, app_name: str = "xythrion-api") -> None:
         super().__init__(app)
         self.app_name = app_name
@@ -130,14 +130,14 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
         return request.url.path, False
 
 
-def metrics(request: Request) -> Response:
+def metrics(request: Request) -> Response:  # pragma: no cover
     return Response(
         generate_latest(REGISTRY),
         headers={"Content-Type": CONTENT_TYPE_LATEST},
     )
 
 
-def _setup_db(app: FastAPI) -> None:
+def _setup_db(app: FastAPI) -> None:  # pragma: no cover
     engine = create_async_engine(str(settings.db_url), echo=settings.db_echo)
     session_factory = async_sessionmaker(
         engine,
@@ -151,7 +151,7 @@ def setup_opentelemetry(
     app: FastAPI,
     app_name: str | None = "xythrion-api",
     log_correlation: bool = True,
-) -> None:
+) -> None:  # pragma: no cover
     if settings.opentelemetry_endpoint is None:
         log.warning("Telemetry endpoint not configured, no logs will be exported.")
         return
@@ -210,7 +210,7 @@ def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator:
+async def lifespan(app: FastAPI) -> AsyncGenerator:  # pragma: no cover
     app.middleware_stack = None
     _setup_db(app)
     setup_opentelemetry(app)

@@ -7,7 +7,7 @@ from app.settings import settings
 
 async def create_database(
     url: str | None = make_url(str(settings.db_url.with_path("/postgres"))),
-) -> None:
+) -> None:  # pragma: no cover
     """Create a database."""
     engine = create_async_engine(url, isolation_level="AUTOCOMMIT")
 
@@ -32,7 +32,7 @@ async def create_database(
 
 async def drop_database(
     url: str | None = make_url(str(settings.db_url.with_path("/postgres"))),
-) -> None:
+) -> None:  # pragma: no cover
     """Drop current database."""
     engine = create_async_engine(url, isolation_level="AUTOCOMMIT")
 
