@@ -19,25 +19,66 @@ A graphing bot built with [`discord.py`](https://github.com/Rapptz/discord.py).
 
 </div>
 
+# Installation
+
 ## Requirements
 
+### Docker installation
+
+- [`docker`](https://github.com/docker/cli) and [`docker-compose`](https://github.com/docker/compose)
+
+### Local installation
+
+- Postgres
 - Python 3.11
 - [`python-pdm`](https://github.com/pdm-project/pdm)
 
-### Optional Requirements
+## Bringing up of [infra.xithrius.cloud](https://github.com/Xithrius/infra.xithrius.cloud)
 
-- [`docker`](https://github.com/docker/cli) and [`docker-compose`](https://github.com/docker/compose)
-- [`podman`](https://github.com/containers/podman) and [`podman-compose`](https://github.com/containers/podman-compose)
+1. Cloning
 
-## Setup
+```bash
+git clone https://github.com/Xithrius/infra.xithrius.cloud
+```
+
+2. Environment variables
+
+```bash
+cp .env.sample .env
+```
+
+Put a password into `POSTGRES_PASSWORD` and `"infra"` into `POSTGRES_USER`
+
+> [!IMPORTANT]
+> If you're setting up for production, you can place a discord webhook into `WATCHTOWER_NOTIFICATION_URL` if you plan to use watchtower.
+
+3. Creating the Postgres container
+
+```bash
+cd infra.xithrius.cloud/scripts
+./create-networks.sh
+./setup-postgres.sh infra xythrion xythrion xythrion
+```
+
+## Bringing up of this repo
+
+1. Copy the `.env.sample` file to `.env`
+
+```bash
+cp .env.sample .env
+```
+
+2. Place your key in `BOT_TOKEN` in the `.env` file, and whatever prefix you'd like (such as `";"`) into `BOT_PREFIX`
 
 ### Local Installation
 
-1. Place your key in `BOT_TOKEN` in the `.env` file.
-2. (For development) Install pre-commit hooks using `pdm precommit`.
-3. Run `pdm api` to start the api, and `pdm bot` to run the bot.
+1. (For development) Install pre-commit hooks using `pdm precommit`
+2. (first time installation) run `pdm upgrade` to run database migrations
+3. Run the API via `pdm api`
+4. Finally get the bot up by `pdm bot`
 
 ### Docker/Podman Installation
 
-1. Place your key in `BOT_TOKEN` in the `.env` file.
-2. Run `docker-compose up bot` or `podman-compose up bot`.
+1. Run `docker compose up -d`
+2. (If in a production environment) run `loginctl enable-linger` such that detached containers don't exit when you logout
+3. (Optional) run all the Grafana/Prometheus/Tempo/Loki containers from [infra.xithrius.cloud](https://github.com/Xithrius/infra.xithrius.cloud) to get realtime metrics.
