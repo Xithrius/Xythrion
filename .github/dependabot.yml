@@ -1,17 +1,38 @@
 version: 2
 
 updates:
-- package-ecosystem: github-actions
-  directory: /
+- package-ecosystem: "github-actions"
+  directory: "/"
   schedule:
-    interval: daily
+    interval: "daily"
+  groups:
+    ci-dependencies:
+      patterns:
+      - "*"
 
-- package-ecosystem: pip
-  directory: api
+- package-ecosystem: "pip"
+  directory: "api"
   schedule:
-    interval: daily
+    interval: "daily"
+  groups:
+    python-dependencies:
+      patterns:
+      - "*"
 
-- package-ecosystem: pip
-  directory: bot
+- package-ecosystem: "pip"
+  directory: "bot"
   schedule:
-    interval: daily
+    interval: "daily"
+  groups:
+    python-dependencies:
+      patterns:
+      - "*"
+
+- package-ecosystem: "docker"
+  directory: "/"
+  schedule:
+    interval: "daily"
+  groups:
+    docker-dependencies:
+      patterns:
+      - "*"
