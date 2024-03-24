@@ -123,7 +123,7 @@ async def create_link_map_converter(
 
 
 @router.delete(
-    "/channels/{id}",
+    "/channels/{channel_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def remove_link_map_channel(
@@ -142,7 +142,7 @@ async def remove_link_map_channel(
 
 
 @router.delete(
-    "/converters/{id}",
+    "/converters/{converter_id}",
     status_code=status.HTTP_200_OK,
 )
 async def remove_link_map_converter(
