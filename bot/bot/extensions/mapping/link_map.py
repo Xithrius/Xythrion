@@ -9,7 +9,6 @@ from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
 from bot.utils import dict_to_human_table, is_trusted
-
 from ._utils.link_converter import DestinationType, validate_destination
 
 REGEX_URL_MATCH = re.compile(r"https?://\S+")
@@ -221,8 +220,6 @@ class LinkMapper(Cog):
 
         response = await self.bot.api.post("/api/link_maps/converters", data=data)
 
-        data = response.json()
-
         if not response.is_success:
             await ctx.send(f"Link map creation failed with code {response.status_code}")
 
@@ -237,8 +234,8 @@ class LinkMapper(Cog):
 
     @link_map_remove.command(name="converters")
     @is_trusted()
-    async def remove_link_map_converter(self, ctx: Context, id: str) -> None:
-        response = await self.bot.api.delete(f"/api/link_maps/converters/{id}")
+    async def remove_link_map_converter(self, ctx: Context, converter_id: str) -> None:
+        response = await self.bot.api.delete(f"/api/link_maps/converters/{converter_id}")
 
         if not response.is_success:
             await ctx.send(f"Link map deletion failed with code {response.status_code}")

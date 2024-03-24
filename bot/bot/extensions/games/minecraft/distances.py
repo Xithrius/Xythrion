@@ -31,9 +31,9 @@ class MinecraftDistances(Cog):
         d: int
 
         if (x0, y0, z0) == (0, 0, 0):
-            d = sqrt(x1**2 + y1**2 + z1**2)
+            d = int(sqrt(x1**2 + y1**2 + z1**2))
         else:
-            d = sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2 + (z1 - z0) ** 2)
+            d = int(sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2 + (z1 - z0) ** 2))
 
         embed = Embed(
             description=f"`({x0}, {y0}, {z0})` -> `({x1}, {y1}, {z1})` is {int(d)} blocks",

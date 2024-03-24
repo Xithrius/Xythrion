@@ -44,7 +44,7 @@ async def create_command_usage_metric(
 async def remove_command_usage_metric(
     session: DBSession,
     item_id: UUID,
-) -> None:
+) -> Response:
     count = await command_metric_dao.delete(session, pk=[item_id])
 
     if count == 0:

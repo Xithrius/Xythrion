@@ -8,6 +8,7 @@ from bot.context import Context
 
 CVE_PATTERN = re.compile(r"CVE-\d{4}-\d{4,}")
 
+
 # TODO: Pydantic models
 
 

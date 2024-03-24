@@ -26,11 +26,11 @@ class PinCRUD(CRUDBase[PinModel, PinCreate, PinUpdate]):
         return items.scalars().all()
 
     async def get_by_section_ids(self, db: AsyncSession, *, pin: PinCreate) -> PinModel | None:
-        items = await db.execute(select(PinModel).where(equivalent_pin_model(pin)))
+        items = await db.execute(select(self.model).where(equivalent_pin_model(pin)))
 
         return items.scalars().first()
 
-    async def create(self, db: AsyncSession, *, obj_in: PinCreate) -> PinModel:
+    async def create(self, db: AsyncSession, *, obj_in: PinCreate) -> None:
         await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pin: PinBase) -> int:

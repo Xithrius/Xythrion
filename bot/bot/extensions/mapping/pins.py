@@ -44,8 +44,8 @@ class Pins(Cog):
 
     @pin.command(aliases=("remove", "delete", "del"))
     @is_trusted()
-    async def delete_pin(self, ctx: Context, id: str) -> None:
-        r: Response = await self.bot.api.delete(f"/api/pins/{id}")
+    async def delete_pin(self, ctx: Context, pin_id: str) -> None:
+        r: Response = await self.bot.api.delete(f"/api/pins/{pin_id}")
 
         if r.is_success:
             data = r.json()
@@ -57,7 +57,7 @@ class Pins(Cog):
             return
 
         await ctx.send(
-            embed=Embed(title=f"Could not find pin with ID '{id}'"),
+            embed=Embed(title=f"Could not find pin with ID '{pin_id}'"),
         )
 
     @pin.command(aliases=("migrate",))
@@ -85,7 +85,7 @@ class Pins(Cog):
                         continue
 
                     raise ValueError(
-                        f"Error when migrating pin with jump message '{pin.jump_url}': {e.response.text}",
+                        f"Error when migrating pin with jump message {pin['message']}: {e.response.text}",
                     )
 
                 if r.is_success:

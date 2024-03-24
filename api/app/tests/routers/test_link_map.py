@@ -110,7 +110,7 @@ async def test_create_valid_link_map_channel_and_delete(
 
     url = fastapi_app.url_path_for(
         "remove_link_map_channel",
-        id=1,
+        channel_id=1,
     )
     response = await client.delete(url)
 
@@ -301,7 +301,7 @@ async def test_create_valid_channel_and_converter_then_delete_converter_then_lis
 
     new_converter = response.json()["link_maps"][0]
 
-    url = fastapi_app.url_path_for("remove_link_map_converter", id=new_converter["id"])
+    url = fastapi_app.url_path_for("remove_link_map_converter", converter_id=new_converter["id"])
     response = await client.delete(url)
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -327,7 +327,7 @@ async def test_delete_invalid_link_map_channel(
 ) -> None:
     url = fastapi_app.url_path_for(
         "remove_link_map_channel",
-        id=55555,
+        channel_id=55555,
     )
     response = await client.delete(url)
 
@@ -342,7 +342,7 @@ async def test_delete_invalid_link_map_converter(
 ) -> None:
     url = fastapi_app.url_path_for(
         "remove_link_map_converter",
-        id="3e552f84-ebeb-4afc-b5db-997abe6d9458",
+        converter_id="3e552f84-ebeb-4afc-b5db-997abe6d9458",
     )
     response = await client.delete(url)
 

@@ -1,6 +1,6 @@
 import asyncio
-from collections.abc import Callable, Coroutine
 from typing import Any
+from collections.abc import Callable, Coroutine
 
 
 def to_async(func: Callable[..., Any]) -> Callable[..., Coroutine[Any, Any, Any]]:

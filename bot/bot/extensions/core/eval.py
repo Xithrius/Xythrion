@@ -38,6 +38,9 @@ class Eval(Cog):
         self.ln = 0
         self.stdout = StringIO()
 
+        self.socket_events: int = 0
+        self.socket_event_total: int = 0
+
     @Cog.listener()
     async def on_socket_event_type(self, event_type: str) -> None:
         """When a websocket event is received, increase our counters."""
@@ -101,7 +104,7 @@ class Eval(Cog):
 
         if out is None:
             # No output, return the input statement
-            return (res, None)
+            return res, None
 
         res += f"Out[{self.ln}]: "
 

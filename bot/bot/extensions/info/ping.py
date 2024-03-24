@@ -24,7 +24,7 @@ class Ping(Cog):
 
     @ping.command(aliases=("discord",))
     async def latency(self, ctx: Context) -> None:
-        await ctx.send(f"Latency: {self.bot.latency*1000:.0f}ms")
+        await ctx.send(f"Latency: {self.bot.latency * 1000:.0f}ms")
 
 
 async def setup(bot: Xythrion) -> None:

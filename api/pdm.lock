@@ -5,7 +5,7 @@
 groups = ["default", "precommit", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:b42d4e6730453aa6c5b1c0e314dcdbb811eef4eedfd12e8b847423870fbdc0e0"
+content_hash = "sha256:18b150f09eb5e07e633684a88eb38e9ab23686c1b7bf49a8b3d29a673e3a8d04"
 
 [[package]]
 name = "alembic"
@@ -1373,7 +1373,7 @@ files = [
 
 [[package]]
 name = "testcontainers"
-version = "4.1.1"
+version = "4.2.0rc2"
 requires_python = "<4.0,>=3.9"
 summary = "Python library for throwaway instances of anything that can run in a Docker container"
 groups = ["test"]
@@ -1383,23 +1383,23 @@ dependencies = [
     "wrapt",
 ]
 files = [
-    {file = "testcontainers-4.1.1-py3-none-any.whl", hash = "sha256:9105b1807cbd0a4e0bfe084c2159754554bc5264ff8173c32f88b0a91e6a5e7c"},
-    {file = "testcontainers-4.1.1.tar.gz", hash = "sha256:6c20bde6e040a0fea0ddfaa80492bcde105251b8a59a1325bb1a6fdffe0e62ad"},
+    {file = "testcontainers-4.2.0rc2-py3-none-any.whl", hash = "sha256:72d93ee02142906b6c50299761dfed39dcbc826d8034990f9bf3ebaeb671c6a3"},
+    {file = "testcontainers-4.2.0rc2.tar.gz", hash = "sha256:3c3006a858d36d9df23a952f6ab580c98e42dda6be6ad5ed48b47a32140f0d54"},
 ]
 
 [[package]]
 name = "testcontainers"
-version = "4.1.1"
+version = "4.2.0rc2"
 extras = ["postgres"]
 requires_python = "<4.0,>=3.9"
 summary = "Python library for throwaway instances of anything that can run in a Docker container"
 groups = ["test"]
 dependencies = [
-    "testcontainers==4.1.1",
+    "testcontainers==4.2.0rc2",
 ]
 files = [
-    {file = "testcontainers-4.1.1-py3-none-any.whl", hash = "sha256:9105b1807cbd0a4e0bfe084c2159754554bc5264ff8173c32f88b0a91e6a5e7c"},
-    {file = "testcontainers-4.1.1.tar.gz", hash = "sha256:6c20bde6e040a0fea0ddfaa80492bcde105251b8a59a1325bb1a6fdffe0e62ad"},
+    {file = "testcontainers-4.2.0rc2-py3-none-any.whl", hash = "sha256:72d93ee02142906b6c50299761dfed39dcbc826d8034990f9bf3ebaeb671c6a3"},
+    {file = "testcontainers-4.2.0rc2.tar.gz", hash = "sha256:3c3006a858d36d9df23a952f6ab580c98e42dda6be6ad5ed48b47a32140f0d54"},
 ]
 
 [[package]]

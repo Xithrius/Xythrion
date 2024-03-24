@@ -1,12 +1,12 @@
 import inspect
 from pathlib import Path
-from bot.context import Context
 
 from discord import Embed
 from discord.ext.commands import BadArgument, Cog, Command, HelpCommand, command
 
 from bot.bot import Xythrion
 from bot.constants import GITHUB_URL
+from bot.context import Context
 from bot.utils.converters import SourceConverter, SourceType
 
 DEPLOYMENT_FILE_PATH_PREFIX = Path("/project") / "pkgs"
@@ -65,7 +65,7 @@ class Source(Cog):
         except OSError:
             raise BadArgument("Cannot get source for a dynamically-created object.")
 
-        lines_extension = f"#L{first_line_no}-L{first_line_no+len(lines)-1}"
+        lines_extension = f"#L{first_line_no}-L{first_line_no + len(lines) - 1}"
 
         file_location = build_source_filepath(filename).as_posix()
 

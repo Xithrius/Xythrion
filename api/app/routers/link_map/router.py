@@ -123,38 +123,38 @@ async def create_link_map_converter(
 
 
 @router.delete(
-    "/channels/{id}",
+    "/channels/{channel_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def remove_link_map_channel(
     session: DBSession,
-    id: int,
-) -> None:
-    count = await link_map_channel_dao.delete(session, pk=[id])
+    channel_id: int,
+) -> Response:
+    count = await link_map_channel_dao.delete(session, pk=[channel_id])
 
     if count == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Link map channel with ID '{id}' does not exist.",
+            detail=f"Link map channel with ID '{channel_id}' does not exist.",
         )
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.delete(
-    "/converters/{id}",
+    "/converters/{converter_id}",
     status_code=status.HTTP_200_OK,
 )
 async def remove_link_map_converter(
     session: DBSession,
-    id: str,
-) -> None:
-    count = await link_map_converter_dao.delete(session, pk=[id])
+    converter_id: str,
+) -> Response:
+    count = await link_map_converter_dao.delete(session, pk=[converter_id])
 
     if count == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Link map converter with ID '{id}' does not exist.",
+            detail=f"Link map converter with ID '{converter_id}' does not exist.",
         )
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

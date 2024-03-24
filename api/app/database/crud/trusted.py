@@ -19,7 +19,7 @@ class TrustedCRUD(CRUDBase[TrustedModel, TrustedCreate, TrustedUpdate]):
 
         return items.scalars().first()
 
-    async def create(self, db: AsyncSession, *, obj_in: TrustedCreate) -> TrustedModel:
+    async def create(self, db: AsyncSession, *, obj_in: TrustedCreate) -> None:
         await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[int]) -> int:

@@ -15,7 +15,6 @@ from bot.context import Context
 if TYPE_CHECKING:
     from bot.bot import walk_extensions
 
-
 WHITESPACE_PATTERN = re.compile(r"\s+")
 TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")
 
@@ -27,7 +26,7 @@ def remove_whitespace(argument: str) -> str:
     return re.sub(WHITESPACE_PATTERN, "", argument)
 
 
-def convert_3d_tuples(argument: str) -> tuple[int, int, int]:
+def convert_3d_tuples(argument: str) -> tuple[int, ...]:
     """From a string with 3 arguments to integers."""
     if (m := re.match(TUPLE_3D_INT_PATTERN, argument)) is None:
         raise ValueError("No groups found in match")
@@ -61,7 +60,7 @@ class SourceConverter(Converter):
     """Convert an argument into a help command, command, or cog."""
 
     @staticmethod
-    async def convert(ctx: Context, argument: str) -> SourceType | None:
+    async def convert(ctx: Context, argument: str, **kwargs) -> SourceType | None:
         """Convert argument into source object."""
         if argument.lower() == "help":
             return ctx.bot.help_command

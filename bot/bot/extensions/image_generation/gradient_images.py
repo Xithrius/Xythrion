@@ -2,8 +2,8 @@ import asyncio
 from io import BytesIO
 
 import numpy as np
-from discord.ext.commands import Cog, command
 from PIL import Image
+from discord.ext.commands import Cog, command
 
 from bot.bot import Xythrion
 from bot.context import Context
