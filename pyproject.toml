@@ -1,14 +1,12 @@
 [project]
-dependencies = []
+name = "xythrion"
+version = "0.1.0"
+authors = [{ name = "Xithrius", email = "xithrius@gmail.com" }]
 requires-python = ">=3.11"
+license = { text = "MIT" }
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "-e file:///${PROJECT_ROOT}/api",
-    "-e file:///${PROJECT_ROOT}/bot",
-    "pre-commit==3.6.0",
-]
+[tool.rye]
+virtual = true
 
-[tool.pdm.scripts]
-lint = "pre-commit run --all-files"
-precommit = "pre-commit install"
+[tool.rye.workspace]
+members = ["api", "bot"]
