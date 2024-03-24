@@ -10,9 +10,9 @@ from bot.utils import remove_outliers, to_async
 async def plot_line_2d(
     df: pd.DataFrame,
     *,
-    title: str | None = "Line",
-    x_label: str | None = "x",
-    y_label: str | None = "y",
+    title: str = "Line",
+    x_label: str = "x",
+    y_label: str = "y",
     include_outliers: bool | None = False,
     ctx: Context | None,
 ) -> BytesIO | None:
@@ -27,10 +27,13 @@ async def plot_line_2d(
         svm.set_ylabel(y_label.capitalize())
 
         buffer = BytesIO()
-        svm.get_figure().savefig(buffer, format="png")
-        buffer.seek(0)
 
-        svm.figure.clf()
+        if (fig := svm.get_figure()) is None:
+            raise AttributeError("Figure of line plot is empty.")
+
+        fig.savefig(buffer, format="png")
+        buffer.seek(0)
+        fig.clf()
 
         return buffer
 

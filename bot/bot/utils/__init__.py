@@ -19,24 +19,24 @@ from .gradients import gradient3
 
 __all__ = (
     # checks
-    is_trusted,
+    "is_trusted",
     # converters
-    Extension,
-    convert_3d_tuples,
-    remove_whitespace,
+    "Extension",
+    "convert_3d_tuples",
+    "remove_whitespace",
     # dataframes
-    remove_outliers,
+    "remove_outliers",
     # decorators
-    to_async,
+    "to_async",
     # extensions
-    walk_extensions,
+    "walk_extensions",
     # formatting
-    final_join,
-    codeblock,
-    convert_to_deltas,
-    dict_to_human_table,
-    format_nanosecond_time,
-    markdown_link,
+    "final_join",
+    "codeblock",
+    "convert_to_deltas",
+    "dict_to_human_table",
+    "format_nanosecond_time",
+    "markdown_link",
     # gradients
-    gradient3,
+    "gradient3",
 )

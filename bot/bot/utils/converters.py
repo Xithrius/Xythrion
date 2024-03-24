@@ -29,7 +29,12 @@ def remove_whitespace(argument: str) -> str:
 
 def convert_3d_tuples(argument: str) -> tuple[int, int, int]:
     """From a string with 3 arguments to integers."""
-    int3 = tuple(int(x) for x in re.match(TUPLE_3D_INT_PATTERN, argument).groups())
+    if (m := re.match(TUPLE_3D_INT_PATTERN, argument)) is None:
+        raise ValueError("No groups found in match")
+
+    groups = m.groups()
+
+    int3 = tuple(int(x) for x in groups)
 
     if len(int3) != 3:
         raise ValueError("Argument could not be converted to tuple of 3 integers")

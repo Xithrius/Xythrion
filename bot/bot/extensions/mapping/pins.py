@@ -103,7 +103,7 @@ class Pins(Cog):
     async def list_pins(
         self,
         ctx: Context,
-        amount: int | None = 10,
+        amount: int = 10,
         server_id: int | None = None,
         user_id: int | None = None,
     ) -> None:

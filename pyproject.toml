@@ -12,3 +12,9 @@ dev = [
 [tool.pdm.scripts]
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+reportIncompatibleMethodOverride = false

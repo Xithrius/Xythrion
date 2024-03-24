@@ -19,8 +19,8 @@ def markdown_link(
 def final_join(
     items: list[str],
     *,
-    sep: str | None = ", ",
-    final: str | None = "and",
+    sep: str = ", ",
+    final: str = "and",
 ) -> str:
     """Joins a list by a separator with a final join at the very end."""
     items_length = len(items)
@@ -70,9 +70,9 @@ def dict_to_human_table(data: dict, *, datetime_key: str | None = None) -> str:
 def format_nanosecond_time(
     ns: int,
     *,
-    microsecond_threshold: int | None = 1_000,
-    millisecond_threshold: int | None = 1_000_000,
-    second_threshold: int | None = 1_000_000_000,
+    microsecond_threshold: int = 1_000,
+    millisecond_threshold: int = 1_000_000,
+    second_threshold: int = 1_000_000_000,
 ) -> str:
     if ns < microsecond_threshold:
         return f"{ns}ns"
