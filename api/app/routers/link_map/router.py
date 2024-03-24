@@ -22,7 +22,9 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_link_map_channels(session: DBSession) -> list[LinkMapChannelModel]:
-    return await link_map_channel_dao.get_all(session)
+    items = await link_map_channel_dao.get_all(session)
+
+    return list(items)
 
 
 @router.get(
@@ -31,7 +33,9 @@ async def get_all_link_map_channels(session: DBSession) -> list[LinkMapChannelMo
     status_code=status.HTTP_200_OK,
 )
 async def get_all_link_map_converters(session: DBSession) -> list[LinkMapConverterModel]:
-    return await link_map_converter_dao.get_all(session)
+    items = await link_map_converter_dao.get_all(session)
+
+    return list(items)
 
 
 @router.get(
@@ -41,7 +45,7 @@ async def get_all_link_map_converters(session: DBSession) -> list[LinkMapConvert
 )
 async def get_one_link_map_channel(
     session: DBSession,
-    server_id: int | None = None,
+    server_id: int,
 ) -> LinkMapChannelModel:
     channel = await link_map_channel_dao.get_by_server_id(session, server_id=server_id)
 

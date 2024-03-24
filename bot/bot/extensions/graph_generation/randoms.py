@@ -1,8 +1,3 @@
-from collections import Counter
-from random import randint
-
-import pandas as pd
-from discord import Embed
 from discord.ext.commands import Cog, command
 
 from bot.bot import Xythrion
@@ -19,21 +14,21 @@ class GraphRandom(Cog):
     @command(aliases=("roll",), enabled=False)
     async def dice(self, ctx: Context, rolls: int = 1) -> None:
         """Rolls a die anywhere between 1 and 10 times."""
-        if rolls not in range(1, 11):
-            embed = Embed(description="Amount of rolls must be between 1 and 10.")
+        # if rolls not in range(1, 11):
+        #     embed = Embed(description="Amount of rolls must be between 1 and 10.")
 
-            await ctx.send(embed=embed)
+        #     await ctx.send(embed=embed)
 
-            return
+        #     return
 
-        counts = Counter(randint(1, 6) for _ in range(rolls))
+        # counts = Counter(randint(1, 6) for _ in range(rolls))
 
-        df = pd.DataFrame(
-            [[i, counts[i]] for i in range(1, 7)],
-            columns=("roll", "amount"),
-        )
+        # df = pd.DataFrame(
+        #     [[i, counts[i]] for i in range(1, 7)],
+        #     columns=("roll", "amount"),
+        # )
 
-        await ctx.send(df.to_string())
+        # await ctx.send(df.to_string())
 
         # buffer = await graph_2d(
         #     df["roll"], df["amount"], graph_type="bar", autorotate_xaxis=False

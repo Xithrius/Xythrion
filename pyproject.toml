@@ -17,4 +17,8 @@ precommit = "pre-commit install"
 venvPath = "."
 venv = ".venv"
 
+include = ["api/app", "bot/bot"]
+ignore = ["api/alembic/", "bot/**/source.py", "bot/**/eval.py"]
+
+reportIncompatibleVariableOverride = false
 reportIncompatibleMethodOverride = false

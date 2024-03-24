@@ -59,8 +59,8 @@ class Context(BaseContext):
     def __construct_reply_embed(
         description: str,
         title: str | None,
-        color: Colours,
-        replies: tuple[str],
+        color: int,
+        replies: tuple[str, ...],
     ) -> Embed:
         embed = Embed(
             title=title or choice(replies),

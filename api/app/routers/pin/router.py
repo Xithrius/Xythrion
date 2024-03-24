@@ -16,10 +16,12 @@ router = APIRouter()
 )
 async def get_all_pins(
     session: DBSession,
-    limit: int | None = 10,
-    offset: int | None = 0,
+    limit: int = 10,
+    offset: int = 0,
 ) -> list[PinModel]:
-    return await pin_dao.get_all(session, offset=offset, limit=limit)
+    items = await pin_dao.get_all(session, offset=offset, limit=limit)
+
+    return list(items)
 
 
 @router.post(

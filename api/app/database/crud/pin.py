@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from typing import Generic, TypeVar
 
 from sqlalchemy import ColumnElement, and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,10 +7,8 @@ from app.database.crud.base import CRUDBase
 from app.database.models.pin import PinModel
 from app.routers.pin.schemas import PinBase, PinCreate, PinUpdate
 
-PinType = TypeVar("PinType", bound=PinBase)
 
-
-def equivalent_pin_model(pin: Generic[PinType]) -> ColumnElement[bool]:
+def equivalent_pin_model(pin: PinBase) -> ColumnElement[bool]:
     return and_(
         PinModel.server_id == pin.server_id,
         PinModel.channel_id == pin.channel_id,

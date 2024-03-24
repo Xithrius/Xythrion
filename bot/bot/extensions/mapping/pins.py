@@ -24,8 +24,13 @@ class Pins(Cog):
         ctx: Context,
         message: Message,
     ) -> None:
+        if (guild := message.guild) is None:
+            await ctx.error_embed("Can only create a pin in a guild channel")
+
+            return
+
         pin = {
-            "server_id": message.guild.id,
+            "server_id": guild.id,
             "user_id": message.author.id,
             "message": message.jump_url,
         }
@@ -64,6 +69,11 @@ class Pins(Cog):
     @is_trusted()
     async def migrate_pins(self, ctx: Context) -> None:
         """Puts the channel's pins in the database."""
+        if (guild := ctx.guild) is None:
+            await ctx.error_embed("Can only migrate pins in a guild channel")
+
+            return
+
         async with ctx.typing():
             channel_pins = await ctx.channel.pins()
 
@@ -71,21 +81,21 @@ class Pins(Cog):
             already_migrated = 0
 
             for pin in channel_pins:
-                pin = {
-                    "server_id": pin.guild.id,
+                pin_data = {
+                    "server_id": guild.id,
                     "user_id": pin.author.id,
                     "message": pin.jump_url,
                 }
 
                 try:
-                    r: Response = await self.bot.api.post("/api/pins/", data=pin)
+                    r: Response = await self.bot.api.post("/api/pins/", data=pin_data)
                 except HTTPStatusError as e:
                     if e.response.status_code == 409:
                         already_migrated += 1
                         continue
 
                     raise ValueError(
-                        f"Error when migrating pin with jump message {pin['message']}: {e.response.text}",
+                        f"Error when migrating pin with jump message {pin.jump_url}: {e.response.text}",
                     )
 
                 if r.is_success:

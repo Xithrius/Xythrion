@@ -46,7 +46,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         db: AsyncSession,
         *,
-        pk: list[int | UUID] | Callable,
+        pk: list[int] | list[UUID] | list[str] | Callable,
     ) -> int:
         result = await db.execute(delete(self.model).where(self.model.id.in_(pk) if isinstance(pk, list) else pk()))
 
