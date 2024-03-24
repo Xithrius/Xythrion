@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
 
-async def _get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]:  # pragma: no cover
+async def get_db_session(request: Request) -> AsyncGenerator[AsyncSession, None]:  # pragma: no cover
     """Yield a database session, for use with a FastAPI dependency."""
     async with request.app.state.db_session_factory() as session, session.begin():
         yield session
 
 
-DBSession = Annotated[AsyncSession, Depends(_get_db_session)]
+DBSession = Annotated[AsyncSession, Depends(get_db_session)]

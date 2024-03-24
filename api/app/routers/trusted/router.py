@@ -68,7 +68,7 @@ async def create_trusted_user(
 async def remove_trusted_user(
     session: DBSession,
     user_id: int,
-) -> None:
+) -> Response:
     count = await trusted_dao.delete(session, pk=[user_id])
 
     if count == 0:

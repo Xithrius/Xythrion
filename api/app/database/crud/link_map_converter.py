@@ -15,7 +15,7 @@ class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreat
 
         return items.scalars().all()
 
-    async def create(self, db: AsyncSession, *, obj_in: LinkMapConverterCreate) -> LinkMapConverterModel:
+    async def create(self, db: AsyncSession, *, obj_in: LinkMapConverterCreate) -> None:
         await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:

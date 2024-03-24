@@ -50,7 +50,7 @@ async def remove_pin(
     server_id: int,
     channel_id: int,
     message_id: int,
-) -> None:
+) -> Response:
     count = await pin_dao.delete(
         session,
         pin=PinBase(

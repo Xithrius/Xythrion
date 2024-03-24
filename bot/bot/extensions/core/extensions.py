@@ -39,7 +39,7 @@ class Extensions(Cog):
     @is_trusted()
     async def reload_extensions(self, ctx: Context) -> None:
         """Reloads all extensions."""
-        exts = walk_extensions(extensions)
+        exts = list(walk_extensions(extensions))
 
         for extension in exts:
             try:
@@ -57,6 +57,7 @@ class Extensions(Cog):
         log.info(msg)
 
         await ctx.send(msg)
+
         return None
 
     @extension.command(aliases=("list", "l", "cmds", "c"))

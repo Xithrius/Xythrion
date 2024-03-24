@@ -1,11 +1,12 @@
 from collections import Counter
 from random import randint
+
+import pandas as pd
 from discord import Embed
 from discord.ext.commands import Cog, command
 
 from bot.bot import Xythrion
 from bot.context import Context
-import pandas as pd
 
 
 class GraphRandom(Cog):
@@ -32,7 +33,7 @@ class GraphRandom(Cog):
             columns=("roll", "amount"),
         )
 
-        await ctx.send(df)
+        await ctx.send(df.to_string())
 
         # buffer = await graph_2d(
         #     df["roll"], df["amount"], graph_type="bar", autorotate_xaxis=False

@@ -50,7 +50,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> int:
         result = await db.execute(delete(self.model).where(self.model.id.in_(pk) if isinstance(pk, list) else pk()))
 
-        return result.rowcount
+        return result.rowcount()
 
     # async def update_(
     #     self,

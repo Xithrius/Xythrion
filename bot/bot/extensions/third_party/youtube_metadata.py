@@ -15,11 +15,11 @@ class YoutubeMetadata(Cog):
         await ctx.check_subcommands()
 
     @youtube.command()
-    async def thumbnail(self, ctx: Context, id: str, quality: int | None = 0) -> None:
+    async def thumbnail(self, ctx: Context, video_id: str, quality: int | None = 0) -> None:
         if quality not in range(4):
             await ctx.send("Quality must be anywhere from 0 to 3.")
 
-        url = f"https://img.youtube.com/vi/{id}/{quality}.jpg"
+        url = f"https://img.youtube.com/vi/{video_id}/{quality}.jpg"
 
         await ctx.send(url)
 

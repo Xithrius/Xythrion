@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
 from humanize import naturaldelta
 from tabulate import tabulate
@@ -56,7 +57,7 @@ def convert_to_deltas(
     return data
 
 
-def dict_to_human_table(data: dict, *, datetime_key: str | None = None) -> str:
+def dict_to_human_table(data: dict[Any, Any], *, datetime_key: str | None = None) -> str:
     """Dictionary to readable table."""
     if (key := datetime_key) is not None:
         data = convert_to_deltas(data, datetime_key=key)

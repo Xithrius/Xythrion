@@ -2,7 +2,6 @@ import importlib
 import inspect
 import pkgutil
 import types
-from collections.abc import Iterator
 from typing import NoReturn
 
 
@@ -10,7 +9,7 @@ def ignore_module(module: pkgutil.ModuleInfo) -> bool:
     return any(name.startswith("_") for name in module.name.split("."))
 
 
-def walk_extensions(module: types.ModuleType) -> Iterator[str]:
+def walk_extensions(module: types.ModuleType) -> frozenset[str]:
     def on_error(name: str) -> NoReturn:
         raise ImportError(name=name)
 

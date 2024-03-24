@@ -70,7 +70,7 @@ class Context(BaseContext):
 
         return embed
 
-    async def error_embed(self, description: str, title: str | None = None) -> Embed:
+    async def error_embed(self, description: str, title: str | None = None) -> None:
         await self.send(
             embed=self.__construct_reply_embed(
                 description,
@@ -80,7 +80,7 @@ class Context(BaseContext):
             ),
         )
 
-    async def warning_embed(self, description: str, title: str | None = None) -> Embed:
+    async def warning_embed(self, description: str, title: str | None = None) -> None:
         await self.send(
             embed=self.__construct_reply_embed(
                 description,
@@ -90,7 +90,7 @@ class Context(BaseContext):
             ),
         )
 
-    async def success_embed(self, description: str, title: str | None = None) -> Embed:
+    async def success_embed(self, description: str, title: str | None = None) -> None:
         await self.send(
             embed=self.__construct_reply_embed(
                 description,

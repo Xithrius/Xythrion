@@ -74,7 +74,7 @@ class GunicornApplication(BaseApplication):
         This function is used to set parameters to gunicorn
         main process. It only sets parameters that
         gunicorn can handle. If you pass unknown
-        parameter to it, it crash with error.
+        parameter to it, this will crash with an error.
         """
         for key, value in self.options.items():
             if key in self.cfg.settings and value is not None:

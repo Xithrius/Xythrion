@@ -28,16 +28,16 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
         input_channel_id: int,
     ) -> LinkMapChannelModel | None:
         items = await db.execute(
-            select(LinkMapChannelModel).where(
-                LinkMapChannelModel.server_id == server_id,
-                LinkMapChannelModel.input_channel_id == input_channel_id,
+            select(self.model).where(
+                self.model.server_id == server_id,
+                self.model.input_channel_id == input_channel_id,
             ),
         )
         items.unique()
 
         return items.scalars().one_or_none()
 
-    async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> LinkMapChannelModel:
+    async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> None:
         await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[int]) -> int:
