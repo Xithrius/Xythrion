@@ -50,7 +50,7 @@ def convert_to_deltas(
     )
 
     for idx, row in data.iterrows():
-        created_time = datetime.fromisoformat(row[datetime_key].rstrip("Z"))
+        created_time = datetime.fromisoformat(str(row[datetime_key]).rstrip("Z"))
         delta = created_time - current_time
         data.at[idx, datetime_key] = naturaldelta(delta.total_seconds())
 
@@ -62,7 +62,7 @@ def dict_to_human_table(data: pd.DataFrame, *, datetime_key: str | None = None) 
     if datetime_key is not None:
         data = convert_to_deltas(data, datetime_key=datetime_key)
 
-    table = tabulate(data.to_json(), headers="keys", tablefmt="grid")
+    table = tabulate(list(data.to_dict().values()), headers="keys", tablefmt="grid")
     block = codeblock(table)
 
     return block

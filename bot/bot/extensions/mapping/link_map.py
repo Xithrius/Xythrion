@@ -1,5 +1,6 @@
 import re
 
+import pandas as pd
 from bs4 import BeautifulSoup
 from discord import ChannelType, Message, utils
 from discord.ext.commands import Cog, group
@@ -10,7 +11,6 @@ from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
 from bot.utils import dict_to_human_table, is_trusted
-import pandas as pd
 
 from ._utils.link_converter import DestinationType, validate_destination
 
@@ -66,10 +66,10 @@ class LinkMapper(Cog):
                 if converter["to_link"] is not None:
                     new_url = message.content.replace(converter["from_link"], converter["to_link"])
                 else:
-                    full_url = self.get_first_url(message.content)
-
-                    if full_url is None:
+                    if (full_url := self.get_first_url(message.content)) is None:
                         log.error(f"Could not extract any links from {message.jump_url} for link converter")
+
+                        return
 
                     webpage = await self.bot.http_client.get(
                         full_url,

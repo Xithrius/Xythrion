@@ -21,28 +21,35 @@ TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")
 SourceType = HelpCommand | Command | Cog | ExtensionNotLoaded
 
 
-def remove_whitespace(argument: str) -> str:
-    """Replaces any whitespace within a string with nothingness."""
-    return re.sub(WHITESPACE_PATTERN, "", argument)
+class NoWhitespace(Converter):
+    @staticmethod
+    async def convert(ctx: Context, argument: str) -> str:
+        argument = argument.lower()
+
+        return re.sub(WHITESPACE_PATTERN, "", argument)
 
 
-def convert_3d_tuples(argument: str) -> tuple[int, ...]:
-    """From a string with 3 arguments to integers."""
-    if (m := re.match(TUPLE_3D_INT_PATTERN, argument)) is None:
-        raise ValueError("No groups found in match")
+class Tuple3(Converter):
+    @staticmethod
+    async def convert(ctx: Context, argument: str) -> tuple[int, int, int]:
+        argument = argument.lower()
 
-    groups = m.groups()
+        if (m := re.match(TUPLE_3D_INT_PATTERN, argument)) is None:
+            raise ValueError("No groups found in match")
 
-    int3 = tuple(int(x) for x in groups)
+        groups = m.groups()
 
-    if len(int3) != 3:
-        raise ValueError("Argument could not be converted to tuple of 3 integers")
+        int3 = tuple(int(x) for x in groups)
 
-    return int3
+        if len(int3) != 3:
+            raise ValueError("Argument could not be converted to tuple of 3 integers")
+
+        return int3
 
 
 class Extension(Converter):
-    async def convert(self, ctx: Context, argument: str) -> str:
+    @staticmethod
+    async def convert(ctx: Context, argument: str) -> str:
         argument = argument.lower()
 
         if "." not in argument:

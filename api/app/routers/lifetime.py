@@ -109,7 +109,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):  # pragma: no cover
             RESPONSES.labels(
                 method=method,
                 path=path,
-                status_code=status_code,
+                status_code=status_code,  # type: ignore status_code
                 app_name=self.app_name,
             ).inc()
             REQUESTS_IN_PROGRESS.labels(
@@ -149,7 +149,7 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
 
 def setup_opentelemetry(
     app: FastAPI,
-    app_name: str | None = "xythrion-api",
+    app_name: str = "xythrion-api",
     log_correlation: bool = True,
 ) -> None:  # pragma: no cover
     if settings.opentelemetry_endpoint is None:
