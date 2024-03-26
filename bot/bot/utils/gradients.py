@@ -8,7 +8,7 @@ def gradient2(
     width: int,
     height: int,
     is_horizontal: bool,
-) -> np.array:
+) -> np.ndarray:
     if is_horizontal:
         return np.tile(np.linspace(start, stop, width), (height, 1))
 
@@ -21,7 +21,7 @@ def gradient3(
     start_list: tuple[int, int, int],
     stop_list: tuple[int, int, int],
     is_horizontal_list: tuple[bool, bool, bool],
-) -> np.array:
+) -> np.ndarray:
     result = np.zeros((height, width, len(start_list)))
 
     for i, (start, stop, is_horizontal) in enumerate(

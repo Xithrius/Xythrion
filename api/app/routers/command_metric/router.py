@@ -19,10 +19,12 @@ router = APIRouter()
 )
 async def get_all_command_metrics(
     session: DBSession,
-    limit: int | None = 10,
-    offset: int | None = 0,
+    limit: int = 10,
+    offset: int = 0,
 ) -> list[CommandMetricModel]:
-    return await command_metric_dao.get_all(session, offset=offset, limit=limit)
+    items = await command_metric_dao.get_all(session, offset=offset, limit=limit)
+
+    return list(items)
 
 
 @router.post(

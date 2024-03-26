@@ -10,11 +10,11 @@ from bot.utils import remove_outliers, to_async
 async def plot_histogram_2d(
     df: pd.DataFrame,
     *,
-    title: str | None = "Value distribution",
-    x_label: str | None = "value",
-    y_label: str | None = "frequency",
-    include_outliers: bool | None = False,
-    ctx: Context | None,
+    title: str = "Value distribution",
+    x_label: str = "value",
+    y_label: str = "frequency",
+    include_outliers: bool = False,
+    ctx: Context | None = None,
 ) -> BytesIO | None:
     @to_async
     def __build_histogram_2d(data: pd.DataFrame) -> BytesIO:
@@ -27,10 +27,13 @@ async def plot_histogram_2d(
         svm.set_ylabel(y_label.capitalize())
 
         buffer = BytesIO()
-        svm.get_figure().savefig(buffer, format="png")
-        buffer.seek(0)
 
-        svm.figure.clf()
+        if (fig := svm.get_figure()) is None:
+            raise AttributeError("Figure of line plot is empty.")
+
+        fig.savefig(buffer, format="png")
+        buffer.seek(0)
+        fig.clf()
 
         return buffer
 

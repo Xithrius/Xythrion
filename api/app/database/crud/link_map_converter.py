@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,7 +17,7 @@ class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreat
     async def create(self, db: AsyncSession, *, obj_in: LinkMapConverterCreate) -> None:
         await self.create_(db, obj_in=obj_in)
 
-    async def delete(self, db: AsyncSession, *, pk: list[UUID]) -> int:
+    async def delete(self, db: AsyncSession, *, pk: list[str]) -> int:
         return await self.delete_(db, pk=pk)
 
 

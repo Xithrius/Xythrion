@@ -2,12 +2,12 @@ import asyncio
 from io import BytesIO
 
 import numpy as np
-from PIL import Image
 from discord.ext.commands import Cog, command
+from PIL import Image
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import convert_3d_tuples, gradient3
+from bot.utils import Tuple3, gradient3
 
 
 class GradientImages(Cog):
@@ -37,8 +37,8 @@ class GradientImages(Cog):
     async def gradient(
         self,
         ctx: Context,
-        start: convert_3d_tuples,
-        end: convert_3d_tuples,
+        start: Tuple3,
+        end: Tuple3,
         size_h: int,
         size_v: int,
         direction: str = "h",
@@ -53,8 +53,8 @@ class GradientImages(Cog):
 
         buffer = await asyncio.to_thread(
             lambda: self.generate_gradient_image(
-                start,
-                end,
+                start,  # type: ignore Tuple3
+                end,  # type: ignore Tuple3
                 (size_h, size_v),
                 gradient_direction,
             ),

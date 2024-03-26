@@ -5,7 +5,7 @@ from discord.ext.commands import Cog, group
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import convert_3d_tuples
+from bot.utils import Tuple3
 
 
 class MinecraftDistances(Cog):
@@ -23,10 +23,11 @@ class MinecraftDistances(Cog):
     async def distance(
         self,
         ctx: Context,
-        start: convert_3d_tuples,
-        end: convert_3d_tuples,
+        start: Tuple3,
+        end: Tuple3,
     ) -> None:
-        (x0, y0, z0), (x1, y1, z1) = start, end
+        (x0, y0, z0) = start  # type: ignore Tuple3
+        (x1, y1, z1) = end  # type: ignore Tuple3
 
         d: int
 
@@ -42,8 +43,8 @@ class MinecraftDistances(Cog):
         await ctx.send(embed=embed)
 
     @mc.command(aliases=("from_overworld",))
-    async def to_nether(self, ctx: Context, overworld: convert_3d_tuples) -> None:
-        (x0, y0, z0) = overworld
+    async def to_nether(self, ctx: Context, overworld: Tuple3) -> None:
+        (x0, y0, z0) = overworld  # type: ignore Tuple3
         x1, y1, z1 = int(x0 / 8), int(y0 / 8), int(z0 / 8)
 
         embed = Embed(
@@ -53,8 +54,8 @@ class MinecraftDistances(Cog):
         await ctx.send(embed=embed)
 
     @mc.command(aliases=("from_nether",))
-    async def to_overworld(self, ctx: Context, nether: convert_3d_tuples) -> None:
-        (x0, y0, z0) = nether
+    async def to_overworld(self, ctx: Context, nether: Tuple3) -> None:
+        (x0, y0, z0) = nether  # type: ignore Tuple3
         x1, y1, z1 = x0 * 8, y0 * 8, z0 * 8
 
         embed = Embed(
