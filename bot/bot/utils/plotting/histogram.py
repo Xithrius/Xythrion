@@ -6,15 +6,17 @@ import seaborn as sns
 from bot.context import Context
 from bot.utils import remove_outliers, to_async
 
+from .errors import EmptyFigureError
+
 
 async def plot_histogram_2d(
     df: pd.DataFrame,
     *,
-    title: str | None = "Value distribution",
-    x_label: str | None = "value",
-    y_label: str | None = "frequency",
-    include_outliers: bool | None = False,
-    ctx: Context | None,
+    title: str = "Value distribution",
+    x_label: str = "value",
+    y_label: str = "frequency",
+    include_outliers: bool = False,
+    ctx: Context | None = None,
 ) -> BytesIO | None:
     @to_async
     def __build_histogram_2d(data: pd.DataFrame) -> BytesIO:
@@ -27,10 +29,13 @@ async def plot_histogram_2d(
         svm.set_ylabel(y_label.capitalize())
 
         buffer = BytesIO()
-        svm.get_figure().savefig(buffer, format="png")
-        buffer.seek(0)
 
-        svm.figure.clf()
+        if (fig := svm.get_figure()) is None:
+            raise EmptyFigureError("Figure of line plot is empty.")
+
+        fig.savefig(buffer, format="png")
+        buffer.seek(0)
+        fig.clf()
 
         return buffer
 
@@ -42,4 +47,6 @@ async def plot_histogram_2d(
     if ctx is None:
         return b
 
-    return await ctx.send_image_buffer(b)
+    await ctx.send_image_buffer(b)
+
+    return None

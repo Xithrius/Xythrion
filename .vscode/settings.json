@@ -3,6 +3,7 @@
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.languageServer": "Pylance",
+  "python.analysis.typeCheckingMode": "off",
   "[python]": {
     "editor.codeActionsOnSave": {
       "source.fixAll.ruff": "explicit",

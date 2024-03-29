@@ -34,7 +34,7 @@ class Eval(Cog):
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
-        self.env = {}
+        self.env = {}  # type: ignore [var-annotated]
         self.ln = 0
         self.stdout = StringIO()
 
@@ -45,9 +45,9 @@ class Eval(Cog):
     async def on_socket_event_type(self, event_type: str) -> None:
         """When a websocket event is received, increase our counters."""
         self.socket_event_total += 1
-        self.socket_events[event_type] += 1
+        self.socket_events[event_type] += 1  # type: ignore [var-annotated,index]
 
-    def _format(self, inp: str, out: Any) -> tuple[str, discord.Embed | None]:
+    def _format(self, inp: str, out: Any) -> str | tuple[str, discord.Embed | None]:
         """Format the eval output into a string & attempt to format it into an Embed."""
         self._ = out
 
@@ -111,7 +111,7 @@ class Eval(Cog):
         if isinstance(out, discord.Embed):
             # We made an embed? Send that as embed
             res += "<Embed>"
-            res = (res, out)
+            res = (res, out)  # type: ignore [assignment]
 
         else:
             if isinstance(out, str) and out.startswith(
@@ -141,9 +141,9 @@ class Eval(Cog):
 
             # Add the output
             res += pretty
-            res = (res, None)
+            res = (res, None)  # type: ignore [assignment]
 
-        return res  # Return (text, embed)
+        return res
 
     async def _eval(self, ctx: Context, code: str) -> discord.Message | None:
         """Eval the input code string & send an embed to the invoking context."""
@@ -193,7 +193,7 @@ async def func():  # (None,) -> Any
         except Exception:
             res = traceback.format_exc()
 
-        out, embed = self._format(code, res)
+        out, embed = self._format(code, res)  # type: ignore [misc]
         out = out.rstrip("\n")  # Strip empty lines from output
 
         # Truncate output to max 15 lines or 1500 characters

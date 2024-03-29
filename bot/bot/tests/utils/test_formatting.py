@@ -21,7 +21,7 @@ def test_markdown_link_some_wrap() -> None:
 
 
 def test_and_join_no_items() -> None:
-    items = []
+    items: list[str] = []
 
     assert final_join(items) == ""
 

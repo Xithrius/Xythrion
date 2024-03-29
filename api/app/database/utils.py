@@ -1,14 +1,15 @@
-from sqlalchemy import text
+from sqlalchemy import URL, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.settings import settings
 
 
-async def create_database(
-    url: str | None = make_url(str(settings.db_url.with_path("/postgres"))),
-) -> None:  # pragma: no cover
+async def create_database(url: URL | str | None = None) -> None:  # pragma: no cover
     """Create a database."""
+    if url is None:
+        url = make_url(str(settings.db_url.with_path("/postgres")))
+
     engine = create_async_engine(url, isolation_level="AUTOCOMMIT")
 
     async with engine.connect() as conn:
@@ -30,11 +31,12 @@ async def create_database(
         )
 
 
-async def drop_database(
-    url: str | None = make_url(str(settings.db_url.with_path("/postgres"))),
-) -> None:  # pragma: no cover
+async def drop_database(url: URL | str | None = None) -> None:  # pragma: no cover
     """Drop current database."""
-    engine = create_async_engine(url, isolation_level="AUTOCOMMIT")
+    if url is None:
+        url = make_url(str(settings.db_url.with_path("/postgres")))
+
+    engine = create_async_engine(str(url), isolation_level="AUTOCOMMIT")
 
     async with engine.connect() as conn:
         disc_users = (

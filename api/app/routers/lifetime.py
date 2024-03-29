@@ -149,7 +149,7 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
 
 def setup_opentelemetry(
     app: FastAPI,
-    app_name: str | None = "xythrion-api",
+    app_name: str = "xythrion-api",
     log_correlation: bool = True,
 ) -> None:  # pragma: no cover
     if settings.opentelemetry_endpoint is None:

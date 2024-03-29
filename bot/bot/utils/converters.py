@@ -21,14 +21,21 @@ TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")
 SourceType = HelpCommand | Command | Cog | ExtensionNotLoaded
 
 
-def remove_whitespace(argument: str) -> str:
-    """Replaces any whitespace within a string with nothingness."""
-    return re.sub(WHITESPACE_PATTERN, "", argument)
+def remove_whitespace(s: str) -> str:
+    s = s.lower()
+
+    return re.sub(WHITESPACE_PATTERN, "", s)
 
 
-def convert_3d_tuples(argument: str) -> tuple[int, ...]:
-    """From a string with 3 arguments to integers."""
-    int3 = tuple(int(x) for x in re.match(TUPLE_3D_INT_PATTERN, argument).groups())
+def str_to_tuple3(s: str) -> tuple[int, int, int]:
+    s = s.lower()
+
+    if (m := re.match(TUPLE_3D_INT_PATTERN, s)) is None:
+        raise ValueError("No groups found in match")
+
+    groups = m.groups()
+
+    int3 = tuple(int(x) for x in groups)
 
     if len(int3) != 3:
         raise ValueError("Argument could not be converted to tuple of 3 integers")
@@ -37,7 +44,8 @@ def convert_3d_tuples(argument: str) -> tuple[int, ...]:
 
 
 class Extension(Converter):
-    async def convert(self, ctx: Context, argument: str) -> str:
+    @staticmethod
+    async def convert(ctx: Context, argument: str) -> str:
         argument = argument.lower()
 
         if "." not in argument:
@@ -55,7 +63,7 @@ class SourceConverter(Converter):
     """Convert an argument into a help command, command, or cog."""
 
     @staticmethod
-    async def convert(ctx: Context, argument: str, **kwargs) -> SourceType | None:
+    async def convert(ctx: Context, argument: str, **kwargs) -> SourceType | None:  # type: ignore [valid-type]
         """Convert argument into source object."""
         if argument.lower() == "help":
             return ctx.bot.help_command

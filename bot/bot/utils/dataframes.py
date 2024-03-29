@@ -9,4 +9,4 @@ def remove_outliers(df: pd.DataFrame, key: str) -> pd.DataFrame:
 
     Source: https://stackoverflow.com/a/23202269
     """
-    return df[np.abs(stats.zscore(df[key])) < 3]
+    return pd.DataFrame(df[np.abs(stats.zscore(df[key])) < 3])

@@ -16,10 +16,12 @@ router = APIRouter()
 )
 async def get_all_trusted_users(
     session: DBSession,
-    limit: int | None = 10,
-    offset: int | None = 0,
+    limit: int = 10,
+    offset: int = 0,
 ) -> list[TrustedModel]:
-    return await trusted_dao.get_all(session, limit=limit, offset=offset)
+    items = await trusted_dao.get_all(session, limit=limit, offset=offset)
+
+    return list(items)
 
 
 @router.get(

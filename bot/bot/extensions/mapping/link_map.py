@@ -1,14 +1,17 @@
 import re
 
+import pandas as pd
 from bs4 import BeautifulSoup
-from discord import Message, utils
+from discord import ChannelType, Message, utils
 from discord.ext.commands import Cog, group
+from loguru import logger as log
 from lxml import etree
 
 from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
 from bot.utils import dict_to_human_table, is_trusted
+
 from ._utils.link_converter import DestinationType, validate_destination
 
 REGEX_URL_MATCH = re.compile(r"https?://\S+")
@@ -28,7 +31,7 @@ class LinkMapper(Cog):
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
-        if message.guild is None or message.author.id == self.bot.user.id:
+        if message.guild is None or message.author.bot:
             return
 
         response = await self.bot.api.get(
@@ -45,6 +48,13 @@ class LinkMapper(Cog):
         data = response.json()
 
         output_channel_id = data["output_channel_id"]
+        if (output_channel := utils.get(message.guild.channels, id=output_channel_id)) is None:
+            log.error(f"Could not retrieve channel {output_channel_id} for link map")
+
+            return
+        if output_channel.type != ChannelType.text:
+            log.error(f"Link map output channel {output_channel_id} is not a text channel")
+
         converters = data["link_maps"]
 
         for converter in converters:
@@ -56,20 +66,23 @@ class LinkMapper(Cog):
                 if converter["to_link"] is not None:
                     new_url = message.content.replace(converter["from_link"], converter["to_link"])
                 else:
-                    full_url = self.get_first_url(message.content)
+                    if (full_url := self.get_first_url(message.content)) is None:
+                        log.error(f"Could not extract any links from {message.jump_url} for link converter")
+
+                        return
+
                     webpage = await self.bot.http_client.get(
                         full_url,
                         headers=BS4_HEADERS,
                     )
                     soup = BeautifulSoup(webpage.content, "html.parser")
-                    dom = etree.HTML(str(soup))
+                    dom = etree.HTML(str(soup), None)
                     extracted = dom.xpath(converter["xpath"])
 
                     # "src" for images, "data-src" for videos
                     new_url = extracted[0].get("src") or extracted[0].get("data-src")
 
-                output_channel = utils.get(message.guild.channels, id=output_channel_id)
-
+                # TODO: Fix this line so the channel is the correct type
                 await output_channel.send(
                     f"<@{message.author.id}> {message.jump_url} {new_url}",
                 )
@@ -117,10 +130,15 @@ class LinkMapper(Cog):
         input_channel_id: str | None = None,
         attribute: str | None = None,
     ) -> None:
+        if (guild := ctx.guild) is None:
+            await ctx.error_embed("Can only list link map converters within a guild")
+
+            return
+
         response = await self.bot.api.get(
             "/api/link_maps/converters",
             params={
-                "server_id": ctx.guild.id,
+                "server_id": guild.id,
                 "input_channel_id": input_channel_id or ctx.channel.id,
             },
         )
@@ -158,7 +176,7 @@ class LinkMapper(Cog):
         else:
             lst = [{"source": x["from_link"], attribute: x[attribute]} for x in converters]
 
-        table = dict_to_human_table(lst)
+        table = dict_to_human_table(pd.DataFrame(lst))
 
         await ctx.send(table)
 
@@ -175,8 +193,13 @@ class LinkMapper(Cog):
         input_channel_id: int,
         output_channel_id: int,
     ) -> None:
+        if (guild := ctx.guild) is None:
+            await ctx.error_embed("Can only create a link map channel within a guild")
+
+            return
+
         data = {
-            "server_id": ctx.guild.id,
+            "server_id": guild.id,
             "input_channel_id": input_channel_id,
             "output_channel_id": output_channel_id,
         }
@@ -205,8 +228,13 @@ class LinkMapper(Cog):
         source: str,
         destination: str,
     ) -> None:
+        if (guild := ctx.guild) is None:
+            await ctx.error_embed("Can only create a link map converter within a guild")
+
+            return
+
         data = {
-            "channel_map_server_id": ctx.guild.id,
+            "channel_map_server_id": guild.id,
             "from_link": source,
         }
 

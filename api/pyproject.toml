@@ -38,7 +38,7 @@ build-backend = "pdm.pep517.api"
 [tool]
 [tool.pdm]
 [tool.pdm.dev-dependencies]
-precommit = ["pre-commit==3.6.2"]
+precommit = ["pre-commit==3.6.2", "types-tabulate>=0.9"]
 test = [
     "pytest==8.1.1",
     "anyio==4.3.0",

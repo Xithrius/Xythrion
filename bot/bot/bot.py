@@ -31,8 +31,8 @@ class Xythrion(Bot):
 
         self.command_prefix_str: str = getenv("BOT_PREFIX", "^")
 
-        self.api: APIClient | None = None
-        self.http_client: AsyncClient | None = None
+        self.api: APIClient
+        self.http_client: AsyncClient
 
         super().__init__(
             command_prefix=when_mentioned_or(self.command_prefix_str),
@@ -41,8 +41,7 @@ class Xythrion(Bot):
             intents=intents,
         )
 
-    async def get_context(self, message: Message, *, cls: Context = Context) -> Context:
-        # noinspection PyTypeChecker
+    async def get_context(self, message: Message, *, cls: Context = Context) -> Context:  # type: ignore [assignment]
         return await super().get_context(message, cls=cls)
 
     async def on_command_completion(self, ctx: Context) -> None:
