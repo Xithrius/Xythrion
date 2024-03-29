@@ -7,6 +7,8 @@ dev = [
     "-e file:///${PROJECT_ROOT}/api",
     "-e file:///${PROJECT_ROOT}/bot",
     "pre-commit==3.6.0",
+    "pytest==8.1.1",
+    "testcontainers[postgres]==4.2.0rc2",
 ]
 
 [tool.pdm.scripts]
