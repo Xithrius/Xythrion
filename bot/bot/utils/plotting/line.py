@@ -6,6 +6,8 @@ import seaborn as sns
 from bot.context import Context
 from bot.utils import remove_outliers, to_async
 
+from .errors import EmptyFigureError
+
 
 async def plot_line_2d(
     df: pd.DataFrame,
@@ -29,7 +31,7 @@ async def plot_line_2d(
         buffer = BytesIO()
 
         if (fig := svm.get_figure()) is None:
-            raise AttributeError("Figure of line plot is empty.")
+            raise EmptyFigureError("Figure of line plot is empty.")
 
         fig.savefig(buffer, format="png")
         buffer.seek(0)

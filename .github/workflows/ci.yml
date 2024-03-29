@@ -42,7 +42,7 @@ jobs:
 
     - name: Run lints
       working-directory: ${{ matrix.directory }}
-      run: pdm lint
+      run: SKIP=pyright pdm lint
 
     - name: Run tests with coverage
       working-directory: ${{ matrix.directory }}

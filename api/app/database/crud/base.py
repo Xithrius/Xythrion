@@ -23,7 +23,9 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         *,
         pk: int | UUID | None = None,
     ) -> ModelType | None:
-        result = await db.execute(select(self.model).where(self.model.id == pk))
+        result = await db.execute(
+            select(self.model).where(self.model.id == pk),  # type: ignore id
+        )
 
         return result.scalars().first()
 
@@ -48,7 +50,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         *,
         pk: list[int] | list[UUID] | list[str] | Callable,
     ) -> int:
-        result = await db.execute(delete(self.model).where(self.model.id.in_(pk) if isinstance(pk, list) else pk()))
+        result = await db.execute(
+            delete(self.model).where(
+                self.model.id.in_(pk) if isinstance(pk, list) else pk(),  # type: ignore id
+            ),
+        )
 
         return result.rowcount
 

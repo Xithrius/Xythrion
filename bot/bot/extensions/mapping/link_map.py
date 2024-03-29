@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from discord import ChannelType, Message, utils
 from discord.ext.commands import Cog, group
 from loguru import logger as log
-from lxml import etree
 
 from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
@@ -13,6 +12,11 @@ from bot.context import Context
 from bot.utils import dict_to_human_table, is_trusted
 
 from ._utils.link_converter import DestinationType, validate_destination
+
+try:
+    from lxml import etree  # type: ignore unknown import
+except ImportError:
+    log.error("Could not import lxml")
 
 REGEX_URL_MATCH = re.compile(r"https?://\S+")
 
@@ -76,13 +80,14 @@ class LinkMapper(Cog):
                         headers=BS4_HEADERS,
                     )
                     soup = BeautifulSoup(webpage.content, "html.parser")
-                    dom = etree.HTML(str(soup), None)
+                    dom = etree.HTML(str(soup), None)  # type: ignore unknown attribute, it exists
                     extracted = dom.xpath(converter["xpath"])
 
                     # "src" for images, "data-src" for videos
                     new_url = extracted[0].get("src") or extracted[0].get("data-src")
 
-                await output_channel.send(
+                # TODO: Fix this line so the channel is the correct type
+                await output_channel.send(  # type: ignore send
                     f"<@{message.author.id}> {message.jump_url} {new_url}",
                 )
 

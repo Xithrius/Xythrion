@@ -77,3 +77,13 @@ filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.coverage.run]
 concurrency = ["gevent"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+include = ["app/"]
+ignore = ["migrations/"]
+
+reportIncompatibleVariableOverride = false
+reportIncompatibleMethodOverride = false

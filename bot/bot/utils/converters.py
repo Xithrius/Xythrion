@@ -21,30 +21,26 @@ TUPLE_3D_INT_PATTERN = re.compile(r"^\((-?\d+),(-?\d+),(-?\d+)\)$")
 SourceType = HelpCommand | Command | Cog | ExtensionNotLoaded
 
 
-class NoWhitespace(Converter):
-    @staticmethod
-    async def convert(ctx: Context, argument: str) -> str:
-        argument = argument.lower()
+def remove_whitespace(s: str) -> str:
+    s = s.lower()
 
-        return re.sub(WHITESPACE_PATTERN, "", argument)
+    return re.sub(WHITESPACE_PATTERN, "", s)
 
 
-class Tuple3(Converter):
-    @staticmethod
-    async def convert(ctx: Context, argument: str) -> tuple[int, int, int]:
-        argument = argument.lower()
+def str_to_tuple3(s: str) -> tuple[int, int, int]:
+    s = s.lower()
 
-        if (m := re.match(TUPLE_3D_INT_PATTERN, argument)) is None:
-            raise ValueError("No groups found in match")
+    if (m := re.match(TUPLE_3D_INT_PATTERN, s)) is None:
+        raise ValueError("No groups found in match")
 
-        groups = m.groups()
+    groups = m.groups()
 
-        int3 = tuple(int(x) for x in groups)
+    int3 = tuple(int(x) for x in groups)
 
-        if len(int3) != 3:
-            raise ValueError("Argument could not be converted to tuple of 3 integers")
+    if len(int3) != 3:
+        raise ValueError("Argument could not be converted to tuple of 3 integers")
 
-        return int3
+    return int3
 
 
 class Extension(Converter):

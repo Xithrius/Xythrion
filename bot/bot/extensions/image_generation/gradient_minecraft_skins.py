@@ -2,12 +2,12 @@ import asyncio
 from io import BytesIO
 
 import numpy as np
-from PIL import Image
 from discord.ext.commands import Cog, command
+from PIL import Image
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import convert_3d_tuples, gradient3
+from bot.utils import gradient3, str_to_tuple3
 
 REMOVE_IMAGE_SECTIONS = [
     (0, 8, 0, 8),
@@ -66,11 +66,14 @@ class GradientMinecraftSkins(Cog):
     async def gradient_skin(
         self,
         ctx: Context,
-        start: convert_3d_tuples,
-        end: convert_3d_tuples,
+        start: str,
+        end: str,
     ) -> None:
         buffer = await asyncio.to_thread(
-            lambda: self.generate_gradient_skin_image(start, end),
+            lambda: self.generate_gradient_skin_image(
+                str_to_tuple3(start),
+                str_to_tuple3(end),
+            ),
         )
 
         await ctx.send_image_buffer(buffer)

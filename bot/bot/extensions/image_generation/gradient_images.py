@@ -7,7 +7,7 @@ from PIL import Image
 
 from bot.bot import Xythrion
 from bot.context import Context
-from bot.utils import Tuple3, gradient3
+from bot.utils import gradient3, str_to_tuple3
 
 
 class GradientImages(Cog):
@@ -37,8 +37,8 @@ class GradientImages(Cog):
     async def gradient(
         self,
         ctx: Context,
-        start: Tuple3,
-        end: Tuple3,
+        start: str,
+        end: str,
         size_h: int,
         size_v: int,
         direction: str = "h",
@@ -53,8 +53,8 @@ class GradientImages(Cog):
 
         buffer = await asyncio.to_thread(
             lambda: self.generate_gradient_image(
-                start,  # type: ignore Tuple3
-                end,  # type: ignore Tuple3
+                str_to_tuple3(start),
+                str_to_tuple3(end),
                 (size_h, size_v),
                 gradient_direction,
             ),

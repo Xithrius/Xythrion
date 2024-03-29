@@ -73,7 +73,7 @@ async def get_all_channel_link_map_converters(
         input_channel_id=input_channel_id,
     )
 
-    return converters or Response(status_code=status.HTTP_204_NO_CONTENT)
+    return converters or Response(status_code=status.HTTP_204_NO_CONTENT)  # type: ignore response
 
 
 @router.post(

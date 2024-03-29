@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from app.settings import settings
 
 
-async def create_database(url: URL | None = None) -> None:  # pragma: no cover
+async def create_database(url: URL | str | None = None) -> None:  # pragma: no cover
     """Create a database."""
     if url is None:
         url = make_url(str(settings.db_url.with_path("/postgres")))
@@ -31,7 +31,7 @@ async def create_database(url: URL | None = None) -> None:  # pragma: no cover
         )
 
 
-async def drop_database(url: URL | None = None) -> None:  # pragma: no cover
+async def drop_database(url: URL | str | None = None) -> None:  # pragma: no cover
     """Drop current database."""
     if url is None:
         url = make_url(str(settings.db_url.with_path("/postgres")))

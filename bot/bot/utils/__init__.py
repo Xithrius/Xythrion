@@ -1,8 +1,8 @@
 from .checks import is_trusted
 from .converters import (
     Extension,
-    Tuple3,
-    NoWhitespace,
+    remove_whitespace,
+    str_to_tuple3,
 )
 from .dataframes import remove_outliers
 from .decorators import to_async
@@ -22,8 +22,8 @@ __all__ = (
     "is_trusted",
     # converters
     "Extension",
-    "Tuple3",
-    "NoWhitespace",
+    "remove_whitespace",
+    "str_to_tuple3",
     # dataframes
     "remove_outliers",
     # decorators
