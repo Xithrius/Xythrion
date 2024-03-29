@@ -55,7 +55,7 @@ class MinecraftDistances(Cog):
 
     @mc.command(aliases=("from_nether",))
     async def to_overworld(self, ctx: Context, nether: str) -> None:
-        (x0, y0, z0) = str(nether)
+        (x0, y0, z0) = str_to_tuple3(nether)
         x1, y1, z1 = x0 * 8, y0 * 8, z0 * 8
 
         embed = Embed(

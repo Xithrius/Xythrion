@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 from humanize import naturaldelta
-from tabulate import tabulate
+from tabulate import tabulate  # type: ignore [import-untyped]
 
 
 def markdown_link(

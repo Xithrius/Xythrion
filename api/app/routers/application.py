@@ -20,7 +20,7 @@ def get_app() -> FastAPI:
     )
 
     app.add_middleware(PrometheusMiddleware, app_name="xythrion-api")
-    app.add_route("/metrics", metrics)  # type: ignore metrics
+    app.add_route("/metrics", metrics)
 
     app.include_router(router=api_router)
 

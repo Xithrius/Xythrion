@@ -41,8 +41,8 @@ class Xythrion(Bot):
             intents=intents,
         )
 
-    async def get_context(self, message: Message, *, cls: Context = Context) -> Context:  # type: ignore Context
-        return await super().get_context(message, cls=cls)  # type: ignore cls
+    async def get_context(self, message: Message, *, cls: Context = Context) -> Context:  # type: ignore [assignment]
+        return await super().get_context(message, cls=cls)
 
     async def on_command_completion(self, ctx: Context) -> None:
         if ctx.command is None:

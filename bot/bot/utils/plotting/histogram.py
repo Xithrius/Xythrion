@@ -47,4 +47,6 @@ async def plot_histogram_2d(
     if ctx is None:
         return b
 
-    return await ctx.send_image_buffer(b)
+    await ctx.send_image_buffer(b)
+
+    return None

@@ -63,7 +63,7 @@ class SourceConverter(Converter):
     """Convert an argument into a help command, command, or cog."""
 
     @staticmethod
-    async def convert(ctx: Context, argument: str, **kwargs) -> SourceType | None:
+    async def convert(ctx: Context, argument: str, **kwargs) -> SourceType | None:  # type: ignore [valid-type]
         """Convert argument into source object."""
         if argument.lower() == "help":
             return ctx.bot.help_command

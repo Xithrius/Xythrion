@@ -58,13 +58,3 @@ report = "coverage report"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
-
-[tool.pyright]
-venvPath = "."
-venv = ".venv"
-
-include = ["bot/"]
-ignore = ["bot/**/source.py", "bot/**/eval.py"]
-
-reportIncompatibleVariableOverride = false
-reportIncompatibleMethodOverride = false

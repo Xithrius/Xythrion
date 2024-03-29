@@ -109,7 +109,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):  # pragma: no cover
             RESPONSES.labels(
                 method=method,
                 path=path,
-                status_code=status_code,  # type: ignore status_code
+                status_code=status_code,
                 app_name=self.app_name,
             ).inc()
             REQUESTS_IN_PROGRESS.labels(
