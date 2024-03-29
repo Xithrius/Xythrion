@@ -45,14 +45,14 @@ lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 
 # Testing
-test = "python3 -m pytest --ff"
-atest = "python3 -m pytest -n auto --ff"
-vtest = "python3 -m pytest -vvv --ff"
-retest = "python3 -m pytest --lf"
-memtest = "python3 -m pytest -ff --memray"
+test = "pytest --ff"
+atest = "pytest -n auto --ff"
+vtest = "pytest -vvv --ff"
+retest = "pytest --lf"
+memtest = "pytest -ff --memray"
 
 # Coverage
-test-cov = "python3 -m pytest --cov=./ --cov-report=xml"
+test-cov = "pytest --cov=./ --cov-report=xml"
 html = "coverage html"
 report = "coverage report"
 

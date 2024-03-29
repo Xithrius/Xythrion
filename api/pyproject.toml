@@ -62,13 +62,13 @@ migrate = "alembic revision --autogenerate -m"
 upgrade = "alembic upgrade head"
 
 # Testing
-test = "python3 -m pytest --ff"
-atest = "python3 -m pytest -n auto --ff"
-vtest = "python3 -m pytest -vvv --ff"
-retest = "python3 -m pytest --lf"
+test = "pytest --ff"
+atest = "pytest -n auto --ff"
+vtest = "pytest -vvv --ff"
+retest = "pytest --lf"
 
 # Coverage
-test-cov = "python3 -m pytest --cov=./ --cov-report=xml"
+test-cov = "pytest --cov=./ --cov-report=xml"
 html = "coverage html"
 report = "coverage report --sort=Cover"
 
