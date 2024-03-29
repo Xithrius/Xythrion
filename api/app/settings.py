@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     opentelemetry_endpoint: str | None = None
 
     @property
-    def db_url(self) -> URL:
+    def db_url(self) -> URL:  # pragma: no cover
         """
         Assemble database URL from settings.
 

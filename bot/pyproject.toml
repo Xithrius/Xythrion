@@ -58,3 +58,6 @@ report = "coverage report"
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+omit = ["bot/extensions/*", "bot/*.py", "bot/utils/plotting/*"]

@@ -77,3 +77,4 @@ filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.coverage.run]
 concurrency = ["gevent"]
+omit = ["app/__main__.py", "app/gunicorn_runner.py", "app/logging.py"]
