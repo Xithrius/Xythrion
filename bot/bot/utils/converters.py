@@ -12,7 +12,7 @@ from discord.ext.commands import (
 from bot import extensions
 from bot.context import Context
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from bot.bot import walk_extensions
 
 WHITESPACE_PATTERN = re.compile(r"\s+")
@@ -27,7 +27,7 @@ def remove_whitespace(s: str) -> str:
     return re.sub(WHITESPACE_PATTERN, "", s)
 
 
-def str_to_tuple3(s: str) -> tuple[int, int, int]:
+def str_to_tuple3(s: str) -> tuple[int, ...]:
     s = s.lower()
 
     if (m := re.match(TUPLE_3D_INT_PATTERN, s)) is None:
@@ -37,13 +37,10 @@ def str_to_tuple3(s: str) -> tuple[int, int, int]:
 
     int3 = tuple(int(x) for x in groups)
 
-    if len(int3) != 3:
-        raise ValueError("Argument could not be converted to tuple of 3 integers")
-
     return int3
 
 
-class Extension(Converter):
+class Extension(Converter):  # pragma: no cover
     @staticmethod
     async def convert(ctx: Context, argument: str) -> str:
         argument = argument.lower()
@@ -59,7 +56,7 @@ class Extension(Converter):
         raise ValueError(f"Invalid argument {argument}")
 
 
-class SourceConverter(Converter):
+class SourceConverter(Converter):  # pragma: no cover
     """Convert an argument into a help command, command, or cog."""
 
     @staticmethod

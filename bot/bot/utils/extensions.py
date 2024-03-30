@@ -5,11 +5,11 @@ import types
 from typing import NoReturn
 
 
-def ignore_module(module: pkgutil.ModuleInfo) -> bool:
+def ignore_module(module: pkgutil.ModuleInfo) -> bool:  # pragma: no cover
     return any(name.startswith("_") for name in module.name.split("."))
 
 
-def walk_extensions(module: types.ModuleType) -> frozenset[str]:
+def walk_extensions(module: types.ModuleType) -> frozenset[str]:  # pragma: no cover
     def on_error(name: str) -> NoReturn:
         raise ImportError(name=name)
 

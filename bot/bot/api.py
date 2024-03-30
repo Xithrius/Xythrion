@@ -17,8 +17,6 @@ class APIClient:
             **kwargs,
         )
 
-        r.raise_for_status()
-
         return r
 
     async def get(self, partial_endpoint: str, **kwargs) -> Response:

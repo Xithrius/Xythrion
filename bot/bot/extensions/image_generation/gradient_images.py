@@ -18,8 +18,8 @@ class GradientImages(Cog):
 
     @staticmethod
     def generate_gradient_image(
-        start_color: tuple[int, int, int],
-        end_color: tuple[int, int, int],
+        start_color: tuple[int, ...],
+        end_color: tuple[int, ...],
         size: tuple[int, int],
         gradient_direction: tuple[bool, bool, bool],
     ) -> BytesIO:

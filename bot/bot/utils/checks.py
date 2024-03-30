@@ -10,7 +10,7 @@ class TrustedUserCheckFailure(CheckFailure):
     """User is not in the trusted database, and therefore cannot run a command."""
 
 
-def is_trusted() -> Callable:
+def is_trusted() -> Callable:  # pragma: no cover
     async def predicate(ctx: Context) -> bool:
         if await ctx.bot.is_owner(ctx.message.author):
             return True

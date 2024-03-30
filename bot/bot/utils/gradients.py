@@ -18,8 +18,8 @@ def gradient2(
 def gradient3(
     width: int,
     height: int,
-    start_list: tuple[int, int, int],
-    stop_list: tuple[int, int, int],
+    start_list: tuple[int, ...],
+    stop_list: tuple[int, ...],
     is_horizontal_list: tuple[bool, bool, bool],
 ) -> np.ndarray:
     result = np.zeros((height, width, len(start_list)))

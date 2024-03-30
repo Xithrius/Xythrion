@@ -56,7 +56,7 @@ class Xythrion(Bot):
     async def api_healthcheck(api: APIClient) -> bool:
         for i in range(API_HEALTHCHECK_ATTEMPTS):
             timeout = (i + 1) * 2
-            log.info(f"({i + 1}/10): Attempting to connect to API, timeout of {timeout}...")
+            log.info(f"({i + 1}/10): Attempting to connect to API, timeout of {timeout}s...")
             response = await api.get("/api/health", timeout=timeout)
 
             if response.is_success:

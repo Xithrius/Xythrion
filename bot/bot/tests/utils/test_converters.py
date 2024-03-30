@@ -1,3 +1,5 @@
+import pytest
+
 from bot.utils import remove_whitespace, str_to_tuple3
 
 
@@ -19,3 +21,8 @@ def test_convert_multiple_digits_in_tuple() -> None:
 
 def test_convert_different_digits_in_tuple() -> None:
     assert str_to_tuple3("(1,22,333)") == (1, 22, 333)
+
+
+def test_convert_no_digits_in_tuple() -> None:
+    with pytest.raises(ValueError):
+        str_to_tuple3("(asdf,asdf,asdf)")

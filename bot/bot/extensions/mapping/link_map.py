@@ -102,10 +102,21 @@ class LinkMapper(Cog):
     @link_map_list.command(name="channels")
     @is_trusted()
     async def list_link_map_channels(self, ctx: Context) -> None:
-        response = await self.bot.api.get("/api/link_maps/channels")
+        if (guild := ctx.guild) is None:
+            raise ValueError("Be in a guild to run this command")
+
+        response = await self.bot.api.get(
+            "/api/link_maps/channels",
+            params={"server_id": guild.id},
+        )
 
         if not response.is_success:
-            await ctx.send(
+            if response.status_code == 404:
+                await ctx.warning_embed("No redirect channels exist for this server")
+
+                return
+
+            await ctx.error_embed(
                 f"Something went wrong when requesting link map channels. Status code {response.status_code}.",
             )
 
@@ -113,12 +124,7 @@ class LinkMapper(Cog):
 
         data = response.json()
 
-        if len(data) == 0:
-            await ctx.warning_embed("No redirect channels exist.")
-
-            return
-
-        table = dict_to_human_table(data)
+        table = dict_to_human_table(pd.DataFrame([data]).T)
 
         await ctx.send(table)
 
@@ -176,7 +182,7 @@ class LinkMapper(Cog):
         else:
             lst = [{"source": x["from_link"], attribute: x[attribute]} for x in converters]
 
-        table = dict_to_human_table(pd.DataFrame(lst))
+        table = dict_to_human_table(pd.DataFrame(lst).T)
 
         await ctx.send(table)
 

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timezone
 
 import pandas as pd
 from humanize import naturaldelta
@@ -39,30 +39,29 @@ def codeblock(code: str | list[str], *, language: str | None = None) -> str:
 
 
 def convert_to_deltas(
-    data: pd.DataFrame,
+    df: pd.DataFrame,
     *,
     datetime_key: str,
-    tz: timezone | None = None,
+    tz: timezone = UTC,
 ) -> pd.DataFrame:
     """Converts a datetime in a DataFrame to a human-readable delta."""
-    current_time = datetime.now(
-        tz=tz if tz is not None else timezone(timedelta(hours=0.0)),
-    )
+    current_time = datetime.now(tz=tz)
 
-    for idx, row in data.iterrows():
-        created_time = datetime.fromisoformat(str(row[datetime_key]).rstrip("Z"))
+    def __datetime_conversion(x: str) -> str:
+        created_time = datetime.fromisoformat(str(x).rstrip("Z")).replace(tzinfo=tz)
         delta = created_time - current_time
-        data.at[idx, datetime_key] = naturaldelta(delta.total_seconds())
+        return naturaldelta(delta.total_seconds())
 
-    return data
+    df[datetime_key] = df[datetime_key].apply(__datetime_conversion)
+
+    return df
 
 
-def dict_to_human_table(data: pd.DataFrame, *, datetime_key: str | None = None) -> str:
-    """DataFrame to readable table."""
-    if datetime_key is not None:
-        data = convert_to_deltas(data, datetime_key=datetime_key)
+def dict_to_human_table(data: pd.DataFrame) -> str:
+    """DataFrame to human-readable table."""
+    d = data.to_dict()
 
-    table = tabulate(list(data.to_dict().values()), headers="keys", tablefmt="grid")
+    table = tabulate(list(d.values()), headers="keys")
     block = codeblock(table)
 
     return block

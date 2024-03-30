@@ -35,8 +35,8 @@ class GradientMinecraftSkins(Cog):
 
     @staticmethod
     def generate_gradient_skin_image(
-        start_color: tuple[int, int, int],
-        end_color: tuple[int, int, int],
+        start_color: tuple[int, ...],
+        end_color: tuple[int, ...],
         gradient_direction: tuple[bool, bool, bool] = (False, False, False),
         size_h: int = 64,
         size_v: int = 64,

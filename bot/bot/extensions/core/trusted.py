@@ -34,7 +34,7 @@ class Trusted(Cog):
         r: Response = await self.bot.api.get("/api/trusted/")
 
         if data := r.json():
-            table = dict_to_human_table(data, datetime_key="at")
+            table = dict_to_human_table(data)
 
             await ctx.send(table)
 
