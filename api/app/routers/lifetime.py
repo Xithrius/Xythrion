@@ -130,7 +130,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):  # pragma: no cover
         return request.url.path, False
 
 
-def metrics() -> Response:  # pragma: no cover
+def metrics(request: Request) -> Response:  # pragma: no cover
     return Response(
         generate_latest(REGISTRY),
         headers={"Content-Type": CONTENT_TYPE_LATEST},
