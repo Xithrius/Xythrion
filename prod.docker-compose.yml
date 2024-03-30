@@ -1,5 +1,3 @@
-version: "3.8"
-
 x-logging-loki: &logging_loki
   logging:
     driver: loki

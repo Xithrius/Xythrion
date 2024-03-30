@@ -5,7 +5,7 @@
 groups = ["default", "precommit", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:feade0cf932f69339419ecc8df488f6d2d697de25126f29f876993ef6566cc44"
+content_hash = "sha256:18b150f09eb5e07e633684a88eb38e9ab23686c1b7bf49a8b3d29a673e3a8d04"
 
 [[package]]
 name = "alembic"
@@ -1400,17 +1400,6 @@ dependencies = [
 files = [
     {file = "testcontainers-4.2.0rc2-py3-none-any.whl", hash = "sha256:72d93ee02142906b6c50299761dfed39dcbc826d8034990f9bf3ebaeb671c6a3"},
     {file = "testcontainers-4.2.0rc2.tar.gz", hash = "sha256:3c3006a858d36d9df23a952f6ab580c98e42dda6be6ad5ed48b47a32140f0d54"},
-]
-
-[[package]]
-name = "types-tabulate"
-version = "0.9.0.20240106"
-requires_python = ">=3.8"
-summary = "Typing stubs for tabulate"
-groups = ["precommit"]
-files = [
-    {file = "types-tabulate-0.9.0.20240106.tar.gz", hash = "sha256:c9b6db10dd7fcf55bd1712dd3537f86ddce72a08fd62bb1af4338c7096ce947e"},
-    {file = "types_tabulate-0.9.0.20240106-py3-none-any.whl", hash = "sha256:0378b7b6fe0ccb4986299496d027a6d4c218298ecad67199bbd0e2d7e9d335a1"},
 ]
 
 [[package]]
