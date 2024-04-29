@@ -1,16 +1,16 @@
 """
 Created base tables.
 
-Revision ID: 87e3f598d749
+Revision ID: 40992cc96dc5
 Revises:
-Create Date: 2024-04-29 06:24:58.938755
+Create Date: 2024-04-29 06:36:22.807688
 
 """
 
 import sqlalchemy as sa
 from alembic import op
 
-revision = "87e3f598d749"
+revision = "40992cc96dc5"
 down_revision = None
 branch_labels = None
 depends_on = None

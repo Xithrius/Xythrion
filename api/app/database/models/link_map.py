@@ -25,9 +25,8 @@ class LinkMapChannelModel(Base):
     output_channel_id = mapped_column(BigInteger)
 
     converters: Mapped[list[LinkMapConverterModel]] = relationship(
-        "LinkMapConverter",
         secondary="channel_converter_association",
-        back_populates="link_map_converters",
+        back_populates="channels",
         lazy="joined",
     )
 
@@ -54,9 +53,8 @@ class LinkMapConverterModel(Base):
     xpath: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
 
     channels: Mapped[list[LinkMapChannelModel]] = relationship(
-        "LinkMapChannels",
         secondary="channel_converter_association",
-        back_populates="link_map_channels",
+        back_populates="converters",
         lazy="joined",
     )
 
