@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
 from app.database.models.pin import PinModel
-from app.routers.pin.schemas import PinBase, PinCreate, PinUpdate
+from app.routers.schemas.pin import PinBase, PinCreate, PinUpdate
 
 
 def equivalent_pin_model(pin: PinBase) -> ColumnElement[bool]:

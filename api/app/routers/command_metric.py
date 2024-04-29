@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from app.database.dependencies import DBSession
 from fastapi import APIRouter, HTTPException, Response, status
 
 from app.database.crud.command_metric import command_metric_dao
+from app.database.dependencies import DBSession
 from app.database.models.command_metric import CommandMetricModel
 
-from .schemas import CommandMetric, CommandMetricCreate
+from .schemas.command_metric import CommandMetric, CommandMetricCreate
 
 router = APIRouter()
 

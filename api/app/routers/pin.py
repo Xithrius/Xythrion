@@ -4,7 +4,7 @@ from app.database.crud.pin import pin_dao
 from app.database.dependencies import DBSession
 from app.database.models.pin import PinModel
 
-from .schemas import Pin, PinBase, PinCreate
+from .schemas.pin import Pin, PinBase, PinCreate
 
 router = APIRouter()
 

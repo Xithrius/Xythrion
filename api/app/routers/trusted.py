@@ -4,7 +4,7 @@ from app.database.crud.trusted import trusted_dao
 from app.database.dependencies import DBSession
 from app.database.models.trusted import TrustedModel
 
-from .schemas import Trusted, TrustedCreate
+from .schemas.trusted import Trusted, TrustedCreate
 
 router = APIRouter()
 

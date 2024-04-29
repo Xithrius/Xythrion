@@ -2,9 +2,9 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 import pytest
+from app.application import get_app
 from app.database.dependencies import get_db_session
 from app.database.utils import create_database, drop_database
-from app.routers.application import get_app
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import (
