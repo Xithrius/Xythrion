@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
 from app.database.models.link_map import LinkMapChannelModel
-from app.routers.link_map.schemas import LinkMapChannelCreate, LinkMapChannelUpdate
+from app.routers.schemas.link_map import LinkMapChannelCreate, LinkMapChannelUpdate
 
 
 class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, LinkMapChannelUpdate]):

@@ -5,7 +5,7 @@ from app.database.crud.link_map_converter import link_map_converter_dao
 from app.database.dependencies import DBSession
 from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
 
-from .schemas import (
+from .schemas.link_map import (
     LinkMapChannel,
     LinkMapChannelConverters,
     LinkMapChannelCreate,

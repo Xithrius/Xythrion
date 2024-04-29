@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
 from app.database.models.link_map import LinkMapConverterModel
-from app.routers.link_map.schemas import LinkMapConverterCreate, LinkMapConverterUpdate
+from app.routers.schemas.link_map import LinkMapConverterCreate, LinkMapConverterUpdate
 
 
 class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreate, LinkMapConverterUpdate]):

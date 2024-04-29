@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
 from app.database.models.trusted import TrustedModel
-from app.routers.trusted.schemas import TrustedCreate, TrustedUpdate
+from app.routers.schemas.trusted import TrustedCreate, TrustedUpdate
 
 
 class TrustedCRUD(CRUDBase[TrustedModel, TrustedCreate, TrustedUpdate]):

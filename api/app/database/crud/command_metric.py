@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
 from app.database.models.command_metric import CommandMetricModel
-from app.routers.command_metric.schemas import CommandMetricCreate, CommandMetricUpdate
+from app.routers.schemas.command_metric import CommandMetricCreate, CommandMetricUpdate
 
 
 class CommandMetricCRUD(CRUDBase[CommandMetricModel, CommandMetricCreate, CommandMetricUpdate]):
