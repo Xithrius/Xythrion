@@ -1,16 +1,16 @@
 """
 Created base tables.
 
-Revision ID: a80273b97b54
+Revision ID: 87e3f598d749
 Revises:
-Create Date: 2024-04-29 06:05:12.960040
+Create Date: 2024-04-29 06:24:58.938755
 
 """
 
 import sqlalchemy as sa
 from alembic import op
 
-revision = "a80273b97b54"
+revision = "87e3f598d749"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -72,13 +72,11 @@ def upgrade() -> None:
             ["channel_id"],
             ["link_map_channels.id"],
             name=op.f("channel_converter_association_channel_id_fkey"),
-            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["converter_id"],
             ["link_map_converters.id"],
             name=op.f("channel_converter_association_converter_id_fkey"),
-            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("channel_id", "converter_id", name=op.f("channel_converter_association_pkey")),
     )

@@ -66,11 +66,11 @@ class LinkMapChannelConverterAssociationModel(Base):
 
     channel_id = mapped_column(
         UUID,
-        ForeignKey("link_map_channels.id", ondelete="CASCADE"),
+        ForeignKey("link_map_channels.id"),
         primary_key=True,
     )
     converter_id = mapped_column(
         UUID,
-        ForeignKey("link_map_converters.id", ondelete="CASCADE"),
+        ForeignKey("link_map_converters.id"),
         primary_key=True,
     )
