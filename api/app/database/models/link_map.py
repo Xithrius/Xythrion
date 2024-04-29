@@ -13,9 +13,13 @@ from app.database.base import Base
 class LinkMapChannelModel(Base):
     __tablename__ = "link_map_channels"
 
-    # TODO: Change to UUID primary key, this implementation is not good
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
 
-    server_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    server_id: Mapped[int] = mapped_column(BigInteger)
 
     input_channel_id: Mapped[int] = mapped_column(BigInteger)
     output_channel_id: Mapped[int] = mapped_column(BigInteger)
@@ -43,8 +47,8 @@ class LinkMapConverterModel(Base):
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now())
 
-    channel_map_server_id: Mapped[int] = mapped_column(
-        ForeignKey("link_map_channels.server_id"),
+    channel_map_id: Mapped[int] = mapped_column(
+        ForeignKey("link_map_channels.id"),
     )
 
     channel_map: Mapped[LinkMapChannelModel] = relationship(
