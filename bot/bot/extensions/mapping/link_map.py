@@ -240,7 +240,7 @@ class LinkMapper(Cog):
             return
 
         data = {
-            "channel_map_server_id": guild.id,
+            "channel_map_id": guild.id,
             "from_link": source,
         }
 

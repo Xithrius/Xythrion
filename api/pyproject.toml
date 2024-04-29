@@ -58,8 +58,10 @@ lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 
 # Database migrating
+history = "alembic history"
 migrate = "alembic revision --autogenerate -m"
 upgrade = "alembic upgrade head"
+downgrade = "alembic downgrade"
 
 # Testing
 test = "pytest --ff"

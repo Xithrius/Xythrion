@@ -57,7 +57,7 @@ async def test_create_invalid_link_map_converter_with_no_channels(
 ) -> None:
     url = fastapi_app.url_path_for("create_link_map_converter")
     new_link_map = {
-        "channel_map_server_id": 1000,
+        "channel_map_id": 1000,
         "from_link": "http://example.com",
         "to_link": "http://example.com/example",
     }
@@ -155,7 +155,7 @@ async def test_create_valid_channel_but_invalid_converter_with_link_and_xpath(
 
     url = fastapi_app.url_path_for("create_link_map_converter")
     new_link_map = {
-        "channel_map_server_id": 123,
+        "channel_map_id": 123,
         "from_link": "http://example.com",
         "to_link": "http://example.com/example",
         "xpath": "/",
@@ -183,7 +183,7 @@ async def test_create_valid_channel_but_invalid_converter_with_no_link_and_no_xp
 
     url = fastapi_app.url_path_for("create_link_map_converter")
     new_link_map = {
-        "channel_map_server_id": 1,
+        "channel_map_id": 1,
         "from_link": "http://example.com",
     }
     response = await client.post(url, json=new_link_map)
@@ -209,7 +209,7 @@ async def test_create_valid_channel_and_then_valid_link_map_converter(
 
     url = fastapi_app.url_path_for("create_link_map_converter")
     new_link_map = {
-        "channel_map_server_id": 1234,
+        "channel_map_id": 1234,
         "from_link": "http://example.com",
         "to_link": "http://example.com/example",
     }
@@ -236,7 +236,7 @@ async def test_create_valid_channel_and_converter_and_search_with_input_channel(
 
     url = fastapi_app.url_path_for("create_link_map_converter")
     new_link_map = {
-        "channel_map_server_id": 1111,
+        "channel_map_id": 1111,
         "from_link": "http://example.com",
         "to_link": "http://example.com/example",
     }
@@ -285,7 +285,7 @@ async def test_create_valid_channel_and_converter_then_delete_converter_then_lis
 
     url = fastapi_app.url_path_for("create_link_map_converter")
     new_link_map = {
-        "channel_map_server_id": 321,
+        "channel_map_id": 321,
         "from_link": "http://example.com",
         "to_link": "http://example.com/example",
     }

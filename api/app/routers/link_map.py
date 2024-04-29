@@ -114,13 +114,13 @@ async def create_link_map_converter(
 
     channel = await link_map_channel_dao.get_by_server_id(
         session,
-        server_id=link_map.channel_map_server_id,
+        server_id=link_map.channel_map_id,
     )
 
     if channel is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Relevant channel map does not exist for server ID '{link_map.channel_map_server_id}'",
+            detail=f"Relevant channel map does not exist for server ID '{link_map.channel_map_id}'",
         )
 
     await link_map_converter_dao.create(session, obj_in=link_map)
