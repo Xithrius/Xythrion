@@ -23,7 +23,6 @@ class LinkMapChannel(BaseModel):
 
 
 class LinkMapConverterCreate(BaseModel):
-    channel_map_id: int
     from_link: str
     to_link: str | None = None
     xpath: str | None = None
@@ -35,7 +34,6 @@ class LinkMapConverterUpdate(BaseModel):
 
 class LinkMapConverter(BaseModel):
     id: UUID
-    channel_map_id: int
     created_at: datetime
     from_link: str
     to_link: str | None = None
