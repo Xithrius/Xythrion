@@ -6,38 +6,6 @@ from starlette import status
 
 
 @pytest.mark.anyio
-async def test_check_no_link_map_channels(
-    fastapi_app: FastAPI,
-    client: AsyncClient,
-    dbsession: AsyncSession,
-) -> None:
-    url = fastapi_app.url_path_for("get_all_link_map_channels")
-    response = await client.get(url)
-
-    assert response.status_code == status.HTTP_200_OK
-
-    data = response.json()
-
-    assert data == []
-
-
-@pytest.mark.anyio
-async def test_check_no_link_map_converters(
-    fastapi_app: FastAPI,
-    client: AsyncClient,
-    dbsession: AsyncSession,
-) -> None:
-    url = fastapi_app.url_path_for("get_all_link_map_converters")
-    response = await client.get(url)
-
-    assert response.status_code == status.HTTP_200_OK
-
-    data = response.json()
-
-    assert data == []
-
-
-@pytest.mark.anyio
 async def test_check_no_link_map_channels_on_invalid_server(
     fastapi_app: FastAPI,
     client: AsyncClient,

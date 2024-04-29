@@ -3,39 +3,16 @@ from fastapi import APIRouter, HTTPException, Response, status
 from app.database.crud.link_map_channel import link_map_channel_dao
 from app.database.crud.link_map_converter import link_map_converter_dao
 from app.database.dependencies import DBSession
-from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
+from app.database.models.link_map import LinkMapChannelModel
 
 from .schemas.link_map import (
     LinkMapChannel,
     LinkMapChannelConverters,
     LinkMapChannelCreate,
-    LinkMapConverter,
     LinkMapConverterCreate,
 )
 
 router = APIRouter()
-
-
-@router.get(
-    "/channels/all",
-    response_model=list[LinkMapChannel],
-    status_code=status.HTTP_200_OK,
-)
-async def get_all_link_map_channels(session: DBSession) -> list[LinkMapChannelModel]:
-    items = await link_map_channel_dao.get_all(session)
-
-    return list(items)
-
-
-@router.get(
-    "/converters/all",
-    response_model=list[LinkMapConverter],
-    status_code=status.HTTP_200_OK,
-)
-async def get_all_link_map_converters(session: DBSession) -> list[LinkMapConverterModel]:
-    items = await link_map_converter_dao.get_all(session)
-
-    return list(items)
 
 
 @router.get(
