@@ -106,3 +106,45 @@ async def test_create_one_link_map_channel_and_multiple_converters(
         assert converter.from_link == converter_data["from_link"]
         assert converter.to_link == converter_data["to_link"]
         assert converter.xpath == converter_data["xpath"]
+
+
+@pytest.mark.anyio
+async def test_create_one_converter_and_multiple_channels(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    converter_data = {"from_link": "from_link_1", "to_link": "to_link_1", "xpath": None}
+    converter = LinkMapConverterModel(**converter_data)
+    dbsession.add(converter)
+    await dbsession.commit()
+
+    channels_data = [
+        {
+            "server_id": 123,
+            "input_channel_id": 456,
+            "output_channel_id": 789,
+        },
+        {
+            "server_id": 111,
+            "input_channel_id": 222,
+            "output_channel_id": 333,
+        },
+    ]
+
+    channels = []
+    for channel_data in channels_data:
+        channel = LinkMapChannelModel(**channel_data)
+        channel.converters.append(converter)
+        channels.append(channel)
+        dbsession.add(channel)
+    await dbsession.commit()
+
+    results = await dbsession.execute(select(LinkMapConverterModel).where(LinkMapConverterModel.id == converter.id))
+    stored_converter = results.scalar()
+    assert stored_converter is not None
+    assert len(stored_converter.channels) == len(channels_data)
+
+    for channel, channel_data in zip(stored_converter.channels, channels_data, strict=False):
+        assert channel.input_channel_id == channel_data["input_channel_id"]
+        assert channel.output_channel_id == channel_data["output_channel_id"]
