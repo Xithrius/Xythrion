@@ -158,6 +158,113 @@ async def test_create_link_map_converter_with_duplicate_data_returns_409_conflic
 
 
 @pytest.mark.anyio
+async def test_create_link_map_converter_with_xpath_and_to_link_returns_400_bad_request(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("create_link_map_converter")
+    data = {
+        "from_link": "https://asdf.com",
+        "to_link": "https://asdf.com/test",
+        "xpath": "/html/body/div",
+    }
+
+    response = await client.post(url, json=data)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.anyio
+async def test_get_one_link_map_channel_on_non_empty_database_returns_200_ok(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("create_link_map_channel")
+    data = {
+        "server_id": 1000,
+        "input_channel_id": 1000,
+        "output_channel_id": 1000,
+    }
+    response = await client.post(url, json=data)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    url = fastapi_app.url_path_for("get_all_link_map_channels")
+    response = await client.get(url)
+
+    link_map_channels = response.json()
+
+    assert len(link_map_channels) == 1
+
+    new_link_map_channel = link_map_channels[0]
+    assert new_link_map_channel["id"]
+    for k, v in data.items():
+        assert new_link_map_channel[k] == v
+
+    url = fastapi_app.url_path_for(
+        "get_one_link_map_channel",
+        channel_id=new_link_map_channel["id"],
+    )
+    response = await client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    one_link_map_channel = response.json()
+
+    assert one_link_map_channel == new_link_map_channel
+
+
+@pytest.mark.anyio
+async def test_get_one_link_map_converter_on_non_empty_database_returns_200_ok(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("create_link_map_converter")
+    data = {
+        "from_link": "https://1234.com",
+        "to_link": "https://4321.com/test",
+    }
+    response = await client.post(url, json=data)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    url = fastapi_app.url_path_for("get_all_link_map_converters")
+    response = await client.get(url)
+
+    link_map_converters = response.json()
+
+    assert len(link_map_converters) == 1
+
+    new_link_map_converter = link_map_converters[0]
+    assert new_link_map_converter["id"]
+    for k, v in data.items():
+        assert new_link_map_converter[k] == v
+
+    url = fastapi_app.url_path_for(
+        "get_one_link_map_converter",
+        converter_id=new_link_map_converter["id"],
+    )
+    response = await client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    one_link_map_converter = response.json()
+
+    assert one_link_map_converter == new_link_map_converter
+
+
+@pytest.mark.anyio
+async def test_remove_link_map_converter_on_empty_database_returns_404_not_found(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for(
+        "remove_link_map_converter",
+        converter_id="00000000-0000-0000-0000-000000000000",
+    )
+    response = await client.delete(url)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.anyio
 async def test_remove_link_map_channel_on_empty_database_returns_404_not_found(
     fastapi_app: FastAPI,
     client: AsyncClient,
