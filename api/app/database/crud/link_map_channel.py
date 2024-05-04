@@ -42,7 +42,7 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
         await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[int] | list[str]) -> int:
-        return await self.delete_(db, pk=lambda: self.model.server_id.in_(pk))
+        return await self.delete_(db, pk=lambda: self.model.id.in_(pk))
 
 
 link_map_channel_dao = LinkMapChannelCRUD(LinkMapChannelModel)

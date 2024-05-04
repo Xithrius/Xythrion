@@ -16,6 +16,7 @@ from app.routers.schemas.link_map import (
 class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreate, LinkMapConverterUpdate]):
     async def get_all(self, db: AsyncSession) -> Sequence[LinkMapConverterModel]:
         items = await db.execute(select(self.model))
+        items.unique()
 
         return items.scalars().all()
 
@@ -35,7 +36,6 @@ class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreat
         return items.scalar()
 
     async def get_by_server_id(self, db: AsyncSession, *, server_id: int) -> Sequence[LinkMapConverter]:
-        # TODO: Make sure this works with tests
         items = await db.execute(
             select(self.model).where(self.model.channels.any(LinkMapChannelModel.server_id == server_id)),
         )
