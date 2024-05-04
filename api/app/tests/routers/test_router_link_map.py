@@ -110,10 +110,11 @@ async def test_create_link_map_converter_with_valid_data_returns_201_created(
     dbsession: AsyncSession,
 ) -> None:
     url = fastapi_app.url_path_for("create_link_map_converter")
-    response = await client.post(
-        url,
-        json={"from_link": "https://example.com", "to_link": "https://example.com/test"},
-    )
+    data = {
+        "from_link": "https://example.com",
+        "to_link": "https://example.com/test",
+    }
+    response = await client.post(url, json=data)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -250,6 +251,43 @@ async def test_get_one_link_map_converter_on_non_empty_database_returns_200_ok(
 
 
 @pytest.mark.anyio
+async def test_enable_link_map_converter_for_channel_returns_204_no_content(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    # Create the channel
+    url = fastapi_app.url_path_for("create_link_map_channel")
+    new_link_map_channel_data = {
+        "server_id": 1,
+        "input_channel_id": 1,
+        "output_channel_id": 1,
+    }
+    response = await client.post(url, json=new_link_map_channel_data)
+    new_link_map_channel = response.json()
+    assert new_link_map_channel["id"]
+
+    # Create the converter
+    url = fastapi_app.url_path_for("create_link_map_converter")
+    new_link_map_converter_data = {
+        "from_link": "https://example.com",
+        "to_link": "https://example.com/test",
+    }
+    response = await client.post(url, json=new_link_map_converter_data)
+    new_link_map_converter = response.json()
+    assert new_link_map_converter["id"]
+
+    # Add converter to channel
+    url = fastapi_app.url_path_for(
+        "enable_link_map_converter_for_channel",
+        channel_id=new_link_map_channel["id"],
+        converter_id=new_link_map_converter["id"],
+    )
+    response = await client.put(url)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+@pytest.mark.anyio
 async def test_remove_link_map_converter_on_empty_database_returns_404_not_found(
     fastapi_app: FastAPI,
     client: AsyncClient,
@@ -293,17 +331,7 @@ async def test_remove_link_map_converter_on_non_empty_database_returns_204_no_co
     response = await client.post(url, json=data)
     assert response.status_code == status.HTTP_201_CREATED
 
-    url = fastapi_app.url_path_for("get_all_link_map_converters")
-    response = await client.get(url)
-
-    link_map_converters = response.json()
-
-    assert len(link_map_converters) == 1
-
-    new_link_map_converter = link_map_converters[0]
-    assert new_link_map_converter["id"]
-    for k, v in data.items():
-        assert new_link_map_converter[k] == v
+    new_link_map_converter = response.json()
 
     url = fastapi_app.url_path_for(
         "remove_link_map_converter",
@@ -329,17 +357,7 @@ async def test_remove_link_map_channel_on_non_empty_database_returns_204_no_cont
     response = await client.post(url, json=data)
     assert response.status_code == status.HTTP_201_CREATED
 
-    url = fastapi_app.url_path_for("get_all_link_map_channels")
-    response = await client.get(url)
-
-    link_map_channels = response.json()
-
-    assert len(link_map_channels) == 1
-
-    new_link_map_channel = link_map_channels[0]
-    assert new_link_map_channel["id"]
-    for k, v in data.items():
-        assert new_link_map_channel[k] == v
+    new_link_map_channel = response.json()
 
     url = fastapi_app.url_path_for(
         "remove_link_map_channel",

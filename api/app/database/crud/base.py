@@ -39,10 +39,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db: AsyncSession,
         *,
         obj_in: CreateSchemaType,
-    ) -> None:
+    ) -> ModelType:
         create_data = self.model(**obj_in.model_dump())
 
         db.add(create_data)
+
+        await db.commit()
+        await db.refresh(create_data)
+
+        return create_data
 
     async def delete_(
         self,

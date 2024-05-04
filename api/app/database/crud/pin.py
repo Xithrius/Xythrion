@@ -27,8 +27,8 @@ class PinCRUD(CRUDBase[PinModel, PinCreate, PinUpdate]):
 
         return items.scalars().first()
 
-    async def create(self, db: AsyncSession, *, obj_in: PinCreate) -> None:
-        await self.create_(db, obj_in=obj_in)
+    async def create(self, db: AsyncSession, *, obj_in: PinCreate) -> PinModel:
+        return await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pin: PinBase) -> int:
         return await self.delete_(db, pk=lambda: equivalent_pin_model(pin))

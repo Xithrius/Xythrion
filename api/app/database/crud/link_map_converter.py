@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.crud.base import CRUDBase
 from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
 from app.routers.schemas.link_map import (
-    LinkMapConverter,
     LinkMapConverterBase,
     LinkMapConverterCreate,
     LinkMapConverterUpdate,
@@ -35,15 +34,15 @@ class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreat
 
         return items.scalar()
 
-    async def get_by_server_id(self, db: AsyncSession, *, server_id: int) -> Sequence[LinkMapConverter]:
+    async def get_by_server_id(self, db: AsyncSession, *, server_id: int) -> Sequence[LinkMapConverterModel]:
         items = await db.execute(
             select(self.model).where(self.model.channels.any(LinkMapChannelModel.server_id == server_id)),
         )
 
         return items.scalars().all()
 
-    async def create(self, db: AsyncSession, *, obj_in: LinkMapConverterCreate) -> None:
-        await self.create_(db, obj_in=obj_in)
+    async def create(self, db: AsyncSession, *, obj_in: LinkMapConverterCreate) -> LinkMapConverterModel:
+        return await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[str]) -> int:
         return await self.delete_(db, pk=pk)

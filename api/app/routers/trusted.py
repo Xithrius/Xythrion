@@ -46,12 +46,13 @@ async def get_trusted_user(
 
 @router.post(
     "/",
+    response_model=Trusted,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_trusted_user(
     session: DBSession,
     new_user: TrustedCreate,
-) -> None:
+) -> TrustedModel:
     user = await trusted_dao.get_by_user_id(session, user_id=new_user.user_id)
 
     if user is not None:
@@ -60,7 +61,7 @@ async def create_trusted_user(
             detail="User is already trusted",
         )
 
-    await trusted_dao.create(session, obj_in=new_user)
+    return await trusted_dao.create(session, obj_in=new_user)
 
 
 @router.delete(

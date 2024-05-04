@@ -95,12 +95,13 @@ async def get_server_link_map_converters(session: DBSession, server_id: int) -> 
 
 @router.post(
     "/channels",
+    response_model=LinkMapChannel,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map_channel(
     session: DBSession,
     link_map_channel: LinkMapChannelCreate,
-) -> None:
+) -> LinkMapChannelModel:
     channels = await link_map_channel_dao.get_by_server_id(
         session,
         server_id=link_map_channel.server_id,
@@ -112,17 +113,18 @@ async def create_link_map_channel(
             detail=f"Link map channel already exists in server with ID '{link_map_channel.server_id}'",
         )
 
-    await link_map_channel_dao.create(session, obj_in=link_map_channel)
+    return await link_map_channel_dao.create(session, obj_in=link_map_channel)
 
 
 @router.post(
     "/converters",
+    response_model=LinkMapConverter,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_link_map_converter(
     session: DBSession,
     link_map_converter: LinkMapConverterCreate,
-) -> None:
+) -> LinkMapConverterModel:
     if (link_map_converter.to_link is None) == (link_map_converter.xpath is None):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -137,7 +139,44 @@ async def create_link_map_converter(
             detail="Link map converter already exists",
         )
 
-    await link_map_converter_dao.create(session, obj_in=link_map_converter)
+    return await link_map_converter_dao.create(session, obj_in=link_map_converter)
+
+
+@router.put(
+    "/channels/{channel_id}/converters/{converter_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def enable_link_map_converter_for_channel(
+    session: DBSession,
+    channel_id: str,
+    converter_id: str,
+) -> None:
+    # Make sure the converter exists
+    channel = await link_map_channel_dao.get_(session, pk=channel_id)
+
+    if channel is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Link map channel with ID '{channel_id}' could not be found",
+        )
+
+    # Make sure the channel exists
+    converter = await link_map_converter_dao.get_(session, pk=converter_id)
+
+    if converter is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Link map converter with ID '{converter_id}' could not be found",
+        )
+
+    # Add the converter to the channel
+    await link_map_channel_dao.add_converter(
+        session,
+        channel_id=channel_id,
+        converter_id=converter_id,
+    )
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.delete(

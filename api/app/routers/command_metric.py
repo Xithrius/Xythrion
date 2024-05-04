@@ -30,13 +30,14 @@ async def get_all_command_metrics(
 @router.post(
     "/",
     description="Create a command metric item",
+    response_model=CommandMetric,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_command_usage_metric(
     session: DBSession,
     command_metric: CommandMetricCreate,
-) -> None:
-    await command_metric_dao.create(session, obj_in=command_metric)
+) -> CommandMetricModel:
+    return await command_metric_dao.create(session, obj_in=command_metric)
 
 
 @router.delete(

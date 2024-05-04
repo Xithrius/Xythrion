@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
-from app.database.models.link_map import LinkMapChannelModel
+from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
 from app.routers.schemas.link_map import LinkMapChannelCreate, LinkMapChannelUpdate
 
 
@@ -38,8 +38,21 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
 
         return items.scalars().one_or_none()
 
-    async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> None:
-        await self.create_(db, obj_in=obj_in)
+    async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> LinkMapChannelModel:
+        return await self.create_(db, obj_in=obj_in)
+
+    async def add_converter(self, db: AsyncSession, *, channel_id: str, converter_id: str) -> None:
+        # Assuming that the channel and converter were already checked to exist beforehand
+
+        channel_results = await db.execute(select(self.model).where(self.model.id == channel_id))
+        channel = channel_results.scalars().first()
+
+        converter_results = await db.execute(
+            select(LinkMapConverterModel).where(LinkMapConverterModel.id == converter_id),
+        )
+        converter = converter_results.scalars().first()
+
+        channel.converters.append(converter)
 
     async def delete(self, db: AsyncSession, *, pk: list[int] | list[str]) -> int:
         return await self.delete_(db, pk=lambda: self.model.id.in_(pk))
