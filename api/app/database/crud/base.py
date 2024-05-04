@@ -21,7 +21,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         db: AsyncSession,
         *,
-        pk: int | UUID | None = None,
+        pk: str | int | UUID | None = None,
     ) -> ModelType | None:
         result = await db.execute(
             select(self.model).where(self.model.id == pk),

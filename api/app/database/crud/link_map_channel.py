@@ -15,10 +15,11 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
 
         return items.scalars().all()
 
-    async def get_by_server_id(self, db: AsyncSession, *, server_id: int) -> LinkMapChannelModel | None:
+    async def get_by_server_id(self, db: AsyncSession, *, server_id: int) -> Sequence[LinkMapChannelModel]:
         items = await db.execute(select(self.model).where(self.model.server_id == server_id))
+        items.unique()
 
-        return items.scalars().first()
+        return items.scalars().all()
 
     async def get_converters_for_channel(
         self,
@@ -40,7 +41,7 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
     async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> None:
         await self.create_(db, obj_in=obj_in)
 
-    async def delete(self, db: AsyncSession, *, pk: list[int]) -> int:
+    async def delete(self, db: AsyncSession, *, pk: list[int] | list[str]) -> int:
         return await self.delete_(db, pk=lambda: self.model.server_id.in_(pk))
 
 
