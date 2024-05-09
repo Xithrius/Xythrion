@@ -61,32 +61,6 @@ async def test_get_one_link_map_converter_on_empty_database_returns_404_not_foun
 
 
 @pytest.mark.anyio
-async def test_get_server_link_map_channels_on_empty_database_returns_empty_list(
-    fastapi_app: FastAPI,
-    client: AsyncClient,
-    dbsession: AsyncSession,
-) -> None:
-    url = fastapi_app.url_path_for("get_server_link_map_channels")
-    response = await client.get(url, params={"server_id": 1234})
-
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json() == []
-
-
-@pytest.mark.anyio
-async def test_get_server_link_map_converters_on_empty_database_returns_empty_list(
-    fastapi_app: FastAPI,
-    client: AsyncClient,
-    dbsession: AsyncSession,
-) -> None:
-    url = fastapi_app.url_path_for("get_server_link_map_converters")
-    response = await client.get(url, params={"server_id": 1234})
-
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json() == []
-
-
-@pytest.mark.anyio
 async def test_create_link_map_channel_with_valid_data_returns_201_created(
     fastapi_app: FastAPI,
     client: AsyncClient,
@@ -285,6 +259,71 @@ async def test_enable_link_map_converter_for_channel_returns_204_no_content(
     )
     response = await client.put(url)
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+@pytest.mark.anyio
+async def test_get_discord_channel_converters_on_empty_db_returns_404_not_found(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for(
+        "get_discord_channel_converters",
+        discord_channel_id=1234,
+    )
+    response = await client.get(url)
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.anyio
+async def test_get_discord_channel_converters_after_enabled_converter_on_channel_returns_200_ok(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    # Create the channel
+    url = fastapi_app.url_path_for("create_link_map_channel")
+    new_link_map_channel_data = {
+        "server_id": 1,
+        "input_channel_id": 2,
+        "output_channel_id": 3,
+    }
+    response = await client.post(url, json=new_link_map_channel_data)
+    new_link_map_channel = response.json()
+    assert new_link_map_channel["id"]
+
+    # Create the converter
+    url = fastapi_app.url_path_for("create_link_map_converter")
+    new_link_map_converter_data = {
+        "from_link": "https://example.com",
+        "to_link": "https://example.com/test",
+    }
+    response = await client.post(url, json=new_link_map_converter_data)
+    new_link_map_converter = response.json()
+    assert new_link_map_converter["id"]
+
+    # Add converter to channel
+    url = fastapi_app.url_path_for(
+        "enable_link_map_converter_for_channel",
+        channel_id=new_link_map_channel["id"],
+        converter_id=new_link_map_converter["id"],
+    )
+    response = await client.put(url)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    url = fastapi_app.url_path_for(
+        "get_discord_channel_converters",
+        discord_channel_id=2,
+    )
+    response = await client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+
+    enabled_link_maps = response.json()
+
+    assert len(enabled_link_maps) == 1
+
+    assert enabled_link_maps[0] == new_link_map_converter
 
 
 @pytest.mark.anyio

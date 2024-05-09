@@ -1,20 +1,38 @@
 import re
+from datetime import datetime
+from uuid import UUID
 
-import pandas as pd
+import discord
 from bs4 import BeautifulSoup
-from discord import ChannelType, Message, utils
+from discord import ChannelType, Message
 from discord.ext.commands import Cog, group
+from httpx import Response
 from loguru import logger as log
 from lxml import etree
+from pydantic import BaseModel
 
 from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
-from bot.utils import dict_to_human_table, is_trusted
-
-from ._utils.link_converter import DestinationType, validate_destination
+from bot.utils import is_trusted
 
 REGEX_URL_MATCH = re.compile(r"https?://\S+")
+
+
+class LinkMapChannel(BaseModel):
+    id: UUID
+    created_at: datetime
+    server_id: int
+    input_channel_id: int
+    output_channel_id: int
+
+
+class LinkMapConverter(BaseModel):
+    id: UUID
+    from_link: str
+    to_link: str | None = None
+    xpath: str | None = None
+    created_at: datetime
 
 
 class LinkMapper(Cog):
@@ -22,6 +40,29 @@ class LinkMapper(Cog):
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
+        self.link_map_channels: list[LinkMapChannel] | None = None
+
+        self.bg_task = self.bot.loop.create_task(self.populate_link_map_channels())
+
+    async def populate_link_map_channels(self) -> None:
+        await self.wait_until_ready()
+
+        if self.link_map_channels is not None:
+            return
+
+        response: Response = await self.bot.api.get("/api/link_maps/channels/all")
+
+        data = response.json()
+
+        self.link_map_channels = [LinkMapChannel(**x) for x in data]
+
+    def get_link_map_output_channel(self, discord_channel_id: int) -> int | None:
+        if (link_map_channels := self.link_map_channels) is not None:
+            for link_map_channel in link_map_channels:
+                if link_map_channel.input_channel_id == discord_channel_id:
+                    return link_map_channel.output_channel_id
+
+        return None
 
     @staticmethod
     def get_first_url(message: str) -> str | None:
@@ -29,58 +70,64 @@ class LinkMapper(Cog):
 
         return urls[0] if len(urls) else None
 
+    async def extract_url_from_webpage(self, url: str, xpath: str) -> str:
+        webpage = await self.bot.http_client.get(url, headers=BS4_HEADERS)
+        soup = BeautifulSoup(webpage.content, "html.parser")
+        dom = etree.HTML(str(soup), None)
+        extracted = dom.xpath(xpath)
+
+        # "src" for images, "data-src" for videos
+        extracted_url = extracted[0].get("src") or extracted[0].get("data-src")
+
+        return extracted_url
+
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
         if message.guild is None or message.author.bot:
             return
 
-        response = await self.bot.api.get(
-            "/api/link_maps/converters",
-            params={
-                "server_id": message.guild.id,
-                "input_channel_id": message.channel.id,
-            },
-        )
+        channel_id = message.channel.id
 
-        if not response.is_success:
+        if (output_channel_id := self.get_link_map_output_channel(channel_id)) is None:
             return
+
+        response: Response = await self.bot.api.get(
+            f"/api/link_maps/channels/{channel_id}/converters",
+        )
 
         data = response.json()
 
-        output_channel_id = data["output_channel_id"]
-        if (output_channel := utils.get(message.guild.channels, id=output_channel_id)) is None:
-            log.error(f"Could not retrieve channel {output_channel_id} for link map")
+        converters = [LinkMapConverter(**x) for x in data]
 
+        # Hopefully this branch does not get hit
+        if not response.is_success:
+            log.error(
+                f"Discord channel ID '{channel_id}' missed on getting link map converter(s). "
+                "This is cache invalidation! Was a link map converter or channel not created/deleted properly?",
+            )
             return
+
+        if (output_channel := discord.utils.get(message.guild.channels, id=output_channel_id)) is None:
+            log.error(f"Could not retrieve channel {output_channel_id} for link map")
+            return
+
         if output_channel.type != ChannelType.text:
             log.error(f"Link map output channel {output_channel_id} is not a text channel")
-
-        converters = data["link_maps"]
+            return
 
         for converter in converters:
-            if converter["from_link"] in message.content:
+            if converter.from_link in message.content:
                 new_url: str
 
-                # XOR between to_link and xpath attributes are handled within the API,
-                # so we can assume that the data is valid at this point
-                if converter["to_link"] is not None:
-                    new_url = message.content.replace(converter["from_link"], converter["to_link"])
-                else:
+                if (to_link := converter.to_link) is not None:
+                    new_url = message.content.replace(converter.from_link, to_link)
+                elif (xpath := converter.xpath) is not None:
                     if (full_url := self.get_first_url(message.content)) is None:
                         log.error(f"Could not extract any links from {message.jump_url} for link converter")
 
                         return
 
-                    webpage = await self.bot.http_client.get(
-                        full_url,
-                        headers=BS4_HEADERS,
-                    )
-                    soup = BeautifulSoup(webpage.content, "html.parser")
-                    dom = etree.HTML(str(soup), None)
-                    extracted = dom.xpath(converter["xpath"])
-
-                    # "src" for images, "data-src" for videos
-                    new_url = extracted[0].get("src") or extracted[0].get("data-src")
+                    new_url = await self.extract_url_from_webpage(full_url, xpath)
 
                 # TODO: Fix this line so the channel is the correct type
                 await output_channel.send(
@@ -99,184 +146,58 @@ class LinkMapper(Cog):
     async def link_map_list(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-    @link_map_list.command(name="channels")
+    @link_map_list.command(name="channel")
     @is_trusted()
-    async def list_link_map_channels(self, ctx: Context) -> None:
-        if (guild := ctx.guild) is None:
-            raise ValueError("Be in a guild to run this command")
+    async def list_link_map_channels(self, ctx: Context) -> None: ...
 
-        response = await self.bot.api.get(
-            "/api/link_maps/channels",
-            params={"server_id": guild.id},
-        )
-
-        if not response.is_success:
-            if response.status_code == 404:
-                await ctx.warning_embed("No redirect channels exist for this server")
-
-                return
-
-            await ctx.error_embed(
-                f"Something went wrong when requesting link map channels. Status code {response.status_code}.",
-            )
-
-            return
-
-        data = response.json()
-
-        table = dict_to_human_table(pd.DataFrame([data]).T)
-
-        await ctx.send(table)
-
-    @link_map_list.command(name="converters")
+    @link_map_list.command(name="converter")
     @is_trusted()
     async def list_link_map_converters(
         self,
         ctx: Context,
         input_channel_id: str | None = None,
         attribute: str | None = None,
-    ) -> None:
-        if (guild := ctx.guild) is None:
-            await ctx.error_embed("Can only list link map converters within a guild")
-
-            return
-
-        response = await self.bot.api.get(
-            "/api/link_maps/converters",
-            params={
-                "server_id": guild.id,
-                "input_channel_id": input_channel_id or ctx.channel.id,
-            },
-        )
-
-        if not response.is_success:
-            await ctx.send(
-                f"Something went wrong when requesting link map converters. Status code {response.status_code}.",
-            )
-
-            return
-
-        if response.status_code == 204:
-            await ctx.warning_embed("No link converters exist.")
-
-            return
-
-        data = response.json()
-
-        converters = data["link_maps"]
-
-        if len(converters) == 0:
-            await ctx.warning_embed("No link converters exist.")
-
-            return
-
-        if attribute is None:
-            lst = [
-                {
-                    "source": x["from_link"],
-                    "type": "to_link" if x["to_link"] else "xpath",
-                    "destination": x["to_link"] if x["to_link"] else x["xpath"],
-                }
-                for x in converters
-            ]
-        else:
-            lst = [{"source": x["from_link"], attribute: x[attribute]} for x in converters]
-
-        table = dict_to_human_table(pd.DataFrame(lst).T)
-
-        await ctx.send(table)
+    ) -> None: ...
 
     @link_map.group(aliases=("create", "c"))
     @is_trusted()
     async def link_map_create(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-    @link_map_create.command(name="channels")
+    @link_map_create.command(name="channel")
     @is_trusted()
     async def create_link_map_channel(
         self,
         ctx: Context,
         input_channel_id: int,
         output_channel_id: int,
-    ) -> None:
-        if (guild := ctx.guild) is None:
-            await ctx.error_embed("Can only create a link map channel within a guild")
+    ) -> None: ...
 
-            return
-
-        data = {
-            "server_id": guild.id,
-            "input_channel_id": input_channel_id,
-            "output_channel_id": output_channel_id,
-        }
-
-        response = await self.bot.api.post("/api/link_maps/channels", data=data)
-
-        if not response.is_success:
-            if response.status_code == 409:
-                await ctx.send("Link map channel redirection already exists.")
-            else:
-                await ctx.send(
-                    f"Link map channel redirection failed with code {response.status_code}",
-                )
-
-            return
-
-        await ctx.send(
-            f"Link map channel redirection created: <#{input_channel_id}> -> <#{output_channel_id}>",
-        )
-
-    @link_map_create.command(name="converters")
+    @link_map_create.command(name="converter")
     @is_trusted()
     async def create_link_map_converter(
         self,
         ctx: Context,
         source: str,
         destination: str,
-    ) -> None:
-        if (guild := ctx.guild) is None:
-            await ctx.error_embed("Can only create a link map converter within a guild")
+    ) -> None: ...
 
-            return
+    @link_map.command(aliases=("enable", "e", "add", "a"))
+    @is_trusted()
+    async def link_map_converter_enable(self, ctx: Context) -> None: ...
 
-        data = {
-            "channel_map_id": guild.id,
-            "from_link": source,
-        }
-
-        destination_type = validate_destination(destination)
-
-        match destination_type:
-            case DestinationType.XPATH:
-                data["xpath"] = destination
-            case DestinationType.URL:
-                data["to_link"] = destination
-
-        response = await self.bot.api.post("/api/link_maps/converters", data=data)
-
-        if not response.is_success:
-            await ctx.send(f"Link map creation failed with code {response.status_code}")
-
-            return
-
-        await ctx.done()
-
-    @link_map.group(aliases=("remove", "r"))
+    @link_map.group(aliases=("remove", "r", "delete", "d"))
     @is_trusted()
     async def link_map_remove(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-    @link_map_remove.command(name="converters")
+    @link_map_remove.command(name="channel")
     @is_trusted()
-    async def remove_link_map_converter(self, ctx: Context, converter_id: str) -> None:
-        response = await self.bot.api.delete(f"/api/link_maps/converters/{converter_id}")
+    async def remove_link_map_channel(self, ctx: Context, converter_id: str) -> None: ...
 
-        if not response.is_success:
-            await ctx.send(f"Link map deletion failed with code {response.status_code}")
-
-            return
-
-        await ctx.done()
+    @link_map_remove.command(name="converter")
+    @is_trusted()
+    async def remove_link_map_converter(self, ctx: Context, converter_id: str) -> None: ...
 
 
 async def setup(bot: Xythrion) -> None:

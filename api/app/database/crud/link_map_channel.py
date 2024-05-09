@@ -25,18 +25,15 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
         self,
         db: AsyncSession,
         *,
-        server_id: int,
         input_channel_id: int,
-    ) -> LinkMapChannelModel | None:
-        items = await db.execute(
-            select(self.model).where(
-                self.model.server_id == server_id,
-                self.model.input_channel_id == input_channel_id,
-            ),
-        )
+    ) -> list[LinkMapConverterModel] | None:
+        items = await db.execute(select(self.model).where(self.model.input_channel_id == input_channel_id))
         items.unique()
 
-        return items.scalars().one_or_none()
+        if (channel_converters := items.scalars().first()) is not None:
+            return channel_converters.converters
+
+        return None
 
     async def create(self, db: AsyncSession, *, obj_in: LinkMapChannelCreate) -> LinkMapChannelModel:
         return await self.create_(db, obj_in=obj_in)

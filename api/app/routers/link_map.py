@@ -72,25 +72,23 @@ async def get_one_link_map_converter(session: DBSession, converter_id: str) -> L
 
 
 @router.get(
-    "/channels",
-    response_model=list[LinkMapChannel],
-    status_code=status.HTTP_200_OK,
-)
-async def get_server_link_map_channels(session: DBSession, server_id: int) -> list[LinkMapChannelModel]:
-    channels = await link_map_channel_dao.get_by_server_id(session, server_id=server_id)
-
-    return list(channels)
-
-
-@router.get(
-    "/converters",
+    "/channels/{discord_channel_id}/converters",
     response_model=list[LinkMapConverter],
     status_code=status.HTTP_200_OK,
 )
-async def get_server_link_map_converters(session: DBSession, server_id: int) -> list[LinkMapConverterModel]:
-    converters = await link_map_converter_dao.get_by_server_id(session, server_id=server_id)
+async def get_discord_channel_converters(session: DBSession, discord_channel_id: int) -> list[LinkMapConverterModel]:
+    items = await link_map_channel_dao.get_converters_for_channel(
+        session,
+        input_channel_id=discord_channel_id,
+    )
 
-    return list(converters)
+    if (converters := items) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No link map converters for discord channel with ID {discord_channel_id} could be found",
+        )
+
+    return converters
 
 
 @router.post(

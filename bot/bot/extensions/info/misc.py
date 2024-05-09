@@ -9,7 +9,7 @@ class Misc(Cog):
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
-    @command()
+    @command(name="prefix")
     async def get_prefix(self, ctx: Context) -> None:
         embed = Embed(description=self.bot.command_prefix_str)
 
