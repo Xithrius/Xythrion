@@ -61,6 +61,32 @@ async def test_get_one_link_map_converter_on_empty_database_returns_404_not_foun
 
 
 @pytest.mark.anyio
+async def test_get_server_link_map_channels_on_empty_database_returns_empty_list(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("get_server_link_map_channels")
+    response = await client.get(url, params={"server_id": 1234})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == []
+
+
+@pytest.mark.anyio
+async def test_get_server_link_map_converters_on_empty_database_returns_empty_list(
+    fastapi_app: FastAPI,
+    client: AsyncClient,
+    dbsession: AsyncSession,
+) -> None:
+    url = fastapi_app.url_path_for("get_server_link_map_converters")
+    response = await client.get(url, params={"server_id": 1234})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == []
+
+
+@pytest.mark.anyio
 async def test_create_link_map_channel_with_valid_data_returns_201_created(
     fastapi_app: FastAPI,
     client: AsyncClient,
