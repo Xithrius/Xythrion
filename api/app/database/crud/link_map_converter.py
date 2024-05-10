@@ -38,6 +38,7 @@ class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreat
         items = await db.execute(
             select(self.model).where(self.model.channels.any(LinkMapChannelModel.server_id == server_id)),
         )
+        items.unique()
 
         return items.scalars().all()
 

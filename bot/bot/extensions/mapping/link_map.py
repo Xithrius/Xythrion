@@ -47,8 +47,6 @@ class LinkMapper(Cog):
         self.bg_task = self.bot.loop.create_task(self.populate_link_map_channels())
 
     async def populate_link_map_channels(self) -> None:
-        await self.wait_until_ready()
-
         if self.link_map_channels is not None:
             return
 
@@ -57,6 +55,8 @@ class LinkMapper(Cog):
         data = response.json()
 
         self.link_map_channels = [LinkMapChannel(**x) for x in data]
+
+        log.info("Link map channels cache populated")
 
     def get_link_map_output_channel(self, discord_channel_id: int) -> int | None:
         if (link_map_channels := self.link_map_channels) is not None:
@@ -142,14 +142,35 @@ class LinkMapper(Cog):
     async def link_map(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
+    @link_map.command(aliases=("summary", "server", "s"))
+    async def link_map_server_summary(self, ctx: Context) -> None:
+        if (guild := ctx.guild) is None:
+            await ctx.error_embed("Link maps are not supported in DMs")
+            return
+
+        channels_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/channels")
+        channels = channels_response.json()
+
+        converters_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/converters")
+        converters = converters_response.json()
+
+        await ctx.send(codeblock(channels, language="json"))
+        await ctx.send(codeblock(converters, language="json"))
+
     @link_map.group(aliases=("list", "l"))
     @is_trusted()
     async def link_map_list(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-    @link_map_list.command(name="channel")
+    @link_map_list.command(aliases=("channel", "channels"))
     @is_trusted()
     async def list_link_map_channels(self, ctx: Context, server_id: int | None = None) -> None:
+        if server_id is None and (guild := ctx.guild) is not None:
+            server_id = guild.id
+        elif guild is None:
+            await ctx.error_embed("Link maps are not supported in DMs")
+            return
+
         response: Response = await self.bot.api.get(f"/api/link_maps/server/{server_id}/channels")
 
         if response.is_error:
@@ -157,11 +178,16 @@ class LinkMapper(Cog):
             return
 
         data = response.json()
+
+        if not data:
+            await ctx.warning_embed("Nothing's here")
+            return
+
         block = codeblock(data, language="json")
 
         await ctx.send(block)
 
-    @link_map_list.command(name="converter")
+    @link_map_list.command(aliases=("converter", "converters"))
     @is_trusted()
     async def list_link_map_converters(self, ctx: Context) -> None:
         response: Response = await self.bot.api.get("/api/link_maps/converters/all")
@@ -180,7 +206,7 @@ class LinkMapper(Cog):
     async def link_map_create(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-    @link_map_create.command(name="channel")
+    @link_map_create.command(aliases=("channel", "channels"))
     @is_trusted()
     async def create_link_map_channel(
         self,
@@ -205,7 +231,7 @@ class LinkMapper(Cog):
 
         await ctx.send(block)
 
-    @link_map_create.command(name="converter")
+    @link_map_create.command(aliases=("converter", "converters"))
     @is_trusted()
     async def create_link_map_converter(
         self,
@@ -226,7 +252,7 @@ class LinkMapper(Cog):
                 payload["to_link"] = destination
 
         response: Response = await self.bot.api.post(
-            "/api/link_maps/channels",
+            "/api/link_maps/converters",
             data=payload,
         )
 
@@ -242,17 +268,14 @@ class LinkMapper(Cog):
             f"/api/link_maps/channels/{channel_id}/converters/{converter_id}",
         )
 
-        data = response.json()
-        block = codeblock(data, language="json")
-
-        await ctx.send(block)
+        await ctx.send(response.status_code)
 
     @link_map.group(aliases=("remove", "r", "delete", "d"))
     @is_trusted()
     async def link_map_remove(self, ctx: Context) -> None:
         await ctx.check_subcommands()
 
-    @link_map_remove.command(name="channel")
+    @link_map_remove.command(aliases=("channel", "channels"))
     @is_trusted()
     async def remove_link_map_channel(self, ctx: Context, channel_id: str) -> None:
         response: Response = await self.bot.api.delete(
@@ -264,7 +287,7 @@ class LinkMapper(Cog):
 
         await ctx.send(block)
 
-    @link_map_remove.command(name="converter")
+    @link_map_remove.command(aliases=("converter", "converters"))
     @is_trusted()
     async def remove_link_map_converter(self, ctx: Context, converter_id: str) -> None:
         response: Response = await self.bot.api.delete(

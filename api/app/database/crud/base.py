@@ -45,7 +45,6 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.add(create_data)
 
         await db.commit()
-        await db.refresh(create_data)
 
         return create_data
 
