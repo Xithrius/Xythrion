@@ -14,7 +14,9 @@ from pydantic import BaseModel
 from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
-from bot.utils import is_trusted
+from bot.utils import codeblock, is_trusted
+
+from ._utils.link_converter import DestinationType, validate_destination
 
 REGEX_URL_MATCH = re.compile(r"https?://\S+")
 
@@ -129,7 +131,6 @@ class LinkMapper(Cog):
 
                     new_url = await self.extract_url_from_webpage(full_url, xpath)
 
-                # TODO: Fix this line so the channel is the correct type
                 await output_channel.send(
                     f"<@{message.author.id}> {message.jump_url} {new_url}",
                 )
@@ -148,16 +149,31 @@ class LinkMapper(Cog):
 
     @link_map_list.command(name="channel")
     @is_trusted()
-    async def list_link_map_channels(self, ctx: Context) -> None: ...
+    async def list_link_map_channels(self, ctx: Context, server_id: int | None = None) -> None:
+        response: Response = await self.bot.api.get(f"/api/link_maps/server/{server_id}/channels")
+
+        if response.is_error:
+            await ctx.error_embed(f"Internal API error: {response.text}")
+            return
+
+        data = response.json()
+        block = codeblock(data, language="json")
+
+        await ctx.send(block)
 
     @link_map_list.command(name="converter")
     @is_trusted()
-    async def list_link_map_converters(
-        self,
-        ctx: Context,
-        input_channel_id: str | None = None,
-        attribute: str | None = None,
-    ) -> None: ...
+    async def list_link_map_converters(self, ctx: Context) -> None:
+        response: Response = await self.bot.api.get("/api/link_maps/converters/all")
+
+        if response.is_error:
+            await ctx.error_embed(f"Internal API error: {response.text}")
+            return
+
+        data = response.json()
+        block = codeblock(data, language="json")
+
+        await ctx.send(block)
 
     @link_map.group(aliases=("create", "c"))
     @is_trusted()
@@ -169,9 +185,25 @@ class LinkMapper(Cog):
     async def create_link_map_channel(
         self,
         ctx: Context,
+        server_id: int,
         input_channel_id: int,
         output_channel_id: int,
-    ) -> None: ...
+    ) -> None:
+        payload = {
+            "server_id": server_id,
+            "input_channel_id": input_channel_id,
+            "output_channel_id": output_channel_id,
+        }
+
+        response: Response = await self.bot.api.post(
+            "/api/link_maps/channels",
+            data=payload,
+        )
+
+        data = response.json()
+        block = codeblock(data, language="json")
+
+        await ctx.send(block)
 
     @link_map_create.command(name="converter")
     @is_trusted()
@@ -180,11 +212,40 @@ class LinkMapper(Cog):
         ctx: Context,
         source: str,
         destination: str,
-    ) -> None: ...
+    ) -> None:
+        payload = {
+            "from_link": source,
+        }
+
+        destination_type = validate_destination(destination)
+
+        match destination_type:
+            case DestinationType.XPATH:
+                payload["xpath"] = destination
+            case DestinationType.URL:
+                payload["to_link"] = destination
+
+        response: Response = await self.bot.api.post(
+            "/api/link_maps/channels",
+            data=payload,
+        )
+
+        data = response.json()
+        block = codeblock(data, language="json")
+
+        await ctx.send(block)
 
     @link_map.command(aliases=("enable", "e", "add", "a"))
     @is_trusted()
-    async def link_map_converter_enable(self, ctx: Context) -> None: ...
+    async def link_map_converter_enable(self, ctx: Context, channel_id: str, converter_id: str) -> None:
+        response: Response = await self.bot.api.put(
+            f"/api/link_maps/channels/{channel_id}/converters/{converter_id}",
+        )
+
+        data = response.json()
+        block = codeblock(data, language="json")
+
+        await ctx.send(block)
 
     @link_map.group(aliases=("remove", "r", "delete", "d"))
     @is_trusted()
@@ -193,11 +254,27 @@ class LinkMapper(Cog):
 
     @link_map_remove.command(name="channel")
     @is_trusted()
-    async def remove_link_map_channel(self, ctx: Context, converter_id: str) -> None: ...
+    async def remove_link_map_channel(self, ctx: Context, channel_id: str) -> None:
+        response: Response = await self.bot.api.delete(
+            f"/api/link_maps/channels/{channel_id}",
+        )
+
+        data = response.json()
+        block = codeblock(data, language="json")
+
+        await ctx.send(block)
 
     @link_map_remove.command(name="converter")
     @is_trusted()
-    async def remove_link_map_converter(self, ctx: Context, converter_id: str) -> None: ...
+    async def remove_link_map_converter(self, ctx: Context, converter_id: str) -> None:
+        response: Response = await self.bot.api.delete(
+            f"/api/link_maps/converters/{converter_id}",
+        )
+
+        data = response.json()
+        block = codeblock(data, language="json")
+
+        await ctx.send(block)
 
 
 async def setup(bot: Xythrion) -> None:

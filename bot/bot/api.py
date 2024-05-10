@@ -36,6 +36,13 @@ class APIClient:
             **kwargs,
         )
 
+    async def put(self, partial_endpoint: str, **kwargs) -> Response:
+        return await self.request(
+            "PUT",
+            partial_endpoint,
+            **kwargs,
+        )
+
     async def delete(self, partial_endpoint: str, **kwargs) -> Response:
         return await self.request(
             "DELETE",

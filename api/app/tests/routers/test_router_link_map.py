@@ -66,8 +66,11 @@ async def test_get_server_link_map_channels_on_empty_database_returns_empty_list
     client: AsyncClient,
     dbsession: AsyncSession,
 ) -> None:
-    url = fastapi_app.url_path_for("get_server_link_map_channels")
-    response = await client.get(url, params={"server_id": 1234})
+    url = fastapi_app.url_path_for(
+        "get_server_link_map_channels",
+        discord_server_id=1234,
+    )
+    response = await client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
@@ -79,8 +82,11 @@ async def test_get_server_link_map_converters_on_empty_database_returns_empty_li
     client: AsyncClient,
     dbsession: AsyncSession,
 ) -> None:
-    url = fastapi_app.url_path_for("get_server_link_map_converters")
-    response = await client.get(url, params={"server_id": 1234})
+    url = fastapi_app.url_path_for(
+        "get_server_link_map_converters",
+        discord_server_id=1234,
+    )
+    response = await client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
