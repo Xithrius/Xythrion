@@ -48,7 +48,7 @@ class LinkMapper(Cog):
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
-        self.link_map_channels: list[LinkMapChannel] | None = None
+        self.link_map_channels: dict[int, LinkMapChannel] | None = None
 
         self.bg_task = self.bot.loop.create_task(self.populate_link_map_channels())
 
@@ -60,15 +60,14 @@ class LinkMapper(Cog):
 
         data = response.json()
 
-        self.link_map_channels = [LinkMapChannel(**x) for x in data]
+        self.link_map_channels = {x["input_channel_id"]: LinkMapChannel(**x) for x in data}
 
         log.info("Link map channels cache populated")
 
     def get_link_map_output_channel(self, discord_channel_id: int) -> int | None:
         if (link_map_channels := self.link_map_channels) is not None:
-            for link_map_channel in link_map_channels:
-                if link_map_channel.input_channel_id == discord_channel_id:
-                    return link_map_channel.output_channel_id
+            if link_map_channel := link_map_channels.get(discord_channel_id):
+                return link_map_channel.output_channel_id
 
         return None
 
