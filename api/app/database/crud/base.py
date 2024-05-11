@@ -52,11 +52,15 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         db: AsyncSession,
         *,
-        pk: list[int] | list[UUID] | list[str] | Callable,
+        pk: str | None = None,
+        func: Callable | None = None,
     ) -> int:
+        if (pk is None) == (func is None):
+            raise ValueError("Only `pk` XOR `func` can be None while being passed to delete_")
+
         result = await db.execute(
             delete(self.model).where(
-                self.model.id.in_(pk) if isinstance(pk, list) else pk(),
+                self.model.id == pk if func is None else func(),
             ),
         )
 

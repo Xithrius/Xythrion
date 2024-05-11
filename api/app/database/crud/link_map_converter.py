@@ -45,7 +45,23 @@ class LinkMapConverterCRUD(CRUDBase[LinkMapConverterModel, LinkMapConverterCreat
     async def create(self, db: AsyncSession, *, obj_in: LinkMapConverterCreate) -> LinkMapConverterModel:
         return await self.create_(db, obj_in=obj_in)
 
-    async def delete(self, db: AsyncSession, *, pk: list[str]) -> int:
+    async def remove_children(self, db: AsyncSession, *, pk: str) -> LinkMapConverterModel | None:
+        item = await db.get(self.model, pk)
+
+        if (converter := item) is None:
+            return None
+
+        converter.channels = []
+
+        return converter
+
+    async def delete(self, db: AsyncSession, *, pk: str, cascade_once: bool = False) -> int:
+        if cascade_once:
+            converter = await self.remove_children(db, pk=pk)
+
+            if converter is None:
+                return 0
+
         return await self.delete_(db, pk=pk)
 
 

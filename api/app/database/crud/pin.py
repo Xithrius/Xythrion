@@ -31,7 +31,7 @@ class PinCRUD(CRUDBase[PinModel, PinCreate, PinUpdate]):
         return await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pin: PinBase) -> int:
-        return await self.delete_(db, pk=lambda: equivalent_pin_model(pin))
+        return await self.delete_(db, func=lambda: equivalent_pin_model(pin))
 
 
 pin_dao = PinCRUD(PinModel)

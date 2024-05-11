@@ -226,7 +226,7 @@ async def disable_link_map_converter_for_channel(
             detail=f"Link map converter with ID '{converter_id}' could not be found",
         )
 
-    # Add the converter to the channel
+    # Remove the converter from the channel
     await link_map_channel_dao.remove_converter(
         session,
         channel_id=channel_id,
@@ -241,7 +241,7 @@ async def disable_link_map_converter_for_channel(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def remove_link_map_channel(session: DBSession, channel_id: str) -> Response:
-    count = await link_map_channel_dao.delete(session, pk=[channel_id])
+    count = await link_map_channel_dao.delete(session, pk=channel_id, cascade_once=True)
 
     if count == 0:
         raise HTTPException(
@@ -257,7 +257,7 @@ async def remove_link_map_channel(session: DBSession, channel_id: str) -> Respon
     status_code=status.HTTP_200_OK,
 )
 async def remove_link_map_converter(session: DBSession, converter_id: str) -> Response:
-    count = await link_map_converter_dao.delete(session, pk=[converter_id])
+    count = await link_map_converter_dao.delete(session, pk=converter_id, cascade_once=True)
 
     if count == 0:
         raise HTTPException(

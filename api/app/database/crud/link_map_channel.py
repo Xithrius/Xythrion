@@ -64,8 +64,24 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
 
         channel.converters.remove(converter)
 
-    async def delete(self, db: AsyncSession, *, pk: list[int] | list[str]) -> int:
-        return await self.delete_(db, pk=lambda: self.model.id.in_(pk))
+    async def remove_children(self, db: AsyncSession, *, pk: str) -> LinkMapConverterModel | None:
+        item = await db.get(self.model, pk)
+
+        if (channel := item) is None:
+            return None
+
+        channel.converters = []
+
+        return channel
+
+    async def delete(self, db: AsyncSession, *, pk: str, cascade_once: bool = False) -> int:
+        if cascade_once:
+            converter = await self.remove_children(db, pk=pk)
+
+            if converter is None:
+                return 0
+
+        return await self.delete_(db, pk=pk)
 
 
 link_map_channel_dao = LinkMapChannelCRUD(LinkMapChannelModel)

@@ -23,7 +23,7 @@ class TrustedCRUD(CRUDBase[TrustedModel, TrustedCreate, TrustedUpdate]):
         return await self.create_(db, obj_in=obj_in)
 
     async def delete(self, db: AsyncSession, *, pk: list[int]) -> int:
-        return await self.delete_(db, pk=lambda: self.model.user_id.in_(pk))
+        return await self.delete_(db, func=lambda: self.model.user_id.in_(pk))
 
 
 trusted_dao = TrustedCRUD(TrustedModel)

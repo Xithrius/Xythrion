@@ -7,7 +7,7 @@ from app.routers import api_router
 from app.settings import settings
 
 
-def get_app() -> FastAPI:
+def get_app() -> FastAPI:  # pragma: no cover
     openapi_url = "/api/openapi.json" if settings.environment == "dev" else None
 
     app = FastAPI(
