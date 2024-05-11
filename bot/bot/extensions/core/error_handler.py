@@ -17,15 +17,6 @@ class CommandErrorHandler(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, e: errors.CommandError) -> None:
-        if ctx.command is not None:
-            await ctx.bot.api.post(
-                "/api/command_metrics/",
-                data={
-                    "command_name": ctx.command.name,
-                    "successfully_completed": False,
-                },
-            )
-
         if isinstance(e, errors.CommandNotFound):
             await ctx.error_embed("That command does not exist")
             return

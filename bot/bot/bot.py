@@ -45,14 +45,6 @@ class Xythrion(Bot):
     async def get_context(self, message: Message, *, cls: Context = Context) -> Context:  # type: ignore [assignment]
         return await super().get_context(message, cls=cls)
 
-    async def on_command_completion(self, ctx: Context) -> None:
-        if ctx.command is None:
-            return
-
-        data = {"command_name": ctx.command.name, "successfully_completed": True}
-
-        await self.api.post("/api/command_metrics/", data=data)
-
     @staticmethod
     async def api_healthcheck(api: APIClient) -> bool:
         for i in range(API_HEALTHCHECK_ATTEMPTS):
