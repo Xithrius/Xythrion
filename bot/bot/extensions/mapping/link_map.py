@@ -107,7 +107,7 @@ class LinkMapper(Cog):
         converters = [LinkMapConverter(**x) for x in data]
 
         # Hopefully this branch does not get hit
-        if not response.is_success:
+        if response.is_error:
             log.error(
                 f"Discord channel ID '{channel_id}' missed on getting link map converter(s). "
                 "This is cache invalidation! Was a link map converter or channel not created/deleted properly?",
@@ -165,7 +165,13 @@ class LinkMapper(Cog):
             if show_id
             else [[x.input_channel_id, x.output_channel_id] for x in channels_data]
         )
-        channels_table = tabulate(channels, headers=headers, maxcolwidths=36)
+        channels_table = tabulate(
+            channels,
+            headers=headers,
+            maxcolwidths=36,
+            stralign="left",
+            colalign=["left"] * len(headers),
+        )
 
         converters_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/converters")
         converters_data = [LinkMapConverter(**x) for x in converters_response.json()]
@@ -174,7 +180,13 @@ class LinkMapper(Cog):
             if show_id
             else [[x.from_link, x.get_destination()] for x in converters_data]
         )
-        converters_table = tabulate(converters, headers=headers, maxcolwidths=36)
+        converters_table = tabulate(
+            converters,
+            headers=headers,
+            maxcolwidths=36,
+            stralign="left",
+            colalign=["left"] * len(headers),
+        )
 
         combined_tables = [
             FAKE_DISCORD_NEWLINE,
@@ -228,6 +240,11 @@ class LinkMapper(Cog):
             return
 
         data = response.json()
+
+        if not data:
+            await ctx.warning_embed("Nothing's here")
+            return
+
         block = codeblock(data, language="json")
 
         await ctx.send(block)
@@ -256,6 +273,10 @@ class LinkMapper(Cog):
             "/api/link_maps/channels",
             data=payload,
         )
+
+        if response.is_error:
+            await ctx.error_embed(f"Failed creating link map channel: {response.status_code} - {response.text}")
+            return
 
         data = response.json()
         block = codeblock(data, language="json")
@@ -287,6 +308,10 @@ class LinkMapper(Cog):
             data=payload,
         )
 
+        if response.is_error:
+            await ctx.error_embed(f"Failed creating link map converter: {response.status_code} - {response.text}")
+            return
+
         data = response.json()
         block = codeblock(data, language="json")
 
@@ -299,7 +324,11 @@ class LinkMapper(Cog):
             f"/api/link_maps/channels/{channel_id}/converters/{converter_id}",
         )
 
-        await ctx.send(response.status_code)
+        if response.is_error:
+            await ctx.error_embed(f"Failed enabling link map: {response.status_code} - {response.text}")
+            return
+
+        await ctx.done()
 
     @link_map.group(aliases=("remove", "r", "delete", "d"))
     @is_trusted()
@@ -313,10 +342,13 @@ class LinkMapper(Cog):
             f"/api/link_maps/channels/{channel_id}",
         )
 
-        data = response.json()
-        block = codeblock(data, language="json")
+        if response.is_error:
+            await ctx.error_embed(
+                f"Failed deleting link map channel '{channel_id}': {response.status_code} - {response.text}",
+            )
+            return
 
-        await ctx.send(block)
+        await ctx.done()
 
     @link_map_remove.command(aliases=("converter", "converters"))
     @is_trusted()
@@ -325,10 +357,13 @@ class LinkMapper(Cog):
             f"/api/link_maps/converters/{converter_id}",
         )
 
-        data = response.json()
-        block = codeblock(data, language="json")
+        if response.is_error:
+            await ctx.error_embed(
+                f"Failed deleting link map converter '{converter_id}': {response.status_code} - {response.text}",
+            )
+            return
 
-        await ctx.send(block)
+        await ctx.done()
 
 
 async def setup(bot: Xythrion) -> None:
