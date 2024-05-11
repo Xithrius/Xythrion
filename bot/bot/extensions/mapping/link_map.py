@@ -10,11 +10,13 @@ from httpx import Response
 from loguru import logger as log
 from lxml import etree
 from pydantic import BaseModel
+from tabulate import tabulate  # type: ignore [import-untyped]
 
 from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
 from bot.utils import codeblock, is_trusted
+from bot.utils.formatting import FAKE_DISCORD_NEWLINE
 
 from ._utils.link_converter import DestinationType, validate_destination
 
@@ -35,6 +37,10 @@ class LinkMapConverter(BaseModel):
     to_link: str | None = None
     xpath: str | None = None
     created_at: datetime
+
+    # TODO: Fix return type since `None` should not be possible at this point
+    def get_destination(self) -> str | None:
+        return self.to_link or self.xpath
 
 
 class LinkMapper(Cog):
@@ -143,19 +149,45 @@ class LinkMapper(Cog):
         await ctx.check_subcommands()
 
     @link_map.command(aliases=("summary", "server", "s"))
-    async def link_map_server_summary(self, ctx: Context) -> None:
+    async def link_map_server_summary(self, ctx: Context, attribute: str | None = None) -> None:
         if (guild := ctx.guild) is None:
             await ctx.error_embed("Link maps are not supported in DMs")
             return
 
+        show_id = attribute.lower() == "id" if attribute is not None else False
+
+        headers = ("ID", "Source", "Destination") if show_id else ("Source", "Destination")
+
+        # TODO: Reduce code duplication and unecessary if statements
         channels_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/channels")
-        channels = channels_response.json()
+        channels_data = [LinkMapChannel(**x) for x in channels_response.json()]
+        channels = (
+            [[x.id, x.input_channel_id, x.output_channel_id] for x in channels_data]
+            if show_id
+            else [[x.input_channel_id, x.output_channel_id] for x in channels_data]
+        )
+        channels_table = tabulate(channels, headers=headers, maxcolwidths=36)
 
         converters_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/converters")
-        converters = converters_response.json()
+        converters_data = [LinkMapConverter(**x) for x in converters_response.json()]
+        converters = (
+            [[x.id, x.from_link, x.get_destination()] for x in converters_data]
+            if show_id
+            else [[x.from_link, x.get_destination()] for x in converters_data]
+        )
+        converters_table = tabulate(converters, headers=headers, maxcolwidths=36)
 
-        await ctx.send(codeblock(channels, language="json"))
-        await ctx.send(codeblock(converters, language="json"))
+        combined_tables = [
+            FAKE_DISCORD_NEWLINE,
+            "**Channels**",
+            codeblock(channels_table),
+            "**Enabled Converters**",
+            codeblock(converters_table),
+        ]
+
+        content = "\n".join(combined_tables)
+
+        await ctx.send(f"\n{content}")
 
     @link_map.group(aliases=("list", "l"))
     @is_trusted()

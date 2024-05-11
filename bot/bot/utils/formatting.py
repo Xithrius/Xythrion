@@ -4,6 +4,8 @@ import pandas as pd
 from humanize import naturaldelta
 from tabulate import tabulate  # type: ignore [import-untyped]
 
+FAKE_DISCORD_NEWLINE = "||\n||"
+
 
 def markdown_link(
     *,
