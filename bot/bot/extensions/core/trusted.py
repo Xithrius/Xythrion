@@ -50,9 +50,11 @@ class Trusted(Cog):
             data={"user_id": user_id},
         )
 
-        if not response.is_success:
-            await ctx.send("Trust for this user already exists")
-
+        if response.status_code == 409:
+            await ctx.warning_embed("Trust for this user already exists")
+            return
+        if response.is_error:
+            await ctx.error_embed(f"Error when trusting user: {response.status_code} - {response.text}")
             return
 
         data = response.json()
@@ -64,7 +66,7 @@ class Trusted(Cog):
     async def remove_trust(self, ctx: Context, user_id: int) -> None:
         await self.bot.api.delete(f"/api/trusted/{user_id}")
 
-        await ctx.send(f"Trust removed from <@{user_id}>")
+        await ctx.done()
 
 
 async def setup(bot: Xythrion) -> None:
