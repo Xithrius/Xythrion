@@ -1,5 +1,5 @@
 import time
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from os import getenv
 
 from discord import AllowedMentions, Intents, Message
@@ -28,6 +28,7 @@ class Xythrion(Bot):
         # https://stackoverflow.com/a/30712187
         timezone_offset: float = 0.0
         self.tzinfo = timezone(timedelta(hours=timezone_offset))
+        self.startup_datetime: datetime | None = None
 
         self.command_prefix_str: str = getenv("BOT_PREFIX", "^")
 
@@ -43,14 +44,6 @@ class Xythrion(Bot):
 
     async def get_context(self, message: Message, *, cls: Context = Context) -> Context:  # type: ignore [assignment]
         return await super().get_context(message, cls=cls)
-
-    async def on_command_completion(self, ctx: Context) -> None:
-        if ctx.command is None:
-            return
-
-        data = {"command_name": ctx.command.name, "successfully_completed": True}
-
-        await self.api.post("/api/command_metrics/", data=data)
 
     @staticmethod
     async def api_healthcheck(api: APIClient) -> bool:
@@ -104,6 +97,7 @@ class Xythrion(Bot):
 
         await super().close()
 
-    @staticmethod
-    async def on_ready() -> None:
+    async def on_ready(self) -> None:
+        self.startup_datetime = datetime.now(self.tzinfo)
+
         log.info("Awaiting...")

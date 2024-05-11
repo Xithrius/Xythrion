@@ -21,7 +21,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         db: AsyncSession,
         *,
-        pk: int | UUID | None = None,
+        pk: str | int | UUID | None = None,
     ) -> ModelType | None:
         result = await db.execute(
             select(self.model).where(self.model.id == pk),
@@ -39,10 +39,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db: AsyncSession,
         *,
         obj_in: CreateSchemaType,
-    ) -> None:
+    ) -> ModelType:
         create_data = self.model(**obj_in.model_dump())
 
         db.add(create_data)
+
+        await db.commit()
+
+        return create_data
 
     async def delete_(
         self,

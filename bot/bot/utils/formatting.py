@@ -4,6 +4,8 @@ import pandas as pd
 from humanize import naturaldelta
 from tabulate import tabulate  # type: ignore [import-untyped]
 
+FAKE_DISCORD_NEWLINE = "||\n||"
+
 
 def markdown_link(
     *,
@@ -31,9 +33,12 @@ def final_join(
     return f"{sep.join(str(x) for x in items[:-1])}{sep}{final} {items[-1]}"
 
 
-def codeblock(code: str | list[str], *, language: str | None = None) -> str:
+def codeblock(code: str | list | dict, *, language: str | None = None) -> str:
     """Returns a string in the format of a Discord codeblock."""
-    block = "\n".join(code) if isinstance(code, list) else code
+    if isinstance(code, list):
+        block = "\n".join(str(x) for x in code)
+    else:
+        block = str(code)
 
     return f"```{language or ''}\n{block}\n```"
 

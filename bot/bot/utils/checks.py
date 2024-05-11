@@ -12,11 +12,11 @@ class TrustedUserCheckFailure(CheckFailure):
 
 def is_trusted() -> Callable:  # pragma: no cover
     async def predicate(ctx: Context) -> bool:
-        if await ctx.bot.is_owner(ctx.message.author):
+        if await ctx.bot.is_owner(ctx.author):
             return True
 
         response: Response = await ctx.bot.api.get(
-            f"/api/trusted/{ctx.message.author.id}",
+            f"/api/trusted/{ctx.author.id}",
         )
 
         if response.is_success:

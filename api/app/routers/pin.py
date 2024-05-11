@@ -26,12 +26,13 @@ async def get_all_pins(
 
 @router.post(
     "/",
+    response_model=Pin,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_pin(
     session: DBSession,
     new_pin: PinCreate,
-) -> None:
+) -> PinModel:
     pins = await pin_dao.get_by_section_ids(session, pin=new_pin)
 
     if pins is not None:
@@ -40,7 +41,7 @@ async def create_pin(
             detail="Pin already exists",
         )
 
-    await pin_dao.create(session, obj_in=new_pin)
+    return await pin_dao.create(session, obj_in=new_pin)
 
 
 @router.delete(

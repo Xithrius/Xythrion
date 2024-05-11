@@ -58,8 +58,10 @@ lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 
 # Database migrating
+history = "alembic history"
 migrate = "alembic revision --autogenerate -m"
 upgrade = "alembic upgrade head"
+downgrade = "alembic downgrade"
 
 # Testing
 test = "pytest --ff"
@@ -73,7 +75,10 @@ html = "coverage html"
 report = "coverage report --sort=Cover"
 
 [tool.pytest.ini_options]
-filterwarnings = ["ignore::DeprecationWarning"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::sqlalchemy.exc.SAWarning",
+]
 
 [tool.coverage.run]
 concurrency = ["gevent"]
