@@ -10,6 +10,21 @@ from sqlalchemy.sql.functions import now
 from app.database.base import Base
 
 
+class LinkMapChannelConverterAssociationModel(Base):
+    __tablename__ = "channel_converter_association"
+
+    channel_id: Mapped[uuid.UUID] = mapped_column(
+        UUID,
+        ForeignKey("link_map_channels.id"),
+        primary_key=True,
+    )
+    converter_id: Mapped[uuid.UUID] = mapped_column(
+        UUID,
+        ForeignKey("link_map_converters.id"),
+        primary_key=True,
+    )
+
+
 class LinkMapChannelModel(Base):
     __tablename__ = "link_map_channels"
 
@@ -56,19 +71,4 @@ class LinkMapConverterModel(Base):
         secondary="channel_converter_association",
         back_populates="converters",
         lazy="joined",
-    )
-
-
-class LinkMapChannelConverterAssociationModel(Base):
-    __tablename__ = "channel_converter_association"
-
-    channel_id = mapped_column(
-        UUID,
-        ForeignKey("link_map_channels.id"),
-        primary_key=True,
-    )
-    converter_id = mapped_column(
-        UUID,
-        ForeignKey("link_map_converters.id"),
-        primary_key=True,
     )

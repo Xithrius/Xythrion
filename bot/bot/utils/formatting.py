@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import UTC, datetime, timezone
 
 import pandas as pd
@@ -62,14 +63,20 @@ def convert_to_deltas(
     return df
 
 
-def dict_to_human_table(data: pd.DataFrame) -> str:
-    """DataFrame to human-readable table."""
-    d = data.to_dict()
+def dict_to_human_table(
+    data: dict,
+    *,
+    headers: str | dict[str, str] | Sequence[str] = "keys",
+) -> str:
+    table = tabulate(
+        list(data.values()),
+        headers=headers,
+        maxcolwidths=36,
+        stralign="left",
+        colalign=["left"] * len(headers),
+    )
 
-    table = tabulate(list(d.values()), headers="keys")
-    block = codeblock(table)
-
-    return block
+    return table
 
 
 def format_nanosecond_time(

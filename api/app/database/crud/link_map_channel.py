@@ -51,6 +51,19 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
 
         channel.converters.append(converter)
 
+    async def remove_converter(self, db: AsyncSession, *, channel_id: str, converter_id: str) -> None:
+        # Assuming that the channel and converter were already checked to exist beforehand
+
+        channel_results = await db.execute(select(self.model).where(self.model.id == channel_id))
+        channel = channel_results.scalars().first()
+
+        converter_results = await db.execute(
+            select(LinkMapConverterModel).where(LinkMapConverterModel.id == converter_id),
+        )
+        converter = converter_results.scalars().first()
+
+        channel.converters.remove(converter)
+
     async def delete(self, db: AsyncSession, *, pk: list[int] | list[str]) -> int:
         return await self.delete_(db, pk=lambda: self.model.id.in_(pk))
 

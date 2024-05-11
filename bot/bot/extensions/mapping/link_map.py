@@ -16,7 +16,7 @@ from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
 from bot.utils import codeblock, is_trusted
-from bot.utils.formatting import FAKE_DISCORD_NEWLINE
+from bot.utils.formatting import FAKE_DISCORD_NEWLINE, dict_to_human_table
 
 from ._utils.link_converter import DestinationType, validate_destination
 
@@ -51,6 +51,7 @@ class LinkMapper(Cog):
         self.link_map_channels: dict[int, LinkMapChannel] | None = None
 
         self.bg_task = self.bot.loop.create_task(self.populate_link_map_channels())
+        log.info("Link map channels cache populated")
 
     async def populate_link_map_channels(self) -> None:
         if self.link_map_channels is not None:
@@ -61,8 +62,6 @@ class LinkMapper(Cog):
         data = response.json()
 
         self.link_map_channels = {x["input_channel_id"]: LinkMapChannel(**x) for x in data}
-
-        log.info("Link map channels cache populated")
 
     def get_link_map_output_channel(self, discord_channel_id: int) -> int | None:
         if (link_map_channels := self.link_map_channels) is not None:
@@ -160,40 +159,50 @@ class LinkMapper(Cog):
         # TODO: Reduce code duplication and unecessary if statements
         channels_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/channels")
         channels_data = [LinkMapChannel(**x) for x in channels_response.json()]
-        channels = (
-            [[x.id, x.input_channel_id, x.output_channel_id] for x in channels_data]
-            if show_id
-            else [[x.input_channel_id, x.output_channel_id] for x in channels_data]
-        )
-        channels_table = tabulate(
-            channels,
-            headers=headers,
-            maxcolwidths=36,
-            stralign="left",
-            colalign=["left"] * len(headers),
-        )
+        if channels_data:
+            channels = (
+                [[x.id, x.input_channel_id, x.output_channel_id] for x in channels_data]
+                if show_id
+                else [[x.input_channel_id, x.output_channel_id] for x in channels_data]
+            )
+            channels_table = codeblock(
+                tabulate(
+                    channels,
+                    headers=headers,
+                    maxcolwidths=36,
+                    stralign="left",
+                    colalign=["left"] * len(headers),
+                ),
+            )
+        else:
+            channels_table = "No channels exist in this server"
 
         converters_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/converters")
         converters_data = [LinkMapConverter(**x) for x in converters_response.json()]
-        converters = (
-            [[x.id, x.from_link, x.get_destination()] for x in converters_data]
-            if show_id
-            else [[x.from_link, x.get_destination()] for x in converters_data]
-        )
-        converters_table = tabulate(
-            converters,
-            headers=headers,
-            maxcolwidths=36,
-            stralign="left",
-            colalign=["left"] * len(headers),
-        )
+        if converters_data:
+            converters = (
+                [[x.id, x.from_link, x.get_destination()] for x in converters_data]
+                if show_id
+                else [[x.from_link, x.get_destination()] for x in converters_data]
+            )
+            converters_table = codeblock(
+                tabulate(
+                    converters,
+                    headers=headers,
+                    maxcolwidths=36,
+                    stralign="left",
+                    colalign=["left"] * len(headers),
+                ),
+            )
+        else:
+            converters_table = "No converters are enabled on this server"
 
         combined_tables = [
             FAKE_DISCORD_NEWLINE,
             "**Channels**",
-            codeblock(channels_table),
+            channels_table,
             "**Enabled Converters**",
-            codeblock(converters_table),
+            converters_table,
         ]
 
         content = "\n".join(combined_tables)
@@ -278,8 +287,10 @@ class LinkMapper(Cog):
             await ctx.error_embed(f"Failed creating link map channel: {response.status_code} - {response.text}")
             return
 
+        await self.populate_link_map_channels()
+
         data = response.json()
-        block = codeblock(data, language="json")
+        block = codeblock(dict_to_human_table(data))
 
         await ctx.send(block)
 
@@ -317,11 +328,16 @@ class LinkMapper(Cog):
 
         await ctx.send(block)
 
-    @link_map.command(aliases=("enable", "e", "add", "a"))
+    @link_map.group(aliases=("enable", "e", "add", "a"))
     @is_trusted()
-    async def link_map_converter_enable(self, ctx: Context, channel_id: str, converter_id: str) -> None:
+    async def link_map_converter_enable(self, ctx: Context) -> None:
+        await ctx.check_subcommands()
+
+    @link_map_converter_enable.command(aliases=("one",))
+    @is_trusted()
+    async def link_map_converter_enable_one(self, ctx: Context, channel_id: str, converter_id: str) -> None:
         response: Response = await self.bot.api.put(
-            f"/api/link_maps/channels/{channel_id}/converters/{converter_id}",
+            f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/enable",
         )
 
         if response.is_error:
@@ -330,7 +346,66 @@ class LinkMapper(Cog):
 
         await ctx.done()
 
-    @link_map.group(aliases=("remove", "r", "delete", "d"))
+    @link_map_converter_enable.command(aliases=("all",))
+    @is_trusted()
+    async def link_map_converter_enable_all(self, ctx: Context, channel_id: str) -> None:
+        all_converters_response: Response = await self.bot.api.get("/api/link_maps/converters/all")
+        all_converters = all_converters_response.json()
+
+        for converter in all_converters:
+            converter_id = converter["id"]
+
+            response: Response = await self.bot.api.put(
+                f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/enable",
+            )
+            if response.is_error:
+                await ctx.error_embed(f"Failed enabling link map: {response.status_code} - {response.text}")
+                return
+
+        await ctx.done()
+
+    @link_map.group(aliases=("disable", "d"))
+    @is_trusted()
+    async def link_map_converter_disable(self, ctx: Context) -> None:
+        await ctx.check_subcommands()
+
+    @link_map_converter_disable.command(aliases=("one",))
+    @is_trusted()
+    async def link_map_converter_disable_one(self, ctx: Context, channel_id: str, converter_id: str) -> None:
+        response: Response = await self.bot.api.put(
+            f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/disable",
+        )
+
+        if response.is_error:
+            await ctx.error_embed(f"Failed enabling link map: {response.status_code} - {response.text}")
+            return
+
+        await ctx.done()
+
+    @link_map_converter_disable.command(aliases=("all",))
+    @is_trusted()
+    async def link_map_converter_disable_all(self, ctx: Context, channel_id: str) -> None:
+        if (guild := ctx.guild) is None:
+            await ctx.error_embed("Link maps are not supported in DMs")
+            return
+
+        enabled_converters_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/converters")
+        enabled_converters = enabled_converters_response.json()
+
+        for converter in enabled_converters:
+            converter_id = converter["id"]
+
+            response: Response = await self.bot.api.put(
+                f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/disable",
+            )
+
+            if response.is_error:
+                await ctx.error_embed(f"Failed enabling link map: {response.status_code} - {response.text}")
+                return
+
+        await ctx.done()
+
+    @link_map.group(aliases=("remove", "r"))
     @is_trusted()
     async def link_map_remove(self, ctx: Context) -> None:
         await ctx.check_subcommands()
@@ -347,6 +422,8 @@ class LinkMapper(Cog):
                 f"Failed deleting link map channel '{channel_id}': {response.status_code} - {response.text}",
             )
             return
+
+        await self.populate_link_map_channels()
 
         await ctx.done()
 

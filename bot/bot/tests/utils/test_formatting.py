@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from bot.utils import convert_to_deltas, dict_to_human_table, final_join, markdown_link
+from bot.utils import convert_to_deltas, final_join, markdown_link
 from bot.utils.formatting import format_nanosecond_time
 
 
@@ -50,18 +50,6 @@ LINK_MAP_DATAFRAME = pd.DataFrame(
         },
     ],
 )
-
-
-def test_dict_to_human_readable_some_items_no_datetime_key() -> None:
-    df = LINK_MAP_DATAFRAME.T
-
-    table = dict_to_human_table(df)
-
-    original_values = [str(x) for x in next(iter(df.to_dict().values())).values()]
-
-    extracted_table_values = table.split("\n")[3].split()
-
-    assert original_values == extracted_table_values
 
 
 def test_format_datetimes_in_dataframe() -> None:
