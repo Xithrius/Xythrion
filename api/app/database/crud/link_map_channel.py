@@ -1,10 +1,14 @@
 from collections.abc import Sequence
 
-from sqlalchemy import select
+from sqlalchemy import and_, exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.crud.base import CRUDBase
-from app.database.models.link_map import LinkMapChannelModel, LinkMapConverterModel
+from app.database.models.link_map import (
+    LinkMapChannelConverterAssociationModel,
+    LinkMapChannelModel,
+    LinkMapConverterModel,
+)
 from app.routers.schemas.link_map import LinkMapChannelCreate, LinkMapChannelUpdate
 
 
@@ -40,6 +44,20 @@ class LinkMapChannelCRUD(CRUDBase[LinkMapChannelModel, LinkMapChannelCreate, Lin
 
     async def add_converter(self, db: AsyncSession, *, channel_id: str, converter_id: str) -> None:
         # Assuming that the channel and converter were already checked to exist beforehand
+
+        association_exists = await db.scalar(
+            select(
+                exists(
+                    and_(
+                        LinkMapChannelConverterAssociationModel.channel_id == channel_id,
+                        LinkMapChannelConverterAssociationModel.converter_id == converter_id,
+                    ),
+                ),
+            ),
+        )
+
+        if association_exists:
+            raise ValueError("This converter is already associated with this channel.")
 
         channel_results = await db.execute(select(self.model).where(self.model.id == channel_id))
         channel = channel_results.scalars().first()

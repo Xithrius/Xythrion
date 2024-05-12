@@ -190,11 +190,17 @@ async def enable_link_map_converter_for_channel(
         )
 
     # Add the converter to the channel
-    await link_map_channel_dao.add_converter(
-        session,
-        channel_id=channel_id,
-        converter_id=converter_id,
-    )
+    try:
+        await link_map_channel_dao.add_converter(
+            session,
+            channel_id=channel_id,
+            converter_id=converter_id,
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Link map channel '{channel_id}' already has converter '{converter_id}' enabled",
+        )
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

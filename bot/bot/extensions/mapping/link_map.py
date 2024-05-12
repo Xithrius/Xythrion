@@ -340,6 +340,10 @@ class LinkMapper(Cog):
             f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/enable",
         )
 
+        if response.status_code == 409:
+            await ctx.warning_embed("Converter is already enabled")
+            return
+
         if response.is_error:
             await ctx.error_embed(f"Failed enabling link map: {response.status_code} - {response.text}")
             return
