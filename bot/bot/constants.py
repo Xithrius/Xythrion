@@ -62,6 +62,10 @@ ERROR_REPLIES = (
     "Parry this, you filthy casual.",
     "L",
     "Unprecedented risk management strategies through scalable micro actions",
+    "Damn you, Perry the Platypus",
+    "Even in death, I still serve.",
+    "Even in debt, I still serve.",
+    "L + Ratio",
 )
 WARNING_REPLIES = (
     "Holup.",
@@ -69,6 +73,9 @@ WARNING_REPLIES = (
     "Unlikely.",
     "There's like, nothing here.",
     "I swear I put it right there!",
+    "Huh?",
+    "Perhamps.",
+    "Augh",
 )
 POSITIVE_REPLIES = (
     "It is done.",
@@ -76,7 +83,7 @@ POSITIVE_REPLIES = (
     "Yuh.",
     "I think that worked.",
     "Indeedingly.",
-    "kerblam.",
+    "Kerblam.",
 )
 
 
