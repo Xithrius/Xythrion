@@ -1,6 +1,10 @@
 import asyncio
 
+import matplotlib
+
 from .bot import Xythrion
+
+matplotlib.use("agg")
 
 
 async def main() -> None:
