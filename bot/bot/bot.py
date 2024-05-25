@@ -81,7 +81,11 @@ class Xythrion(Bot):
             log.info(f"Loaded extension {ext_name} in {elapsed_str}")
 
     async def start(self, **kwargs) -> None:
-        await super().start(token=settings.token)
+        if (token := settings.token) is None:
+            log.error("Discord token is not set at environment variable XYTHRION_BOT_TOKEN")
+            exit(1)
+
+        await super().start(token=token)
 
     async def close(self) -> None:
         await self.api.aclose()
