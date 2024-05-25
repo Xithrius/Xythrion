@@ -5,7 +5,7 @@ from bot.context import Context
 from bot.utils import remove_whitespace, is_trusted
 
 
-class GraphExpression(Cog):
+class ExpressionGraphGeneration(Cog):
     """Graphing different kinds of data."""
 
     def __init__(self, bot: Xythrion) -> None:
@@ -28,4 +28,4 @@ class GraphExpression(Cog):
 
 
 async def setup(bot: Xythrion) -> None:
-    await bot.add_cog(GraphExpression(bot))
+    await bot.add_cog(ExpressionGraphGeneration(bot))

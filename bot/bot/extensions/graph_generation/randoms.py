@@ -4,7 +4,7 @@ from bot.bot import Xythrion
 from bot.context import Context
 
 
-class GraphRandom(Cog):
+class RandomGraphGeneration(Cog):
     """Graph random data."""
 
     def __init__(self, bot: Xythrion) -> None:
@@ -42,4 +42,4 @@ class GraphRandom(Cog):
 
 
 async def setup(bot: Xythrion) -> None:
-    await bot.add_cog(GraphRandom(bot))
+    await bot.add_cog(RandomGraphGeneration(bot))

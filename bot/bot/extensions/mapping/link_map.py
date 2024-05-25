@@ -51,9 +51,10 @@ class LinkMapper(Cog):
         self.link_map_channels: dict[int, LinkMapChannel] | None = None
 
         self.bg_task = self.bot.loop.create_task(self.populate_link_map_channels())
-        log.info("Link map channels cache populated")
 
     async def populate_link_map_channels(self) -> None:
+        await self.bot.wait_until_ready()
+
         if self.link_map_channels is not None:
             return
 
@@ -62,6 +63,8 @@ class LinkMapper(Cog):
         data = response.json()
 
         self.link_map_channels = {x["input_channel_id"]: LinkMapChannel(**x) for x in data}
+
+        log.info("Link map channels cache populated")
 
     def get_link_map_output_channel(self, discord_channel_id: int) -> int | None:
         if (link_map_channels := self.link_map_channels) is not None:
