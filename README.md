@@ -68,7 +68,7 @@ cd infra.xithrius.cloud/scripts
 cp .env.sample .env
 ```
 
-2. Place your key in `BOT_TOKEN` in the `.env` file, and whatever prefix you'd like (such as `";"`) into `BOT_PREFIX`
+2. Place your key in `XYTHRION_BOT_TOKEN` in the `.env` file, and whatever prefix you'd like (such as `";"`) into `XYTHRION_BOT_PREFIX`
 
 ### Local Installation
 

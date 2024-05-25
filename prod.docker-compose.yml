@@ -26,9 +26,6 @@ services:
 
     image: "ghcr.io/xithrius/xythrion/api:latest"
 
-    env_file:
-    - .env
-
     environment:
       XYTHRION_API_ENVIRONMENT: "production"
       XYTHRION_API_RELOAD: "false"
@@ -52,10 +49,10 @@ services:
     image: "ghcr.io/xithrius/xythrion/bot:latest"
 
     env_file:
-    - .env
+    - ./bot/.env
 
     environment:
-      API_URL: "http://api:8001"
+      XYTHRION_BOT_INTERNAL_API_URL: "http://api:8001"
 
     depends_on:
     - api

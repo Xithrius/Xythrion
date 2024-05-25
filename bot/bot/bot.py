@@ -1,6 +1,5 @@
 import time
 from datetime import datetime, timedelta, timezone
-from os import getenv
 
 from discord import AllowedMentions, Intents, Message
 from discord.ext.commands import Bot, when_mentioned_or
@@ -11,6 +10,7 @@ from loguru import logger as log
 from bot import extensions
 from bot.api import APIClient
 from bot.context import Context
+from bot.settings import settings
 from bot.utils import format_nanosecond_time, walk_extensions
 
 load_dotenv()
@@ -30,13 +30,11 @@ class Xythrion(Bot):
         self.tzinfo = timezone(timedelta(hours=timezone_offset))
         self.startup_datetime: datetime | None = None
 
-        self.command_prefix_str: str = getenv("BOT_PREFIX", "^")
-
         self.api: APIClient
         self.http_client: AsyncClient
 
         super().__init__(
-            command_prefix=when_mentioned_or(self.command_prefix_str),
+            command_prefix=when_mentioned_or(settings.prefix),
             case_insensitive=True,
             allowed_mentions=AllowedMentions(everyone=False),
             intents=intents,
@@ -58,7 +56,7 @@ class Xythrion(Bot):
         return False
 
     async def setup_hook(self) -> None:
-        api_url = getenv("API_URL", "http://localhost:8001")
+        api_url = settings.internal_api_url
 
         log.info(f"Attempting to connect to API at {api_url}")
         self.api = APIClient(api_url)
@@ -83,13 +81,7 @@ class Xythrion(Bot):
             log.info(f"Loaded extension {ext_name} in {elapsed_str}")
 
     async def start(self, **kwargs) -> None:
-        token = getenv("BOT_TOKEN")
-
-        if token is None:
-            log.error("Retrieving token returned none")
-            exit(1)
-
-        await super().start(token=token)
+        await super().start(token=settings.token)
 
     async def close(self) -> None:
         await self.api.aclose()

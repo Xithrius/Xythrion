@@ -6,6 +6,7 @@ from humanize import naturaldelta
 
 from bot.bot import Xythrion
 from bot.context import Context
+from bot.settings import settings
 
 
 class Misc(Cog):
@@ -14,7 +15,7 @@ class Misc(Cog):
 
     @command(name="prefix")
     async def get_prefix(self, ctx: Context) -> None:
-        embed = Embed(description=self.bot.command_prefix_str)
+        embed = Embed(description=settings.prefix)
 
         await ctx.send(embed=embed)
 

@@ -41,11 +41,11 @@ services:
       context: ./bot
       dockerfile: Dockerfile
 
-    environment:
-      API_URL: "http://api:8001"
-
     env_file:
     - .env
+
+    environment:
+      XYTHRION_BOT_INTERNAL_API_URL: "http://api:8001"
 
     depends_on:
     - api
