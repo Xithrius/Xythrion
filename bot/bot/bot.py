@@ -15,8 +15,6 @@ from bot.utils import format_nanosecond_time, walk_extensions
 
 load_dotenv()
 
-API_HEALTHCHECK_ATTEMPTS = 5
-
 
 class Xythrion(Bot):
     def __init__(self) -> None:
@@ -45,7 +43,7 @@ class Xythrion(Bot):
 
     @staticmethod
     async def api_healthcheck(api: APIClient) -> bool:
-        for i in range(API_HEALTHCHECK_ATTEMPTS):
+        for i in range(settings.internal_api_healthcheck_attempts):
             timeout = (i + 1) * 2
             log.info(f"({i + 1}/10): Attempting to connect to API, timeout of {timeout}s...")
             response = await api.get("/api/health", timeout=timeout)
