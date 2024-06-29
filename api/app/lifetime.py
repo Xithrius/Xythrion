@@ -123,7 +123,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):  # pragma: no cover
     @staticmethod
     def get_path(request: Request) -> tuple[str, bool]:
         for route in request.app.routes:
-            match, child_scope = route.matches(request.scope)
+            match, _child_scope = route.matches(request.scope)
             if match == Match.FULL:
                 return route.path, True
 

@@ -2,12 +2,11 @@ import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy.ext.asyncio.engine import create_async_engine
-from sqlalchemy.future import Connection
-
 from app.database.meta import meta
 from app.database.models import load_all_models
 from app.settings import settings
+from sqlalchemy.ext.asyncio.engine import create_async_engine
+from sqlalchemy.future import Connection
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -32,7 +31,7 @@ target_metadata = meta
 # ... etc.
 
 
-async def run_migrations_offline() -> None:
+async def run_migrations_offline() -> None:  # noqa: RUF029
     """
     Run migrations in 'offline' mode.
 
@@ -43,7 +42,6 @@ async def run_migrations_offline() -> None:
 
     Calls to context.execute() here emit the given string to the
     script output.
-
     """
     context.configure(
         url=str(settings.db_url),

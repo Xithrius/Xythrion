@@ -69,7 +69,7 @@ def test_format_nanosecond_time_to_nanoseconds() -> None:
 
 
 def test_format_nanosecond_time_to_microseconds() -> None:
-    assert format_nanosecond_time(1_123) == "1.12µs"
+    assert format_nanosecond_time(1_123) == "1.12μs"
 
 
 def test_format_nanosecond_time_to_milliseconds() -> None:

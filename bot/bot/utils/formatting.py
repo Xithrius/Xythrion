@@ -41,7 +41,7 @@ def codeblock(code: str | list | dict, *, language: str | None = None) -> str:
     else:
         block = str(code)
 
-    return f"```{language or ''}\n{block}\n```"
+    return f"```{language or ""}\n{block}\n```"
 
 
 def convert_to_deltas(
@@ -90,7 +90,7 @@ def format_nanosecond_time(
         return f"{ns}ns"
 
     if ns < millisecond_threshold:
-        return f"{ns / microsecond_threshold:.2f}µs"
+        return f"{ns / microsecond_threshold:.2f}μs"
 
     if ns < second_threshold:
         return f"{ns / millisecond_threshold:.2f}ms"

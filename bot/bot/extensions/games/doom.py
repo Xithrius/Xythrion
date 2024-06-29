@@ -56,7 +56,7 @@ class Doom(Cog):
     async def doom(self, ctx: Context, entry: str) -> None:
         if (script := SCRIPTS.get(entry)) is None:
             raise ValueError(
-                f"'{entry}' is not of {final_join(list(SCRIPTS.keys()), final='or')}",
+                f"'{entry}' is not of {final_join(list(SCRIPTS.keys()), final="or")}",
             )
 
         await ctx.send(codeblock(script))

@@ -8,7 +8,7 @@ from yarl import URL
 TEMP_DIR = Path(gettempdir())
 
 
-class LogLevel(str, enum.Enum):
+class LogLevel(enum.StrEnum):
     NOTSET = "NOTSET"
     DEBUG = "DEBUG"
     INFO = "INFO"
