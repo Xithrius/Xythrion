@@ -1,14 +1,14 @@
 [project]
 dependencies = []
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [tool.pdm.dev-dependencies]
 dev = [
     "-e file:///${PROJECT_ROOT}/api",
     "-e file:///${PROJECT_ROOT}/bot",
-    "pre-commit==3.6.0",
-    "pytest==8.1.1",
-    "testcontainers[postgres]==4.2.0rc2",
+    "pre-commit>=3.7.1",
+    "pytest>=8.2.2",
+    "testcontainers[postgres]>=4.7.0",
 ]
 
 [tool.pdm.scripts]

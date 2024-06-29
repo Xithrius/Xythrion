@@ -30,7 +30,7 @@ A graphing bot built with [`discord.py`](https://github.com/Rapptz/discord.py).
 ### Local installation
 
 - Postgres
-- Python 3.11
+- Python 3.12
 - [`python-pdm`](https://github.com/pdm-project/pdm)
 
 ## Bringing up of [infra.xithrius.cloud](https://github.com/Xithrius/infra.xithrius.cloud)
