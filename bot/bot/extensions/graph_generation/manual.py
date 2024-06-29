@@ -19,33 +19,33 @@ class MultiPointType(Enum):
     TRIPLE = 2
 
 
-def extract_points(s: str) -> tuple[MultiPointType, list[tuple[str, str] | tuple[str, str, str]]]:
-    if points_3d := re.findall(MULTIPOINT_3D_REGEX, s):
-        return MultiPointType.TRIPLE, points_3d
-    if points_2d := re.findall(MULTIPOINT_2D_REGEX, s):
-        return MultiPointType.DOUBLE, points_2d
-
-    raise ValueError("Input contains both 2D and 3D points.")
-
-
-async def plot_scatter_2d(df: pd.DataFrame) -> BytesIO:
-    return await plot_generic_2d(df)
-
-
 class ManualGraphGeneration(Cog):
     """Graphing points given by users."""
 
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
+    @staticmethod
+    def __extract_points(s: str) -> tuple[MultiPointType, list[tuple[str, str] | tuple[str, str, str]]]:
+        if points_3d := re.findall(MULTIPOINT_3D_REGEX, s):
+            return MultiPointType.TRIPLE, points_3d
+        if points_2d := re.findall(MULTIPOINT_2D_REGEX, s):
+            return MultiPointType.DOUBLE, points_2d
+
+        raise ValueError("Input contains both 2D and 3D points.")
+
+    @staticmethod
+    async def __plot_scatter_2d(df: pd.DataFrame) -> BytesIO:
+        return await plot_generic_2d(df, plot_type="scatter")
+
     @command()
     @is_trusted()
     async def manual_scatter(self, ctx: Context, points: str) -> None:
-        point_type, matches = extract_points(points)
+        point_type, matches = self.__extract_points(points)
 
         point_arr = [[int(y) for y in match] for match in matches]
         df = pd.DataFrame(point_arr, columns=["x", "y"] if point_type == MultiPointType.DOUBLE else ["x", "y", "z"])
-        b = await plot_scatter_2d(df)
+        b = await self.__plot_scatter_2d(df)
 
         await ctx.send_image_buffer(b)
 

@@ -1,5 +1,6 @@
 from discord.ext.commands import Cog, ExtensionNotLoaded, group
 from loguru import logger as log
+from tabulate import tabulate  # type: ignore [import-untyped]
 
 from bot import extensions
 from bot.bot import Xythrion, walk_extensions
@@ -60,36 +61,33 @@ class Extensions(Cog):
 
         return None
 
-    @extension.command(aliases=("list", "l", "cmds", "c"))
-    async def list_commands(self, ctx: Context) -> None:
-        """Lists all commands, and the extensions they're in."""
-        cmd_list = sorted(self.bot.cogs.items(), key=lambda x: x[0])
+    @extension.command(aliases=("list", "l"))
+    async def list_extensions(self, ctx: Context, cog: str | None = None) -> None:
+        """
+        Lists all extensions and the amount of commands each one has.
 
-        cmd_tree = []
-        for k, v in cmd_list:
-            if not v.get_commands():
-                continue
+        If a cog is specified, then all the commands that it contains are listed.
+        """
+        if (c := cog) is not None:
+            try:
+                cog_obj = self.bot.cogs[c]
+                cmd_list = sorted([x.name for x in cog_obj.walk_commands()])
+                block = tabulate({f"Name ({len(cmd_list)})": cmd_list}, headers="keys")
 
-            cmd_tree.append(k)
+                await ctx.send(codeblock(block))
+            except KeyError:
+                await ctx.error_embed(f"Cog by the name of '{c}' could not be found")
+            return
 
-            cmds = list(v.walk_commands())
+        ext_list = sorted(
+            [(c[0], len(list(c[1].walk_commands()))) for c in self.bot.cogs.items()],
+            key=lambda x: x[1],
+            reverse=True,
+        )
 
-            for i, cmd in enumerate(cmds):
-                spacing: str
-                if cmd.parent is None:
-                    spacing = ""
-                else:
-                    spacing = "│" + " " * 3
+        block = tabulate(ext_list, headers=["Name", "Command count"])
 
-                tree: str
-                if i == (len(cmds) - 1):
-                    tree = "└──"
-                else:
-                    tree = "├──"
-
-                cmd_tree.append(f"{spacing}{tree} {cmd.name}")
-
-        await ctx.send(codeblock(cmd_tree, language="python"))
+        await ctx.send(codeblock(block))
 
 
 async def setup(bot: Xythrion) -> None:

@@ -46,7 +46,7 @@ def plot_generic_2d(
     if plot_type not in ALLOWED_PLOT_TYPES:
         raise ValueError(f"Plot type of '{plot_type}' does not exist")
 
-    def build_plot(data: pd.DataFrame) -> BytesIO:
+    def __build_plot(data: pd.DataFrame) -> BytesIO:
         sns.set_theme()
         plot_func = ALLOWED_PLOT_TYPES[plot_type]
         svm: Axes = plot_func(data, x_l=x_label)
@@ -70,6 +70,6 @@ def plot_generic_2d(
     if not remove_df_outliers and (x_l := x_label) is not None:
         df = remove_outliers(df, x_l)
 
-    b = build_plot(df)
+    b = __build_plot(df)
 
     return b
