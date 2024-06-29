@@ -52,6 +52,7 @@ services:
     - ./bot/.env
 
     environment:
+      XYTHRION_BOT_ENVIRONMENT: "production"
       XYTHRION_BOT_INTERNAL_API_URL: "http://api:8001"
 
     depends_on:

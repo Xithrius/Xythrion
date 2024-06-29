@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     token: str | None = None
     prefix: str = "^"
+    environment: str = "dev"
     internal_api_healthcheck_attempts: int = 5
     internal_api_url: str = "http://localhost:8001"
 
