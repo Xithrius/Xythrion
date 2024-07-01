@@ -46,7 +46,7 @@ class Xythrion(Bot):
         for i in range(settings.internal_api_healthcheck_attempts):
             timeout = (i + 1) * 2
             log.info(
-                f"({i + 1}/{settings.internal_api_healthcheck_attempts + 1}):"
+                f"({i + 1}/{settings.internal_api_healthcheck_attempts + 1}): "
                 f"Attempting to connect to API, timeout of {timeout}s...",
             )
             response = await api.get("/api/health", timeout=timeout)

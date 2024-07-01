@@ -16,7 +16,7 @@ from bot.bot import Xythrion
 from bot.constants import BS4_HEADERS
 from bot.context import Context
 from bot.utils import codeblock, is_trusted
-from bot.utils.formatting import FAKE_DISCORD_NEWLINE, dict_to_human_table
+from bot.utils.formatting import FAKE_DISCORD_NEWLINE
 
 from ._utils.link_converter import DestinationType, validate_destination
 
@@ -235,10 +235,21 @@ class LinkMapper(Cog):
         data = response.json()
 
         if not data:
-            await ctx.warning_embed("Nothing's here")
+            await ctx.warning_embed("No link map channels exist.")
             return
 
-        block = codeblock(data, language="json")
+        headers = ["UUID", "Input", "Output"]
+        channels = [LinkMapChannel(**x) for x in data]
+        channels_slim = [[str(x.id), x.input_channel_id, x.output_channel_id] for x in channels]
+
+        block = codeblock(
+            tabulate(
+                channels_slim,
+                headers=headers,
+                stralign="left",
+                colalign=["left"] * len(headers),
+            ),
+        )
 
         await ctx.send(block)
 
@@ -254,10 +265,21 @@ class LinkMapper(Cog):
         data = response.json()
 
         if not data:
-            await ctx.warning_embed("Nothing's here")
+            await ctx.warning_embed("No link map converters exist")
             return
 
-        block = codeblock(data, language="json")
+        headers = ["UUID", "Source", "Destination"]
+        converters = [LinkMapConverter(**x) for x in data]
+        converters_slim = [[str(x.id), x.from_link, x.to_link or x.xpath] for x in converters]
+
+        block = codeblock(
+            tabulate(
+                converters_slim,
+                headers=headers,
+                stralign="left",
+                colalign=["left"] * len(headers),
+            ),
+        )
 
         await ctx.send(block)
 
@@ -293,9 +315,11 @@ class LinkMapper(Cog):
         await self.populate_link_map_channels()
 
         data = response.json()
-        block = codeblock(dict_to_human_table(data))
 
-        await ctx.send(block)
+        await ctx.success_embed(
+            f"New channels linked with UUID **{data["id"]}**\n\n"
+            f"Input at <#{input_channel_id}> to output <#{output_channel_id}>",
+        )
 
     @link_map_create.command(aliases=("converter", "converters"))
     @is_trusted()
