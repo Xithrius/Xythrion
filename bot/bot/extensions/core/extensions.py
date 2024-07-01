@@ -1,11 +1,23 @@
+import asyncio
+import inspect
+from asyncio import Task
+from pathlib import Path
+
 from discord.ext.commands import Cog, ExtensionNotLoaded, group
 from loguru import logger as log
+from pydantic import BaseModel
 from tabulate import tabulate  # type: ignore [import-untyped]
 
 from bot import extensions
 from bot.bot import Xythrion, walk_extensions
 from bot.context import Context
+from bot.settings import settings
 from bot.utils import Extension, codeblock, is_trusted
+
+
+class ExtensionInfo(BaseModel):
+    abs_path: Path
+    mtime_ns: int
 
 
 class Extensions(Cog):
@@ -13,6 +25,63 @@ class Extensions(Cog):
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
+
+        self.extension_autoreload_bg_task: Task[None] | None
+        self.extension_mtimes_ns: dict[str, ExtensionInfo] | None
+
+        if settings.environment == "dev":
+            log.info("Development environment enabled, cogs will be auto-reloaded upon modification")
+            self.extension_autoreload_bg_task = self.bot.loop.create_task(self.autoreload_extensions())
+        else:
+            log.warning("This is not a development environment, so extension auto-reloading is disabled")
+
+    async def cog_unload(self) -> None:
+        if self.extension_autoreload_bg_task is not None:
+            log.info("Stopping extensions autoreload...")
+
+            self.extension_autoreload_bg_task.cancel()
+
+    def set_extension_mtimes_ns(self) -> None:
+        log.info("Setting initial extension file modification times")
+
+        self.extension_mtimes_ns = {}
+
+        for _, ext in self.bot.extensions.items():
+            path_from_module = inspect.getfile(ext)
+            file = Path(path_from_module)
+
+            if file.exists() and file.is_file():
+                last_modified_ns = file.stat().st_mtime_ns
+
+                self.extension_mtimes_ns[ext.__name__] = ExtensionInfo(
+                    abs_path=file,
+                    mtime_ns=last_modified_ns,
+                )
+
+    async def check_and_reload_extensions(self) -> None:
+        if (ext_mtimes_ns := self.extension_mtimes_ns) is not None:
+            for ext_module_path, ext_info in ext_mtimes_ns.items():
+                current_mtime_ns = ext_info.abs_path.stat().st_mtime_ns
+
+                # File was modified
+                if current_mtime_ns > ext_info.mtime_ns:
+                    log.info(f"Reloaded {ext_module_path}")
+                    await self.bot.reload_extension(ext_module_path)
+                    ext_mtimes_ns[ext_module_path].mtime_ns = current_mtime_ns
+
+    async def autoreload_extensions(self) -> None:
+        await self.bot.wait_until_ready()
+
+        interval = settings.extensions_autoreload_check_interval
+
+        log.info(f"Auto-reload extensions task loaded, listening for extension changes every {interval}s...")
+
+        self.set_extension_mtimes_ns()
+
+        while not self.bot.is_closed():
+            await self.check_and_reload_extensions()
+
+            await asyncio.sleep(interval)
 
     @group(aliases=("extensions", "e"))
     @is_trusted()
