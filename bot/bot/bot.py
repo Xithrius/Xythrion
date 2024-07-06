@@ -4,11 +4,11 @@ from datetime import datetime, timedelta, timezone
 from discord import AllowedMentions, Intents, Message
 from discord.ext.commands import Bot, when_mentioned_or
 from dotenv import load_dotenv
-from httpx import AsyncClient
+from httpx import AsyncClient as HttpxAsyncClient
+from httpx import ConnectError
 from loguru import logger as log
 
 from bot import extensions
-from bot.api import APIClient
 from bot.context import Context
 from bot.settings import settings
 from bot.utils import format_nanosecond_time, walk_extensions
@@ -18,7 +18,6 @@ load_dotenv()
 
 class Xythrion(Bot):
     def __init__(self) -> None:
-        """Initializing the bot with proper permissions."""
         intents = Intents.default()
         intents.members = True
         intents.message_content = True
@@ -28,8 +27,8 @@ class Xythrion(Bot):
         self.tzinfo = timezone(timedelta(hours=timezone_offset))
         self.startup_datetime: datetime | None = None
 
-        self.api: APIClient
-        self.http_client: AsyncClient
+        self.internal_api: HttpxAsyncClient
+        self.http_client: HttpxAsyncClient
 
         super().__init__(
             command_prefix=when_mentioned_or(settings.prefix),
@@ -42,31 +41,26 @@ class Xythrion(Bot):
         return await super().get_context(message, cls=cls)
 
     @staticmethod
-    async def api_healthcheck(api: APIClient) -> bool:
-        for i in range(settings.internal_api_healthcheck_attempts):
-            timeout = (i + 1) * 2
-            log.info(
-                f"({i + 1}/{settings.internal_api_healthcheck_attempts + 1}): "
-                f"Attempting to connect to API, timeout of {timeout}s...",
-            )
-            response = await api.get("/api/health", timeout=timeout)
+    async def __setup_internal_api_client() -> HttpxAsyncClient:
+        base_url, internal_api_timeout = settings.internal_api_url, settings.internal_api_timeout
 
-            if response.is_success:
-                return True
+        log.info(f"Attempting to connect to internal API at {base_url}...")
+        internal_api_client = HttpxAsyncClient(base_url=base_url, timeout=internal_api_timeout)
 
-        return False
+        try:
+            await internal_api_client.get("/api/health")
+        except ConnectError:
+            log.critical("Attempted to connect to API, but failed. Exiting...")
+            await internal_api_client.aclose()
+            exit(1)
+
+        log.info("Successfully created internal API client.")
+
+        return internal_api_client
 
     async def setup_hook(self) -> None:
-        api_url = settings.internal_api_url
-
-        log.info(f"Attempting to connect to API at {api_url}")
-        self.api = APIClient(api_url)
-        internal_api_health = await self.api_healthcheck(self.api)
-        if not internal_api_health:
-            log.critical("Attempted to connect to API, but failed. Exiting...")
-            return
-
-        self.http_client = AsyncClient()
+        self.internal_api_client = await self.__setup_internal_api_client()
+        self.http_client = HttpxAsyncClient(timeout=settings.external_api_timeout)
 
         exts = list(walk_extensions(extensions))
 
@@ -89,7 +83,7 @@ class Xythrion(Bot):
         await super().start(token=token)
 
     async def close(self) -> None:
-        await self.api.aclose()
+        await self.internal_api_client.aclose()
         await self.http_client.aclose()
 
         await super().close()

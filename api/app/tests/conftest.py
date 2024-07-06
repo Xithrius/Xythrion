@@ -113,5 +113,5 @@ async def client(
     :param anyio_backend: the anyio backend
     :yield: client for the app.
     """
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(app=fastapi_app, base_url="http://test", timeout=5.0) as ac:
         yield ac

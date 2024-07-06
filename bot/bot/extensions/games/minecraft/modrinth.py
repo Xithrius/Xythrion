@@ -5,6 +5,7 @@ from loguru import logger as log
 
 from bot.bot import Xythrion
 from bot.context import Context
+from bot.settings import settings
 
 from ._models.modrinth.project import ProjectResult
 from ._models.modrinth.search import ProjectSearchResults
@@ -25,7 +26,10 @@ class Modrinth(Cog):
     async def cog_load(self) -> None:
         log.info("Creating API client for Modrinth...")
 
-        self.modrinth_api = AsyncClient(base_url=MODRINTH_BASE_API_ENDPOINT)
+        self.modrinth_api = AsyncClient(
+            base_url=MODRINTH_BASE_API_ENDPOINT,
+            timeout=settings.external_api_timeout,
+        )
 
     @group()
     async def modrinth(self, ctx: Context) -> None:

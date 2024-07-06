@@ -15,7 +15,7 @@ def is_trusted() -> Callable:  # pragma: no cover
         if await ctx.bot.is_owner(ctx.author):
             return True
 
-        response: Response = await ctx.bot.api.get(
+        response: Response = await ctx.bot.internal_api_client.get(
             f"/api/trusted/{ctx.author.id}",
         )
 

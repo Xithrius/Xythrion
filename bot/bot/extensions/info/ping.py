@@ -18,7 +18,7 @@ class Ping(Cog):
     @ping.command()
     async def api(self, ctx: Context) -> None:
         """Is *that* thing on?"""
-        response = await self.bot.api.get("/api/health")
+        response = await self.bot.internal_api_client.get("/api/health")
 
         await ctx.send("API is healthy" if response.is_success else "API is unhealthy")
 

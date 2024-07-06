@@ -58,7 +58,7 @@ class LinkMapper(Cog):
         if self.link_map_channels is not None:
             return
 
-        response: Response = await self.bot.api.get("/api/link_maps/channels/all")
+        response: Response = await self.bot.internal_api_client.get("/api/link_maps/channels/all")
 
         data = response.json()
 
@@ -100,7 +100,7 @@ class LinkMapper(Cog):
         if (output_channel_id := self.get_link_map_output_channel(channel_id)) is None:
             return
 
-        response: Response = await self.bot.api.get(
+        response: Response = await self.bot.internal_api_client.get(
             f"/api/link_maps/channels/{channel_id}/converters",
         )
 
@@ -160,7 +160,9 @@ class LinkMapper(Cog):
         headers = ("ID", "Source", "Destination") if show_id else ("Source", "Destination")
 
         # TODO: Reduce code duplication and unecessary if statements
-        channels_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/channels")
+        channels_response: Response = await self.bot.internal_api_client.get(
+            f"/api/link_maps/server/{guild.id}/channels",
+        )
         channels_data = [LinkMapChannel(**x) for x in channels_response.json()]
         if channels_data:
             channels = (
@@ -180,7 +182,9 @@ class LinkMapper(Cog):
         else:
             channels_table = "No channels exist in this server"
 
-        converters_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/converters")
+        converters_response: Response = await self.bot.internal_api_client.get(
+            f"/api/link_maps/server/{guild.id}/converters",
+        )
         converters_data = [LinkMapConverter(**x) for x in converters_response.json()]
         if converters_data:
             converters = (
@@ -226,7 +230,7 @@ class LinkMapper(Cog):
             await ctx.error_embed("Link maps are not supported in DMs")
             return
 
-        response: Response = await self.bot.api.get(f"/api/link_maps/server/{server_id}/channels")
+        response: Response = await self.bot.internal_api_client.get(f"/api/link_maps/server/{server_id}/channels")
 
         if response.is_error:
             await ctx.error_embed(f"Internal API error: {response.text}")
@@ -256,7 +260,7 @@ class LinkMapper(Cog):
     @link_map_list.command(aliases=("converter", "converters"))
     @is_trusted()
     async def list_link_map_converters(self, ctx: Context) -> None:
-        response: Response = await self.bot.api.get("/api/link_maps/converters/all")
+        response: Response = await self.bot.internal_api_client.get("/api/link_maps/converters/all")
 
         if response.is_error:
             await ctx.error_embed(f"Internal API error: {response.text}")
@@ -303,7 +307,7 @@ class LinkMapper(Cog):
             "output_channel_id": output_channel_id,
         }
 
-        response: Response = await self.bot.api.post(
+        response: Response = await self.bot.internal_api_client.post(
             "/api/link_maps/channels",
             data=payload,
         )
@@ -341,7 +345,7 @@ class LinkMapper(Cog):
             case DestinationType.URL:
                 payload["to_link"] = destination
 
-        response: Response = await self.bot.api.post(
+        response: Response = await self.bot.internal_api_client.post(
             "/api/link_maps/converters",
             data=payload,
         )
@@ -363,7 +367,7 @@ class LinkMapper(Cog):
     @link_map_converter_enable.command(aliases=("one",))
     @is_trusted()
     async def link_map_converter_enable_one(self, ctx: Context, channel_id: str, converter_id: str) -> None:
-        response: Response = await self.bot.api.put(
+        response: Response = await self.bot.internal_api_client.put(
             f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/enable",
         )
 
@@ -380,13 +384,13 @@ class LinkMapper(Cog):
     @link_map_converter_enable.command(aliases=("all",))
     @is_trusted()
     async def link_map_converter_enable_all(self, ctx: Context, channel_id: str) -> None:
-        all_converters_response: Response = await self.bot.api.get("/api/link_maps/converters/all")
+        all_converters_response: Response = await self.bot.internal_api_client.get("/api/link_maps/converters/all")
         all_converters = all_converters_response.json()
 
         for converter in all_converters:
             converter_id = converter["id"]
 
-            response: Response = await self.bot.api.put(
+            response: Response = await self.bot.internal_api_client.put(
                 f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/enable",
             )
             if response.is_error:
@@ -403,7 +407,7 @@ class LinkMapper(Cog):
     @link_map_converter_disable.command(aliases=("one",))
     @is_trusted()
     async def link_map_converter_disable_one(self, ctx: Context, channel_id: str, converter_id: str) -> None:
-        response: Response = await self.bot.api.put(
+        response: Response = await self.bot.internal_api_client.put(
             f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/disable",
         )
 
@@ -420,13 +424,15 @@ class LinkMapper(Cog):
             await ctx.error_embed("Link maps are not supported in DMs")
             return
 
-        enabled_converters_response: Response = await self.bot.api.get(f"/api/link_maps/server/{guild.id}/converters")
+        enabled_converters_response: Response = await self.bot.internal_api_client.get(
+            f"/api/link_maps/server/{guild.id}/converters",
+        )
         enabled_converters = enabled_converters_response.json()
 
         for converter in enabled_converters:
             converter_id = converter["id"]
 
-            response: Response = await self.bot.api.put(
+            response: Response = await self.bot.internal_api_client.put(
                 f"/api/link_maps/channels/{channel_id}/converters/{converter_id}/disable",
             )
 
@@ -444,7 +450,7 @@ class LinkMapper(Cog):
     @link_map_remove.command(aliases=("channel", "channels"))
     @is_trusted()
     async def remove_link_map_channel(self, ctx: Context, channel_id: str) -> None:
-        response: Response = await self.bot.api.delete(
+        response: Response = await self.bot.internal_api_client.delete(
             f"/api/link_maps/channels/{channel_id}",
         )
 
@@ -461,7 +467,7 @@ class LinkMapper(Cog):
     @link_map_remove.command(aliases=("converter", "converters"))
     @is_trusted()
     async def remove_link_map_converter(self, ctx: Context, converter_id: str) -> None:
-        response: Response = await self.bot.api.delete(
+        response: Response = await self.bot.internal_api_client.delete(
             f"/api/link_maps/converters/{converter_id}",
         )
 

@@ -31,7 +31,7 @@ class Trusted(Cog):
     @trust.command(aliases=("list",))
     @is_owner()
     async def list_trusted(self, ctx: Context) -> None:
-        r: Response = await self.bot.api.get("/api/trusted/")
+        r: Response = await self.bot.internal_api_client.get("/api/trusted/")
 
         if data := r.json():
             table = dict_to_human_table(data)
@@ -45,7 +45,7 @@ class Trusted(Cog):
     @trust.command(aliases=("add",))
     @is_owner()
     async def add_trust(self, ctx: Context, user_id: int) -> None:
-        response: Response = await self.bot.api.post(
+        response: Response = await self.bot.internal_api_client.post(
             "/api/trusted/",
             data={"user_id": user_id},
         )
@@ -64,7 +64,7 @@ class Trusted(Cog):
     @trust.command(aliases=("remove", "delete"))
     @is_owner()
     async def remove_trust(self, ctx: Context, user_id: int) -> None:
-        await self.bot.api.delete(f"/api/trusted/{user_id}")
+        await self.bot.internal_api_client.delete(f"/api/trusted/{user_id}")
 
         await ctx.done()
 

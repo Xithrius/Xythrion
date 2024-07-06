@@ -46,14 +46,14 @@ class Extensions(Cog):
 
         self.extension_mtimes_ns = {}
 
-        for _, ext in self.bot.extensions.items():
+        for ext_module_path, ext in self.bot.extensions.items():
             path_from_module = inspect.getfile(ext)
             file = Path(path_from_module)
 
             if file.exists() and file.is_file():
                 last_modified_ns = file.stat().st_mtime_ns
 
-                self.extension_mtimes_ns[ext.__name__] = ExtensionInfo(
+                self.extension_mtimes_ns[ext_module_path] = ExtensionInfo(
                     abs_path=file,
                     mtime_ns=last_modified_ns,
                 )
