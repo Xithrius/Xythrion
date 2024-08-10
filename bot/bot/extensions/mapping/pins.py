@@ -35,7 +35,10 @@ class Pins(Cog):
             "message": message.jump_url,
         }
 
-        r: Response = await self.bot.internal_api_client.post("/api/pins/", data=pin)
+        r: Response = await self.bot.internal_api_client.post(
+            "/api/pins/",
+            json=pin,
+        )
 
         data = r.json()
 
@@ -88,7 +91,10 @@ class Pins(Cog):
                 }
 
                 try:
-                    r: Response = await self.bot.internal_api_client.post("/api/pins/", data=pin_data)
+                    r: Response = await self.bot.internal_api_client.post(
+                        "/api/pins/",
+                        json=pin_data,
+                    )
                 except HTTPStatusError as e:
                     if e.response.status_code == 409:
                         already_migrated += 1

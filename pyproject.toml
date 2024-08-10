@@ -4,9 +4,9 @@ requires-python = ">=3.12"
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "-e file:///${PROJECT_ROOT}/api",
-    "-e file:///${PROJECT_ROOT}/bot",
-    "pre-commit>=3.7.1",
+    "-e file:///${PROJECT_ROOT}/api#egg=xythrion-api",
+    "-e file:///${PROJECT_ROOT}/bot#egg=xythrion-bot",
+    "pre-commit>=3.8.0",
 ]
 
 [tool.pdm.scripts]

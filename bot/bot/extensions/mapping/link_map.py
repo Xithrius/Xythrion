@@ -309,7 +309,7 @@ class LinkMapper(Cog):
 
         response: Response = await self.bot.internal_api_client.post(
             "/api/link_maps/channels",
-            data=payload,
+            json=payload,
         )
 
         if response.is_error:
@@ -347,7 +347,7 @@ class LinkMapper(Cog):
 
         response: Response = await self.bot.internal_api_client.post(
             "/api/link_maps/converters",
-            data=payload,
+            json=payload,
         )
 
         if response.is_error:
