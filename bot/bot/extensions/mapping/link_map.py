@@ -321,7 +321,7 @@ class LinkMapper(Cog):
         data = response.json()
 
         await ctx.success_embed(
-            f"New channels linked with UUID **{data["id"]}**\n\n"
+            f"New channels linked with UUID **{data['id']}**\n\n"
             f"Input at <#{input_channel_id}> to output <#{output_channel_id}>",
         )
 
