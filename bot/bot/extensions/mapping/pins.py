@@ -44,7 +44,7 @@ class Pins(Cog):
 
         embed = Embed(
             title="Created new pin",
-            description=f"Pin ID: {data["id"]}",
+            description=f"Pin ID: {data['id']}",
             url=message.jump_url,
         )
 
@@ -136,7 +136,7 @@ class Pins(Cog):
 
         pins = "\n".join(
             [
-                f"{i}. <@{pin["user_id"]}>: [{pin["created_at"]}]({pin["message"]})"
+                f"{i}. <@{pin['user_id']}>: [{pin['created_at']}]({pin['message']})"
                 for (i, pin) in enumerate(data if len(data) < amount else data[:amount])
             ],
         )
