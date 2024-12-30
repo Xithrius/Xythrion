@@ -59,7 +59,7 @@ class Trusted(Cog):
 
         data = response.json()
 
-        await ctx.send(f"Trust given to <@{user_id}> at {data["at"]}")
+        await ctx.send(f"Trust given to <@{user_id}> at {data['at']}")
 
     @trust.command(aliases=("remove", "delete"))
     @is_owner()
