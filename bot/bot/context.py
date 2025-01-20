@@ -28,7 +28,7 @@ class Context(BaseContext):
         group: Group = self.command
 
         subcommands = "\n".join(
-            [f"`{cmd.name} ({", ".join(cmd.aliases)})`" if cmd.aliases else f"`{cmd.name}`" for cmd in group.commands],
+            [f"`{cmd.name} ({', '.join(cmd.aliases)})`" if cmd.aliases else f"`{cmd.name}`" for cmd in group.commands],
         )
 
         await self.warning_embed(
