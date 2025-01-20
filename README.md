@@ -1,21 +1,10 @@
-<div align="center">
-
-<img src="images/icon.png" width=256/>
-
 # Xythrion
 
-A graphing bot built with [`discord.py`](https://github.com/Rapptz/discord.py).
+Archived in favor of splitting up the repository and including it in [infra.xithrius.cloud](https://github.com/Xithrius/infra.xithrius.cloud).
 
-[![MIT][s1]][l1] [![CI][s2]][l2] [![pre-commit.ci status][s3]][l3] [![codecov][s4]][l4]
+API: https://github.com/Xithrius/xythrion-api
 
-[s1]: https://img.shields.io/badge/License-MIT-blue.svg
-[l1]: https://opensource.org/licenses/MIT
-[s2]: https://github.com/Xithrius/Xythrion/actions/workflows/ci.yml/badge.svg
-[l2]: https://github.com/Xithrius/Xythrion/actions/workflows/ci.yml
-[s3]: https://results.pre-commit.ci/badge/github/Xithrius/Xythrion/main.svg
-[l3]: https://results.pre-commit.ci/latest/github/Xithrius/Xythrion/main
-[s4]: https://codecov.io/gh/Xithrius/Xythrion/graph/badge.svg?token=J03UIHW314
-[l4]: https://codecov.io/gh/Xithrius/Xythrion
+Bot: https://github.com/Xithrius/xythrion-bot
 
 </div>
 
